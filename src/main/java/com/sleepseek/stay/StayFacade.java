@@ -11,5 +11,5 @@ public interface StayFacade {
 
     boolean stayExists(Long id);
 
-    List<StayDTO> getStays(Long from, Long to);
+    List<StayDTO> getStays(Integer from, Integer to);
 }

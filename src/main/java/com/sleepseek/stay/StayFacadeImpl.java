@@ -44,7 +44,7 @@ class StayFacadeImpl implements StayFacade {
     }
 
     @Override
-    public List<StayDTO> getStays(Long from, Long to) {
+    public List<StayDTO> getStays(Integer from, Integer to) {
         List<Stay> stays = stayRepository.findInRange(from, to);
         return stays.stream().map(StayMapper::toDto).collect(Collectors.toList());
     }
