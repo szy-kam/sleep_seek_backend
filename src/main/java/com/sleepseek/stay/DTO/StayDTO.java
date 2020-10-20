@@ -8,6 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class StayDTO {
+    private Long id;
+
     private String name;
 
     private AddressDTO address;
@@ -24,14 +26,16 @@ public class StayDTO {
 
     private String properties;
 
+    private String createdAt;
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class AddressDTO {
         private String city;
-        private String street;
-        private String postalCode;
+        private String address;
+        private String zipCode;
     }
 }
 
