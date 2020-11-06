@@ -7,12 +7,7 @@ import org.springframework.context.annotation.Configuration;
 public class StayConfiguration {
 
     @Bean
-    public StayFacade stayFacade(){
-        return new StayFacadeImpl(new InMemoryStayRepository());
-    }
-
-    @Bean
-    public StayFacade stayFacade(StayRepository stayRepository){
+    public StayFacade stayFacade(StayRepository stayRepository) {
         return new StayFacadeImpl(stayRepository);
     }
 }

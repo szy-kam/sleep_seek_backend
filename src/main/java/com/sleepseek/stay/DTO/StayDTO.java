@@ -24,8 +24,6 @@ public class StayDTO {
 
     private String mainPhoto;
 
-    private String properties;
-
     private String createdAt;
 
     @Getter
@@ -34,7 +32,7 @@ public class StayDTO {
     @Builder
     public static class AddressDTO {
         private String city;
-        private String address;
+        private String street;
         private String zipCode;
     }
 }

@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 class StayMapper {
-    static StayDTO toDto(Stay stay){
+    static StayDTO toDto(Stay stay) {
         return StayDTO.builder()
                 .id(stay.getId())
                 .name(stay.getName())
@@ -17,11 +17,10 @@ class StayMapper {
                 .description(stay.getDescription())
                 .mainPhoto(stay.getMainPhoto())
                 .price(stay.getPrice())
-                .properties(stay.getProperties())
                 .userId(stay.getUserId())
                 .address(StayDTO.AddressDTO.builder()
                         .city(stay.getAddress().getCity())
-                        .address(stay.getAddress().getAddress())
+                        .street(stay.getAddress().getStreet())
                         .zipCode(stay.getAddress().getZipCode())
                         .build())
                 .build();

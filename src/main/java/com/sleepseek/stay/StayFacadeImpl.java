@@ -1,6 +1,9 @@
 package com.sleepseek.stay;
 
 import com.sleepseek.stay.DTO.StayDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +18,7 @@ class StayFacadeImpl implements StayFacade {
 
     @Override
     public void addStay(StayDTO stayDTO) {
-        if (!stayRepository.existsById(stayDTO.getId())) {
+        if (stayDTO.getId() == null || !stayRepository.existsById(stayDTO.getId())) {
 
             stayRepository.save(Stay.builder()
                     .name(stayDTO.getName())
@@ -23,13 +26,30 @@ class StayFacadeImpl implements StayFacade {
                     .description(stayDTO.getDescription())
                     .mainPhoto(stayDTO.getMainPhoto())
                     .price(stayDTO.getPrice())
-                    .properties(stayDTO.getProperties())
                     .userId(stayDTO.getUserId())
                     .address(Address.builder()
                             .city(stayDTO.getAddress().getCity())
                             .zipCode(stayDTO.getAddress().getZipCode())
-                            .address(stayDTO.getAddress().getAddress()).build())
+                            .street(stayDTO.getAddress().getStreet()).build())
                     .build());
+        }
+    }
+
+    @Override
+    public void updateStay(StayDTO stayDTO) {
+        if (stayExists(stayDTO.getId())) {
+            Stay stay = stayRepository.findById(stayDTO.getId()).orElseThrow();
+            stay.setName(stayDTO.getName());
+            stay.setContactInfo(stayDTO.getContactInfo());
+            stay.setDescription(stayDTO.getDescription());
+            stay.setMainPhoto(stayDTO.getMainPhoto());
+            stay.setPrice(stayDTO.getPrice());
+            stay.setUserId(stayDTO.getUserId());
+            Address address = stay.getAddress();
+            address.setCity(stayDTO.getAddress().getCity());
+            address.setStreet(stayDTO.getAddress().getStreet());
+            address.setZipCode(stayDTO.getAddress().getZipCode());
+            stayRepository.save(stay);
         }
     }
 
@@ -44,8 +64,14 @@ class StayFacadeImpl implements StayFacade {
     }
 
     @Override
-    public List<StayDTO> getStays(Integer from, Integer to) {
-        List<Stay> stays = stayRepository.findInRange(from, to);
-        return stays.stream().map(StayMapper::toDto).collect(Collectors.toList());
+    public List<StayDTO> getStays(Integer pageNumber, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Stay> stays = stayRepository.findAll(pageable);
+        return stays.get().map(StayMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteStay(Long id) {
+        stayRepository.deleteById(id);
     }
 }
