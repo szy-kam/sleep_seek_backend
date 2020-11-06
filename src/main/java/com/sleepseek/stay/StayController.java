@@ -17,8 +17,12 @@ class StayController {
     }
 
     @GetMapping("/stays/{stayId}")
-    StayDTO getStayById(@PathVariable Long stayId) {
-        return stayFacade.getStay(stayId);
+    Object getStayById(@PathVariable Long stayId) {
+        if(stayFacade.stayExists(stayId)){
+            return stayFacade.getStay(stayId);
+        }else{
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
     }
 
     @GetMapping("/stays")
