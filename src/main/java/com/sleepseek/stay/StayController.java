@@ -1,6 +1,5 @@
 package com.sleepseek.stay;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayAlreadyExistsException;
 import com.sleepseek.stay.exception.StayNotFoundException;
