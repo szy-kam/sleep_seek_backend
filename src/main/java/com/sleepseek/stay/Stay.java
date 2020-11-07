@@ -23,7 +23,7 @@ class Stay extends BaseEntity {
     private Address address;
 
     @Column(name = "userId")
-    private String userId;
+    private Long userId;
 
     @Column(name = "description")
     private String description;

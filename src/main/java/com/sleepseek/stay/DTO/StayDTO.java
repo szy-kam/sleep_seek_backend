@@ -14,7 +14,7 @@ public class StayDTO {
 
     private AddressDTO address;
 
-    private String userId;
+    private Long userId;
 
     private String description;
 

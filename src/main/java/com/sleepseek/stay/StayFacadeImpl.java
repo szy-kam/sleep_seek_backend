@@ -1,6 +1,8 @@
 package com.sleepseek.stay;
 
 import com.sleepseek.stay.DTO.StayDTO;
+import com.sleepseek.stay.exception.StayAlreadyExistsException;
+import com.sleepseek.stay.exception.StayNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +21,6 @@ class StayFacadeImpl implements StayFacade {
     @Override
     public void addStay(StayDTO stayDTO) {
         if (stayDTO.getId() == null || !stayRepository.existsById(stayDTO.getId())) {
-
             stayRepository.save(Stay.builder()
                     .name(stayDTO.getName())
                     .contactInfo(stayDTO.getContactInfo())
@@ -32,6 +33,8 @@ class StayFacadeImpl implements StayFacade {
                             .zipCode(stayDTO.getAddress().getZipCode())
                             .street(stayDTO.getAddress().getStreet()).build())
                     .build());
+        } else {
+            throw new StayAlreadyExistsException(stayDTO.getId());
         }
     }
 
@@ -50,11 +53,16 @@ class StayFacadeImpl implements StayFacade {
             address.setStreet(stayDTO.getAddress().getStreet());
             address.setZipCode(stayDTO.getAddress().getZipCode());
             stayRepository.save(stay);
+        }else{
+            throw new StayNotFoundException(stayDTO.getId());
         }
     }
 
     @Override
     public StayDTO getStay(Long id) {
+        if (!stayExists(id)) {
+            throw new StayNotFoundException(id);
+        }
         return stayRepository.findById(id).map(StayMapper::toDto).orElseThrow();
     }
 
@@ -72,6 +80,9 @@ class StayFacadeImpl implements StayFacade {
 
     @Override
     public void deleteStay(Long id) {
+        if (!stayExists(id)) {
+            throw new StayNotFoundException(id);
+        }
         stayRepository.deleteById(id);
     }
 }
