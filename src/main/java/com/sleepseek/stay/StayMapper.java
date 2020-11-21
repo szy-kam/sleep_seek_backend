@@ -1,0 +1,28 @@
+package com.sleepseek.stay;
+
+import com.sleepseek.stay.DTO.StayDTO;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.time.format.DateTimeFormatter;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+class StayMapper {
+    static StayDTO toDto(Stay stay) {
+        return StayDTO.builder()
+                .id(stay.getId())
+                .name(stay.getName())
+                .contactInfo(stay.getContactInfo())
+                .createdAt(stay.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .description(stay.getDescription())
+                .mainPhoto(stay.getMainPhoto())
+                .price(stay.getPrice())
+                .userId(stay.getUserId())
+                .address(StayDTO.AddressDTO.builder()
+                        .city(stay.getAddress().getCity())
+                        .street(stay.getAddress().getStreet())
+                        .zipCode(stay.getAddress().getZipCode())
+                        .build())
+                .build();
+    }
+}
