@@ -11,12 +11,14 @@ class UserController {
     UserController(UserFacade userFacade) {
         this.userFacade = userFacade;
     }
+
     @PostMapping("/user")
-    void addUser(@RequestBody UserDTO userDTO){
+    void addUser(@RequestBody UserDTO userDTO) {
         userFacade.postUser(userDTO);
     }
+
     @GetMapping("/user/{userId}")
-    UserDTO getUser(@PathVariable Long userId){
-       return userFacade.getUser(userId);
+    UserDTO getUser(@PathVariable Long userId) {
+        return userFacade.getUser(userId);
     }
 }
