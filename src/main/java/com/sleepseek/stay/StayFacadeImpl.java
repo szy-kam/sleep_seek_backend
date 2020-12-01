@@ -32,6 +32,7 @@ class StayFacadeImpl implements StayFacade {
                             .city(stayDTO.getAddress().getCity())
                             .zipCode(stayDTO.getAddress().getZipCode())
                             .street(stayDTO.getAddress().getStreet()).build())
+                    .images(stayDTO.getImages())
                     .build());
         } else {
             throw new StayAlreadyExistsException(stayDTO.getId());
@@ -48,6 +49,7 @@ class StayFacadeImpl implements StayFacade {
             stay.setMainPhoto(stayDTO.getMainPhoto());
             stay.setPrice(stayDTO.getPrice());
             stay.setUserId(stayDTO.getUserId());
+            stay.setImages(stayDTO.getImages());
             Address address = stay.getAddress();
             address.setCity(stayDTO.getAddress().getCity());
             address.setStreet(stayDTO.getAddress().getStreet());

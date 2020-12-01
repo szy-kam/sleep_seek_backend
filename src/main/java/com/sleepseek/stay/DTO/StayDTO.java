@@ -2,6 +2,8 @@ package com.sleepseek.stay.DTO;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,9 +24,11 @@ public class StayDTO {
 
     private String contactInfo;
 
-    private String mainPhoto;
+    private Long mainPhoto;
 
     private String createdAt;
+
+    private List<Long> images;
 
     @Getter
     @NoArgsConstructor

@@ -23,6 +23,7 @@ class StayMapper {
                         .street(stay.getAddress().getStreet())
                         .zipCode(stay.getAddress().getZipCode())
                         .build())
+                .images(stay.getImages())
                 .build();
     }
 }

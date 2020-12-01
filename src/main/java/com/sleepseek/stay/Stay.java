@@ -3,10 +3,8 @@ package com.sleepseek.stay;
 import com.sleepseek.common.BaseEntity;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,6 +33,9 @@ class Stay extends BaseEntity {
     private String contactInfo;
 
     @Column(name = "mainPhoto")
-    private String mainPhoto;
+    private Long mainPhoto;
+
+    @ElementCollection
+    private List<Long> images;
 
 }
