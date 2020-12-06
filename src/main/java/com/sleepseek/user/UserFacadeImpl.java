@@ -17,14 +17,16 @@ class UserFacadeImpl implements UserFacade {
 
 
     @Override
-    public void postUser(UserDTO userDTO) {
+    public UserDTO postUser(UserDTO userDTO) {
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             throw new UserAlreadyExistsException(userDTO.getEmail());
         } else {
             userRepository.save(User.builder()
+                    .username(userDTO.getUsername())
                     .email(userDTO.getEmail())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
                     .build());
+            return UserMapper.toDTO(userRepository.findByEmail(userDTO.getEmail()).orElse(null));
         }
     }
 

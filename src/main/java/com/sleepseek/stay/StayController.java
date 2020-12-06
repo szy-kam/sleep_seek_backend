@@ -38,6 +38,7 @@ class StayController {
         try {
             stayFacade.addStay(stay);
         } catch (StayAlreadyExistsException e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e.getCause());
         }
     }
