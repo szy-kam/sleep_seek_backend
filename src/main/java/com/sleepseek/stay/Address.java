@@ -20,4 +20,13 @@ class Address {
 
     @Column(name = "zipCode")
     private String zipCode;
+
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "longtitude")
+    private Double longitude;
+
+    @Column(name = "latitude")
+    private Double latitude;
 }

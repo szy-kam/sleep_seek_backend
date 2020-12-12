@@ -1,5 +1,6 @@
 package com.sleepseek.stay;
 
+import com.sleepseek.image.ImageMapper;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayAlreadyExistsException;
 import com.sleepseek.stay.exception.StayNotFoundException;
@@ -23,16 +24,20 @@ class StayFacadeImpl implements StayFacade {
         if (stayDTO.getId() == null || !stayRepository.existsById(stayDTO.getId())) {
             stayRepository.save(Stay.builder()
                     .name(stayDTO.getName())
-                    .contactInfo(stayDTO.getContactInfo())
+                    .email(stayDTO.getEmail())
                     .description(stayDTO.getDescription())
                     .mainPhoto(stayDTO.getMainPhoto())
-                    .price(stayDTO.getPrice())
+                    .phoneNumber(stayDTO.getPhoneNumber())
+                    .minPrice(stayDTO.getMinPrice())
                     .userId(stayDTO.getUserId())
                     .address(Address.builder()
                             .city(stayDTO.getAddress().getCity())
                             .zipCode(stayDTO.getAddress().getZipCode())
-                            .street(stayDTO.getAddress().getStreet()).build())
-                    .images(stayDTO.getImages())
+                            .street(stayDTO.getAddress().getStreet())
+                            .country(stayDTO.getAddress().getCountry())
+                            .longitude(stayDTO.getAddress().getLongitude())
+                            .latitude(stayDTO.getAddress().getLatitude())
+                            .build())
                     .build());
         } else {
             throw new StayAlreadyExistsException(stayDTO.getId());
@@ -44,16 +49,21 @@ class StayFacadeImpl implements StayFacade {
         if (stayExists(stayDTO.getId())) {
             Stay stay = stayRepository.findById(stayDTO.getId()).orElseThrow();
             stay.setName(stayDTO.getName());
-            stay.setContactInfo(stayDTO.getContactInfo());
+            stay.setEmail(stayDTO.getPhoneNumber());
             stay.setDescription(stayDTO.getDescription());
             stay.setMainPhoto(stayDTO.getMainPhoto());
-            stay.setPrice(stayDTO.getPrice());
+            stay.setMinPrice(stayDTO.getMinPrice());
             stay.setUserId(stayDTO.getUserId());
-            stay.setImages(stayDTO.getImages());
+            stay.setEmail(stayDTO.getEmail());
+            stay.setPhoneNumber(stayDTO.getPhoneNumber());
+
             Address address = stay.getAddress();
             address.setCity(stayDTO.getAddress().getCity());
             address.setStreet(stayDTO.getAddress().getStreet());
             address.setZipCode(stayDTO.getAddress().getZipCode());
+            address.setCountry(stayDTO.getAddress().getCountry());
+            address.setLatitude(stayDTO.getAddress().getLatitude());
+            address.setLongitude(stayDTO.getAddress().getLongitude());
             stayRepository.save(stay);
         }else{
             throw new StayNotFoundException(stayDTO.getId());

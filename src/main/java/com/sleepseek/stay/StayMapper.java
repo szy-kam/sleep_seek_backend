@@ -1,10 +1,13 @@
 package com.sleepseek.stay;
 
+import com.sleepseek.image.Image;
+import com.sleepseek.image.ImageMapper;
 import com.sleepseek.stay.DTO.StayDTO;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 class StayMapper {
@@ -12,18 +15,19 @@ class StayMapper {
         return StayDTO.builder()
                 .id(stay.getId())
                 .name(stay.getName())
-                .contactInfo(stay.getContactInfo())
+                .phoneNumber(stay.getPhoneNumber())
+                .email(stay.getEmail())
                 .createdAt(stay.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .description(stay.getDescription())
                 .mainPhoto(stay.getMainPhoto())
-                .price(stay.getPrice())
+                .minPrice(stay.getMinPrice())
                 .userId(stay.getUserId())
                 .address(StayDTO.AddressDTO.builder()
                         .city(stay.getAddress().getCity())
                         .street(stay.getAddress().getStreet())
                         .zipCode(stay.getAddress().getZipCode())
                         .build())
-                .images(stay.getImages())
+                .photos(stay.getPhotos().stream().map(ImageMapper::toDto).collect(Collectors.toList()))
                 .build();
     }
 }
