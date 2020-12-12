@@ -15,6 +15,6 @@ public interface StayFacade {
 
     boolean stayExists(Long id);
 
-    List<StayDTO> getStays(Integer pageNumber, Integer pageSize);
+    List<StayDTO> getStays(StaySearchParameters searchParameters);
 
 }

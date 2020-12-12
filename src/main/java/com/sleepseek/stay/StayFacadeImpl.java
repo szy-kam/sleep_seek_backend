@@ -1,6 +1,5 @@
 package com.sleepseek.stay;
 
-import com.sleepseek.image.ImageMapper;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayAlreadyExistsException;
 import com.sleepseek.stay.exception.StayNotFoundException;
@@ -66,7 +65,7 @@ class StayFacadeImpl implements StayFacade {
             address.setLatitude(stayDTO.getAddress().getLatitude());
             address.setLongitude(stayDTO.getAddress().getLongitude());
             stayRepository.save(stay);
-        }else{
+        } else {
             throw new StayNotFoundException(stayDTO.getId());
         }
     }
@@ -85,9 +84,15 @@ class StayFacadeImpl implements StayFacade {
     }
 
     @Override
-    public List<StayDTO> getStays(Integer pageNumber, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Stay> stays = stayRepository.findAll(pageable);
+    public List<StayDTO> getStays(StaySearchParameters searchParameters) {
+        
+        Pageable pageable = PageRequest.of(searchParameters.getPageNumber(), searchParameters.getPageSize());
+        Page<Stay> stays;
+        if (searchParameters.getUserId() != null) {
+            stays = stayRepository.findAllByUserId(searchParameters.getUserId(), pageable);
+        } else {
+            stays = stayRepository.findAll(pageable);
+        }
         return stays.get().map(StayMapper::toDto).collect(Collectors.toList());
     }
 

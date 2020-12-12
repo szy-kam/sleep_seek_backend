@@ -29,8 +29,16 @@ class StayController {
     }
 
     @GetMapping("/stays")
-    List<StayDTO> getStaysInRange(@RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
-        return stayFacade.getStays(pageNumber, pageSize);
+    List<StayDTO> getStaysInRange(@RequestParam(required = false) Integer pageNumber,
+                                  @RequestParam(required = false) Integer pageSize,
+                                  @RequestParam(required = false) Long userId,
+                                  @RequestParam(required = false) String s) {
+        return stayFacade.getStays(StaySearchParameters.builder()
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .userId(userId)
+                .searchString(s)
+                .build());
     }
 
     @PostMapping("/stays")

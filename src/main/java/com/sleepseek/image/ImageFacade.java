@@ -15,5 +15,4 @@ public interface ImageFacade {
     Optional<ImageDTO> getImage(Long id);
 
 
-
 }

@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ImageMapper {
 
-    public static ImageDTO toDto(Image image){
+    public static ImageDTO toDto(Image image) {
         return ImageDTO.builder()
                 .id(image.getId())
                 .url(image.getUrl())
