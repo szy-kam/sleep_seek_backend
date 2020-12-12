@@ -26,6 +26,9 @@ class StayMapper {
                         .city(stay.getAddress().getCity())
                         .street(stay.getAddress().getStreet())
                         .zipCode(stay.getAddress().getZipCode())
+                        .country(stay.getAddress().getCountry())
+                        .longitude(stay.getAddress().getLongitude())
+                        .latitude(stay.getAddress().getLatitude())
                         .build())
                 .photos(stay.getPhotos().stream().map(ImageMapper::toDto).collect(Collectors.toList()))
                 .build();

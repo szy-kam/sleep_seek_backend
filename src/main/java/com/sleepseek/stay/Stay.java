@@ -39,7 +39,7 @@ class Stay extends BaseEntity {
     @Column(name = "mainPhoto")
     private Long mainPhoto;
 
-    @OneToMany(mappedBy = "stays")
+    @OneToMany()
     private List<Image> photos;
 
 }

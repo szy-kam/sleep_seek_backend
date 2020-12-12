@@ -39,6 +39,7 @@ class StayFacadeImpl implements StayFacade {
                             .latitude(stayDTO.getAddress().getLatitude())
                             .build())
                     .build());
+
         } else {
             throw new StayAlreadyExistsException(stayDTO.getId());
         }
