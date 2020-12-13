@@ -17,8 +17,8 @@ class UserController {
         return userFacade.postUser(userDTO).getId();
     }
 
-    @GetMapping("/user/{userId}")
-    UserDTO getUser(@PathVariable Long userId) {
-        return userFacade.getUser(userId);
+    @GetMapping("/user/{email}")
+    Long getUser(@PathVariable String email) {
+        return userFacade.getUser(email).getId();
     }
 }
