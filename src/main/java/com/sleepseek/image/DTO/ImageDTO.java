@@ -11,6 +11,5 @@ import org.springframework.lang.Nullable;
 public class ImageDTO {
     private Long id;
     private String url;
-    @Nullable
     private String originalFilename;
 }

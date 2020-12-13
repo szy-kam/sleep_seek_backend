@@ -1,22 +1,28 @@
 package com.sleepseek.stay;
 
+import com.sleepseek.image.DTO.ImageDTO;
+import com.sleepseek.image.ImageFacade;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayAlreadyExistsException;
 import com.sleepseek.stay.exception.StayNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 class StayController {
 
     private final StayFacade stayFacade;
+    private final ImageFacade imageFacade;
 
-    StayController(StayFacade stayFacade) {
+    StayController(StayFacade stayFacade, ImageFacade imageFacade) {
         this.stayFacade = stayFacade;
+        this.imageFacade = imageFacade;
     }
 
     @GetMapping("/stays/{stayId}")
@@ -42,8 +48,16 @@ class StayController {
     }
 
     @PostMapping("/stays")
-    void addStay(@RequestBody StayDTO stay) {
+    void addStay(@RequestBody StayDTO stay, @RequestBody(required = false) List<MultipartFile> newPhotos) {
         try {
+            if(newPhotos != null){
+                List<ImageDTO> imageDTOS = new ArrayList<>();
+                for(MultipartFile image: newPhotos){
+                    ImageDTO imageDTO = imageFacade.addImage(image).orElseThrow();
+                    imageDTOS.add(imageDTO);
+                }
+                stay.setPhotos(imageDTOS);
+            }
             stayFacade.addStay(stay);
         } catch (StayAlreadyExistsException e) {
             e.printStackTrace();

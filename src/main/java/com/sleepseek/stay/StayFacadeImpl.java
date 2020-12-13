@@ -85,7 +85,7 @@ class StayFacadeImpl implements StayFacade {
 
     @Override
     public List<StayDTO> getStays(StaySearchParameters searchParameters) {
-        
+
         Pageable pageable = PageRequest.of(searchParameters.getPageNumber(), searchParameters.getPageSize());
         Page<Stay> stays;
         if (searchParameters.getUserId() != null) {

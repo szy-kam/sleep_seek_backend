@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-public class UserConfiguration {
+class UserConfiguration {
     @Bean
     UserFacade userFacade(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return new UserFacadeImpl(userRepository, passwordEncoder);
