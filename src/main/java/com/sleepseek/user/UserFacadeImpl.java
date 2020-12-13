@@ -21,9 +21,8 @@ class UserFacadeImpl implements UserFacade {
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             throw new UserAlreadyExistsException(userDTO.getEmail());
         } else {
-            String username = userDTO.getUsername() != null ? userDTO.getUsername() : userDTO.getEmail();
             userRepository.save(User.builder()
-                    .username(username)
+                    .username(userDTO.getUsername())
                     .email(userDTO.getEmail())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
                     .build());
