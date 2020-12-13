@@ -21,12 +21,13 @@ class UserFacadeImpl implements UserFacade {
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             throw new UserAlreadyExistsException(userDTO.getEmail());
         } else {
+            String username = userDTO.getUsername() != null ? userDTO.getUsername() : userDTO.getEmail();
             userRepository.save(User.builder()
-                    .username(userDTO.getUsername())
+                    .username(username)
                     .email(userDTO.getEmail())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
                     .build());
-            return UserMapper.toDTO(userRepository.findByEmail(userDTO.getEmail()).orElse(null));
+            return UserMapper.toDTO(userRepository.findByEmail(userDTO.getEmail()).orElseThrow());
         }
     }
 
