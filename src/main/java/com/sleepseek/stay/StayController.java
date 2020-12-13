@@ -45,11 +45,6 @@ class StayController {
     @PostMapping("/stays")
     void addStay(@RequestBody StayDTO stay) {
         try {
-            for (ImageDTO image : stay.getPhotos()
-            ) {
-                System.out.println(image.getOriginalFilename());
-                System.out.println(image.getId());
-            }
             stayFacade.addStay(stay);
         } catch (StayAlreadyExistsException e) {
             e.printStackTrace();
