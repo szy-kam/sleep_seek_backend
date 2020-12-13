@@ -1,7 +1,6 @@
 package com.sleepseek.image.DTO;
 
 import lombok.*;
-import org.springframework.lang.Nullable;
 
 @Getter
 @Setter

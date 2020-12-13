@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name = "stays")
-class Stay extends BaseEntity {
+public class Stay extends BaseEntity {
     @Column(name = "name")
     private String name;
 
@@ -39,7 +39,7 @@ class Stay extends BaseEntity {
     @Column(name = "mainPhoto")
     private Long mainPhoto;
 
-    @OneToMany()
+    @OneToMany(targetEntity = Image.class)
     private List<Image> photos;
 
 }

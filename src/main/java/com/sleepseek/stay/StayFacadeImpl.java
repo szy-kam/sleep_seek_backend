@@ -1,5 +1,7 @@
 package com.sleepseek.stay;
 
+import com.sleepseek.image.DTO.ImageDTO;
+import com.sleepseek.image.ImageRepository;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayAlreadyExistsException;
 import com.sleepseek.stay.exception.StayNotFoundException;
@@ -13,9 +15,11 @@ import java.util.stream.Collectors;
 class StayFacadeImpl implements StayFacade {
 
     private final StayRepository stayRepository;
+    private final ImageRepository imageRepository;
 
-    StayFacadeImpl(StayRepository stayRepository) {
+    StayFacadeImpl(StayRepository stayRepository, ImageRepository imageRepository) {
         this.stayRepository = stayRepository;
+        this.imageRepository = imageRepository;
     }
 
     @Override
@@ -29,6 +33,7 @@ class StayFacadeImpl implements StayFacade {
                     .phoneNumber(stayDTO.getPhoneNumber())
                     .minPrice(stayDTO.getMinPrice())
                     .userId(stayDTO.getUserId())
+                    .photos(imageRepository.findAllById(stayDTO.getPhotos().stream().map(ImageDTO::getId).collect(Collectors.toList())))
                     .address(Address.builder()
                             .city(stayDTO.getAddress().getCity())
                             .zipCode(stayDTO.getAddress().getZipCode())
@@ -56,7 +61,7 @@ class StayFacadeImpl implements StayFacade {
             stay.setUserId(stayDTO.getUserId());
             stay.setEmail(stayDTO.getEmail());
             stay.setPhoneNumber(stayDTO.getPhoneNumber());
-
+            stay.setPhotos(imageRepository.findAllById(stayDTO.getPhotos().stream().map(ImageDTO::getId).collect(Collectors.toList())));
             Address address = stay.getAddress();
             address.setCity(stayDTO.getAddress().getCity());
             address.setStreet(stayDTO.getAddress().getStreet());

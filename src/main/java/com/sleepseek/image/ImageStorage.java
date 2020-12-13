@@ -1,4 +1,7 @@
 package com.sleepseek.image;
 
-public class ImageStorage {
+import java.io.File;
+
+public interface ImageStorage {
+    String uploadFile(File file, String fileName);
 }
