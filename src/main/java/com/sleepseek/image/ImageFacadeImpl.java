@@ -23,6 +23,9 @@ class ImageFacadeImpl implements ImageFacade {
         String originalFilename = image.getOriginalFilename();
         File file = convertMultiPartToFile(image);
         String url = imageStorage.uploadFile(file, generateFileName(image));
+        if(!file.delete()){
+            throw new IOException();
+        }
         Image imageEntity = imageRepository.save(Image.builder()
                 .originalFilename(originalFilename)
                 .url(url)
