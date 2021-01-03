@@ -10,7 +10,7 @@ import static java.util.Collections.emptyList;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
 
     public UserDetailsServiceImpl(UserRepository userRepository) {
@@ -19,10 +19,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User applicationUser = userRepository.findByUsername(username).orElse(null);
+        User applicationUser = userRepository.findByEmail(username).orElse(null);
         if (applicationUser == null) {
             throw new UsernameNotFoundException(username);
         }
-        return new  org.springframework.security.core.userdetails.User(applicationUser.getUsername(), applicationUser.getPassword(), emptyList());
+        return new  org.springframework.security.core.userdetails.User(applicationUser.getEmail(), applicationUser.getPassword(), emptyList());
     }
 }

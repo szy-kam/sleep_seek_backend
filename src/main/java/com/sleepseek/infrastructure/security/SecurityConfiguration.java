@@ -1,5 +1,6 @@
 package com.sleepseek.infrastructure.security;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,4 +14,8 @@ class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    SecurityConstants securityConstants(){
+        return new SecurityConstants();
+    }
 }

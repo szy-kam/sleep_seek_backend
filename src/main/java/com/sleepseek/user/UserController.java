@@ -3,6 +3,8 @@ package com.sleepseek.user;
 import com.sleepseek.user.DTO.UserDTO;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 class UserController {
 
@@ -13,12 +15,12 @@ class UserController {
     }
 
     @PostMapping("/signup")
-    Long addUser(@RequestBody UserDTO userDTO) {
-        return userFacade.postUser(userDTO).getId();
+    void addUser(@RequestBody UserDTO userDTO) {
+         userFacade.postUser(userDTO);
     }
 
-    @GetMapping("/user/{email}")
-    Long getUser(@PathVariable String email) {
-        return userFacade.getUser(email).getId();
+    @GetMapping("/username")
+    String currentUserName(Principal principal){
+        return principal.getName();
     }
 }

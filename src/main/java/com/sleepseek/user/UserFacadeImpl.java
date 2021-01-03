@@ -3,6 +3,8 @@ package com.sleepseek.user;
 import com.sleepseek.user.DTO.UserDTO;
 import com.sleepseek.user.exception.UserAlreadyExistsException;
 import com.sleepseek.user.exception.UserNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 class UserFacadeImpl implements UserFacade {
@@ -36,7 +38,7 @@ class UserFacadeImpl implements UserFacade {
     }
 
     @Override
-    public UserDTO getUser(Long id) {
-        return userRepository.findById(id).map(UserMapper::toDTO).orElseThrow(() -> new UserNotFoundException(id));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmail(username).map(UserMapper::toDetails).orElseThrow(()-> new UsernameNotFoundException(username));
     }
 }

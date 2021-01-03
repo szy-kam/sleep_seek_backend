@@ -1,12 +1,12 @@
 package com.sleepseek.user;
 
 import com.sleepseek.user.DTO.UserDTO;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserFacade {
+public interface UserFacade extends UserDetailsService {
 
     UserDTO postUser(UserDTO userDTO);
 
     UserDTO getUser(String email);
 
-    UserDTO getUser(Long id);
 }
