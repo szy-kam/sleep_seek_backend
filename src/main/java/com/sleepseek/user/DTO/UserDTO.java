@@ -12,8 +12,8 @@ import javax.persistence.OneToMany;
 @AllArgsConstructor
 @Builder
 public final class UserDTO {
-    private String email;
-    private String password;
     private String username;
+    private String password;
+    private String displayName;
 
 }

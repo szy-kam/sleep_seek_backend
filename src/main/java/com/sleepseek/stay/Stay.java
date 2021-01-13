@@ -2,6 +2,7 @@ package com.sleepseek.stay;
 
 import com.sleepseek.common.BaseEntity;
 import com.sleepseek.image.Image;
+import com.sleepseek.user.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,29 +16,33 @@ import java.util.List;
 @Builder
 @Table(name = "stays")
 public class Stay extends BaseEntity {
-    @Column(name = "name")
+    @Column
     private String name;
 
     @Embedded
     private Address address;
 
-    @Column(name = "userId")
-    private Long userId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name="user")
+    private User user;
 
-    @Column(name = "description")
+    @Column
     private String description;
 
-    @Column(name = "minPrice")
+    @Column
     private String minPrice;
 
-    @Column(name = "email")
+    @Column
     private String email;
 
-    @Column(name = "phoneNumber")
+    @Column
     private String phoneNumber;
 
-    @Column(name = "mainPhoto")
-    private Long mainPhoto;
+    @Column
+    private String mainPhoto;
+
+    @Column
+    private String category;
 
     @OneToMany(targetEntity = Image.class)
     private List<Image> photos;

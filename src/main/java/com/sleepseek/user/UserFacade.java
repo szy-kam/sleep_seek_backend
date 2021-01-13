@@ -7,6 +7,6 @@ public interface UserFacade extends UserDetailsService {
 
     UserDTO postUser(UserDTO userDTO);
 
-    UserDTO getUser(String email);
+    User getUserByUsername(String username);
 
 }

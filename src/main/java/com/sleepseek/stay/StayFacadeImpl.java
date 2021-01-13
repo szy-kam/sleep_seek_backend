@@ -1,10 +1,11 @@
 package com.sleepseek.stay;
 
-import com.sleepseek.image.DTO.ImageDTO;
 import com.sleepseek.image.ImageRepository;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayAlreadyExistsException;
 import com.sleepseek.stay.exception.StayNotFoundException;
+import com.sleepseek.user.UserRepository;
+import com.sleepseek.user.exception.UserNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,24 +17,31 @@ class StayFacadeImpl implements StayFacade {
 
     private final StayRepository stayRepository;
     private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
 
-    StayFacadeImpl(StayRepository stayRepository, ImageRepository imageRepository) {
+    StayFacadeImpl(StayRepository stayRepository, ImageRepository imageRepository, UserRepository userRepository) {
         this.stayRepository = stayRepository;
         this.imageRepository = imageRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public void addStay(StayDTO stayDTO) {
+    public StayDTO addStay(StayDTO stayDTO) {
         if (stayDTO.getId() == null || !stayRepository.existsById(stayDTO.getId())) {
-            stayRepository.save(Stay.builder()
+            Stay newStay = stayRepository.save(Stay.builder()
                     .name(stayDTO.getName())
                     .email(stayDTO.getEmail())
                     .description(stayDTO.getDescription())
                     .mainPhoto(stayDTO.getMainPhoto())
                     .phoneNumber(stayDTO.getPhoneNumber())
                     .minPrice(stayDTO.getMinPrice())
-                    .userId(stayDTO.getUserId())
-                    .photos(imageRepository.findAllById(stayDTO.getPhotos().stream().map(ImageDTO::getId).collect(Collectors.toList())))
+                    .category(stayDTO.getCategory())
+                    .user(userRepository.findByUsername(stayDTO.getUsername()).orElseThrow(()-> new UserNotFoundException(stayDTO.getUsername())))
+                    .photos(stayDTO.getPhotos().stream().map(url ->
+                            imageRepository.findByUrl(url).stream().filter(image ->
+                                    image.getStay().getName().equals(stayDTO.getName())
+                            ).findAny().orElseThrow()
+                    ).collect(Collectors.toList()))
                     .address(Address.builder()
                             .city(stayDTO.getAddress().getCity())
                             .zipCode(stayDTO.getAddress().getZipCode())
@@ -43,6 +51,7 @@ class StayFacadeImpl implements StayFacade {
                             .latitude(stayDTO.getAddress().getLatitude())
                             .build())
                     .build());
+            return StayMapper.toDto(newStay);
 
         } else {
             throw new StayAlreadyExistsException(stayDTO.getId());
@@ -58,10 +67,15 @@ class StayFacadeImpl implements StayFacade {
             stay.setDescription(stayDTO.getDescription());
             stay.setMainPhoto(stayDTO.getMainPhoto());
             stay.setMinPrice(stayDTO.getMinPrice());
-            stay.setUserId(stayDTO.getUserId());
+            stay.setUser(userRepository.findByUsername(stayDTO.getUsername()).orElseThrow());
             stay.setEmail(stayDTO.getEmail());
             stay.setPhoneNumber(stayDTO.getPhoneNumber());
-            stay.setPhotos(imageRepository.findAllById(stayDTO.getPhotos().stream().map(ImageDTO::getId).collect(Collectors.toList())));
+            stay.setCategory(stayDTO.getCategory());
+            stay.setPhotos(stayDTO.getPhotos().stream().map(url ->
+                    imageRepository.findByUrl(url).stream().filter(image ->
+                            image.getStay().getName().equals(stayDTO.getName())
+                    ).findAny().orElseThrow()
+            ).collect(Collectors.toList()));
             Address address = stay.getAddress();
             address.setCity(stayDTO.getAddress().getCity());
             address.setStreet(stayDTO.getAddress().getStreet());
@@ -84,6 +98,11 @@ class StayFacadeImpl implements StayFacade {
     }
 
     @Override
+    public Stay loadStay(Long id) {
+        return stayRepository.findById(id).orElseThrow(()-> new StayNotFoundException(id));
+    }
+
+    @Override
     public boolean stayExists(Long id) {
         return stayRepository.existsById(id);
     }
@@ -93,8 +112,8 @@ class StayFacadeImpl implements StayFacade {
 
         Pageable pageable = PageRequest.of(searchParameters.getPageNumber(), searchParameters.getPageSize());
         Page<Stay> stays;
-        if (searchParameters.getUserId() != null) {
-            stays = stayRepository.findAllByUserId(searchParameters.getUserId(), pageable);
+        if (searchParameters.getUsername() != null) {
+            stays = stayRepository.findAllByUser(userRepository.findByUsername(searchParameters.getUsername()).orElseThrow(), pageable);
         } else {
             stays = stayRepository.findAll(pageable);
         }

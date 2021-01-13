@@ -1,6 +1,5 @@
 package com.sleepseek.stay;
 
-import com.sleepseek.image.DTO.ImageDTO;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayAlreadyExistsException;
 import com.sleepseek.stay.exception.StayNotFoundException;
@@ -9,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -32,20 +32,21 @@ class StayController {
     @GetMapping("/stays")
     List<StayDTO> getStaysInRange(@RequestParam(required = false) Integer pageNumber,
                                   @RequestParam(required = false) Integer pageSize,
-                                  @RequestParam(required = false) Long userId,
+                                  @RequestParam(required = false) String username,
                                   @RequestParam(required = false) String s) {
         return stayFacade.getStays(StaySearchParameters.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
-                .userId(userId)
+                .username(username)
                 .searchString(s)
                 .build());
     }
 
     @PostMapping("/stays")
-    void addStay(@RequestBody StayDTO stay) {
+    Long addStay(Principal principal, @RequestBody StayDTO stay) {
         try {
-            stayFacade.addStay(stay);
+            stay.setUsername(principal.getName());
+            return stayFacade.addStay(stay).getId();
         } catch (StayAlreadyExistsException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e.getCause());

@@ -17,7 +17,7 @@ public class StayDTO {
 
     private AddressDTO address;
 
-    private Long userId;
+    private String username;
 
     private String description;
 
@@ -27,11 +27,13 @@ public class StayDTO {
 
     private String email;
 
-    private Long mainPhoto;
+    private String mainPhoto;
+
+    private String category;
 
     private String createdAt;
 
-    private List<ImageDTO> photos;
+    private List<String> photos;
 
     @Getter
     @NoArgsConstructor

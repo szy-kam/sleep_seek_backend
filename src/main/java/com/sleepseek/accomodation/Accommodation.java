@@ -1,4 +1,4 @@
-package com.sleepseek.image;
+package com.sleepseek.accomodation;
 
 import com.sleepseek.common.BaseEntity;
 import com.sleepseek.stay.Stay;
@@ -7,7 +7,7 @@ import lombok.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+
 
 @Entity
 @Getter
@@ -15,14 +15,18 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "images")
-public class Image extends BaseEntity {
-    @Column
-    private String url;
-
-    @Column
-    private String originalFilename;
+public class Accommodation extends BaseEntity {
 
     @ManyToOne
     private Stay stay;
+
+    @Column
+    private Long sleepersCapacity;
+
+    @Column
+    private Long quantity;
+
+    @Column
+    private String price;
+
 }

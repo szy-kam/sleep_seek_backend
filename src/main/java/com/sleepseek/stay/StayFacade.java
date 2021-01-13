@@ -5,13 +5,15 @@ import com.sleepseek.stay.DTO.StayDTO;
 import java.util.List;
 
 public interface StayFacade {
-    void addStay(StayDTO stayDTO);
+    StayDTO addStay(StayDTO stayDTO);
 
     void updateStay(StayDTO stayDTO);
 
     void deleteStay(Long id);
 
     StayDTO getStay(Long id);
+
+    Stay loadStay(Long id);
 
     boolean stayExists(Long id);
 

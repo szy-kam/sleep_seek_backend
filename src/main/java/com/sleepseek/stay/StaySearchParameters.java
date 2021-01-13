@@ -10,7 +10,7 @@ import lombok.*;
 class StaySearchParameters {
     private Integer pageNumber;
     private Integer pageSize;
-    private Long userId;
+    private String username;
     private String searchString;
 
 }

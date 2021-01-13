@@ -20,25 +20,25 @@ class UserFacadeImpl implements UserFacade {
 
     @Override
     public UserDTO postUser(UserDTO userDTO) {
-        if (userRepository.existsByEmail(userDTO.getEmail())) {
-            throw new UserAlreadyExistsException(userDTO.getEmail());
+        if (userRepository.existsByUsername(userDTO.getUsername())) {
+            throw new UserAlreadyExistsException(userDTO.getUsername());
         } else {
-            userRepository.save(User.builder()
+            User newUser = userRepository.save(User.builder()
                     .username(userDTO.getUsername())
-                    .email(userDTO.getEmail())
+                    .displayName(userDTO.getDisplayName())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
                     .build());
-            return UserMapper.toDTO(userRepository.findByEmail(userDTO.getEmail()).orElseThrow());
+            return UserMapper.toDTO(newUser);
         }
     }
 
     @Override
-    public UserDTO getUser(String email) {
-        return userRepository.findByEmail(email).map(UserMapper::toDTO).orElseThrow(() -> new UserNotFoundException(email));
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(()-> new UserNotFoundException(username));
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username).map(UserMapper::toDetails).orElseThrow(()-> new UsernameNotFoundException(username));
+        return userRepository.findByUsername(username).map(UserMapper::toDetails).orElseThrow(()-> new UsernameNotFoundException(username));
     }
 }

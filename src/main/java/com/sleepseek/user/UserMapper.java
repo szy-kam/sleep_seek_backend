@@ -10,7 +10,7 @@ class UserMapper {
     static UserDTO toDTO(User user) {
         return UserDTO.builder()
                 .username(user.getUsername())
-                .email(user.getEmail())
+                .displayName(user.getDisplayName())
                 .build();
     }
 

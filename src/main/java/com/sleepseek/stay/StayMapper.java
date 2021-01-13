@@ -1,5 +1,6 @@
 package com.sleepseek.stay;
 
+import com.sleepseek.image.Image;
 import com.sleepseek.image.ImageMapper;
 import com.sleepseek.stay.DTO.StayDTO;
 import lombok.AccessLevel;
@@ -20,7 +21,8 @@ class StayMapper {
                 .description(stay.getDescription())
                 .mainPhoto(stay.getMainPhoto())
                 .minPrice(stay.getMinPrice())
-                .userId(stay.getUserId())
+                .category(stay.getCategory())
+                .username(stay.getUser().getUsername())
                 .address(StayDTO.AddressDTO.builder()
                         .city(stay.getAddress().getCity())
                         .street(stay.getAddress().getStreet())
@@ -29,7 +31,7 @@ class StayMapper {
                         .longitude(stay.getAddress().getLongitude())
                         .latitude(stay.getAddress().getLatitude())
                         .build())
-                .photos(stay.getPhotos().stream().map(ImageMapper::toDto).collect(Collectors.toList()))
+                .photos(stay.getPhotos().stream().map(Image::getUrl).collect(Collectors.toList()))
                 .build();
     }
 }
