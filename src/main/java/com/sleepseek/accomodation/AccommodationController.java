@@ -10,10 +10,10 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-public class AccommodationController {
+class AccommodationController {
     private final AccommodationFacade accommodationFacade;
 
-    public AccommodationController(AccommodationFacade accommodationFacade) {
+    AccommodationController(AccommodationFacade accommodationFacade) {
         this.accommodationFacade = accommodationFacade;
     }
 
