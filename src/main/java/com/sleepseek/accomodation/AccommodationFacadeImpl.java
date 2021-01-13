@@ -38,6 +38,11 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     }
 
     @Override
+    public Accommodation loadById(Long id) {
+        return accommodationRepository.findById(id).orElseThrow();
+    }
+
+    @Override
     public AccommodationDTO updateAccommodation(AccommodationDTO accommodationDTO) {
         return null;
     }

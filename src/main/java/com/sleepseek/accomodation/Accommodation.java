@@ -15,7 +15,7 @@ import javax.persistence.ManyToOne;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-class Accommodation extends BaseEntity {
+public class Accommodation extends BaseEntity {
 
     @ManyToOne
     private Stay stay;

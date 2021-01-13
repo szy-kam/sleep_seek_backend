@@ -12,6 +12,8 @@ public interface AccommodationFacade {
 
     List<AccommodationDTO> getAccommodationsByStay(Long stayId);
 
+    Accommodation loadById(Long id);
+
     AccommodationDTO updateAccommodation(AccommodationDTO accommodationDTO);
 
 }
