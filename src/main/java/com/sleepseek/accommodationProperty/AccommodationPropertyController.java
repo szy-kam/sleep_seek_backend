@@ -1,10 +1,7 @@
 package com.sleepseek.accommodationProperty;
 
 import com.sleepseek.accommodationProperty.DTO.AccommodationPropertyDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,7 +19,7 @@ public class AccommodationPropertyController {
     }
 
     @GetMapping("/accommodationProperty")
-    List<AccommodationPropertyDTO> getByAccommodationId(@PathVariable Long accommodationId){
+    List<AccommodationPropertyDTO> getByAccommodationId(@RequestParam(required = true) Long accommodationId){
         return accommodationPropertyFacade.findByAccommodation(accommodationId);
     }
 }

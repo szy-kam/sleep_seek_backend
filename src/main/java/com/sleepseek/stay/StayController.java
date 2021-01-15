@@ -30,7 +30,7 @@ class StayController {
     }
 
     @GetMapping("/stays")
-    List<StayDTO> getStaysInRange(@RequestParam(required = false) Integer pageNumber,
+    List<StayDTO> getStays(@RequestParam(required = false) Integer pageNumber,
                                   @RequestParam(required = false) Integer pageSize,
                                   @RequestParam(required = false) String username,
                                   @RequestParam(required = false) String s) {

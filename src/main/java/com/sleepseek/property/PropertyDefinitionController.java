@@ -13,8 +13,8 @@ public class PropertyDefinitionController {
         this.propertyDefinitionFacade = propertyDefinitionFacade;
     }
 
-    @GetMapping("/propertyDefinition/{type}")
-    List<PropertyDefinitionDTO> getByType(String type){
+    @GetMapping("/propertyDefinition")
+    List<PropertyDefinitionDTO> getByType(@RequestParam String type){
         return propertyDefinitionFacade.findByType(type);
     }
 
