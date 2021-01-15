@@ -19,7 +19,7 @@ public class AccommodationPropertyController {
     }
 
     @GetMapping("/accommodationProperty")
-    List<AccommodationPropertyDTO> getByAccommodationId(@RequestParam(required = true) Long accommodationId){
+    List<AccommodationPropertyDTO> getByAccommodationId(@RequestParam Long accommodationId){
         return accommodationPropertyFacade.findByAccommodation(accommodationId);
     }
 }
