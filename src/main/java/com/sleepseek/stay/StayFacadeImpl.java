@@ -2,9 +2,8 @@ package com.sleepseek.stay;
 
 import com.sleepseek.image.ImageRepository;
 import com.sleepseek.stay.DTO.StayDTO;
-import com.sleepseek.stay.exception.StayAlreadyExistsException;
 import com.sleepseek.stay.exception.StayNotFoundException;
-import com.sleepseek.user.UserRepository;
+import com.sleepseek.user.UserFacade;
 import com.sleepseek.user.exception.UserNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,57 +16,58 @@ class StayFacadeImpl implements StayFacade {
 
     private final StayRepository stayRepository;
     private final ImageRepository imageRepository;
-    private final UserRepository userRepository;
+    private final UserFacade userFacade;
 
-    StayFacadeImpl(StayRepository stayRepository, ImageRepository imageRepository, UserRepository userRepository) {
+    StayFacadeImpl(StayRepository stayRepository, ImageRepository imageRepository, UserFacade userFacade) {
         this.stayRepository = stayRepository;
         this.imageRepository = imageRepository;
-        this.userRepository = userRepository;
+        this.userFacade = userFacade;
     }
 
     @Override
     public StayDTO addStay(StayDTO stayDTO) {
-        if (stayDTO.getId() == null || !stayRepository.existsById(stayDTO.getId())) {
-            Stay newStay = stayRepository.save(Stay.builder()
-                    .name(stayDTO.getName())
-                    .email(stayDTO.getEmail())
-                    .description(stayDTO.getDescription())
-                    .mainPhoto(stayDTO.getMainPhoto())
-                    .phoneNumber(stayDTO.getPhoneNumber())
-                    .minPrice(stayDTO.getMinPrice())
-                    .category(stayDTO.getCategory())
-                    .user(userRepository.findByUsername(stayDTO.getUsername()).orElseThrow(()-> new UserNotFoundException(stayDTO.getUsername())))
-                    .photos(stayDTO.getPhotos().stream().map(url ->
-                            imageRepository.findByUrl(url).stream().filter(image ->
-                                    image.getStay().getName().equals(stayDTO.getName())
-                            ).findAny().orElseThrow()
-                    ).collect(Collectors.toList()))
-                    .address(Address.builder()
-                            .city(stayDTO.getAddress().getCity())
-                            .zipCode(stayDTO.getAddress().getZipCode())
-                            .street(stayDTO.getAddress().getStreet())
-                            .country(stayDTO.getAddress().getCountry())
-                            .longitude(stayDTO.getAddress().getLongitude())
-                            .latitude(stayDTO.getAddress().getLatitude())
-                            .build())
-                    .build());
-            return StayMapper.toDto(newStay);
-
-        } else {
-            throw new StayAlreadyExistsException(stayDTO.getId());
+        if (!userFacade.userExists(stayDTO.getUsername())) {
+            throw new UserNotFoundException(stayDTO.getUsername());
         }
+        Stay newStay = stayRepository.save(Stay.builder()
+                .name(stayDTO.getName())
+                .email(stayDTO.getEmail())
+                .description(stayDTO.getDescription())
+                .mainPhoto(stayDTO.getMainPhoto())
+                .phoneNumber(stayDTO.getPhoneNumber())
+                .minPrice(stayDTO.getMinPrice())
+                .category(stayDTO.getCategory())
+                .user(userFacade.getUserByUsername(stayDTO.getUsername()))
+                .photos(stayDTO.getPhotos().stream().map(url ->
+                        imageRepository.findByUrl(url).stream().filter(image ->
+                                image.getStay().getName().equals(stayDTO.getName())
+                        ).findAny().orElseThrow()
+                ).collect(Collectors.toList()))
+                .address(Address.builder()
+                        .city(stayDTO.getAddress().getCity())
+                        .zipCode(stayDTO.getAddress().getZipCode())
+                        .street(stayDTO.getAddress().getStreet())
+                        .country(stayDTO.getAddress().getCountry())
+                        .longitude(stayDTO.getAddress().getLongitude())
+                        .latitude(stayDTO.getAddress().getLatitude())
+                        .build())
+                .build());
+        return StayMapper.toDto(newStay);
     }
 
     @Override
     public void updateStay(StayDTO stayDTO) {
         if (stayExists(stayDTO.getId())) {
+            if (!userFacade.userExists(stayDTO.getUsername())) {
+                throw new UserNotFoundException(stayDTO.getUsername());
+            }
             Stay stay = stayRepository.findById(stayDTO.getId()).orElseThrow();
             stay.setName(stayDTO.getName());
             stay.setEmail(stayDTO.getPhoneNumber());
             stay.setDescription(stayDTO.getDescription());
             stay.setMainPhoto(stayDTO.getMainPhoto());
             stay.setMinPrice(stayDTO.getMinPrice());
-            stay.setUser(userRepository.findByUsername(stayDTO.getUsername()).orElseThrow());
+            stay.setUser(userFacade.getUserByUsername(stayDTO.getUsername()));
             stay.setEmail(stayDTO.getEmail());
             stay.setPhoneNumber(stayDTO.getPhoneNumber());
             stay.setCategory(stayDTO.getCategory());
@@ -99,7 +99,7 @@ class StayFacadeImpl implements StayFacade {
 
     @Override
     public Stay loadStay(Long id) {
-        return stayRepository.findById(id).orElseThrow(()-> new StayNotFoundException(id));
+        return stayRepository.findById(id).orElseThrow(() -> new StayNotFoundException(id));
     }
 
     @Override
@@ -113,7 +113,10 @@ class StayFacadeImpl implements StayFacade {
         Pageable pageable = PageRequest.of(searchParameters.getPageNumber(), searchParameters.getPageSize());
         Page<Stay> stays;
         if (searchParameters.getUsername() != null) {
-            stays = stayRepository.findAllByUser(userRepository.findByUsername(searchParameters.getUsername()).orElseThrow(), pageable);
+            if (!userFacade.userExists(searchParameters.getUsername())) {
+                throw new UserNotFoundException(searchParameters.getUsername());
+            }
+            stays = stayRepository.findAllByUser(userFacade.getUserByUsername(searchParameters.getUsername()), pageable);
         } else {
             stays = stayRepository.findAll(pageable);
         }

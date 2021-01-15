@@ -5,8 +5,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserFacade extends UserDetailsService {
 
-    UserDTO postUser(UserDTO userDTO);
+    void postUser(UserDTO userDTO);
 
     User getUserByUsername(String username);
+
+    boolean userExists(String username);
 
 }
