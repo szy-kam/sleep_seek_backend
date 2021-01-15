@@ -25,7 +25,7 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = UserValidationException.class)
     public ResponseEntity<?> handleUserValidationException(UserValidationException exception) {
-        return buildResponseEntity(new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "User not found", exception));
+        return buildResponseEntity(new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "User validation error", exception));
     }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
