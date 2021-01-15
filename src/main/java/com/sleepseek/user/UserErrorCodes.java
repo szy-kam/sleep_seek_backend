@@ -7,7 +7,7 @@ import lombok.Getter;
 public enum UserErrorCodes {
     USERNAME_IS_NULL("username is null"),
     PASSWORD_IS_NULL("password is null"),
-    USERNAME_IS_NOT_EMAIL("username is invalid"),
+    USERNAME_IS_NOT_EMAIL("username is invalid, should be in email format"),
     DISPLAY_NAME_IS_NULL("displayName is null");
 
     @Getter
