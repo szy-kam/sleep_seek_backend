@@ -1,6 +1,5 @@
 package com.sleepseek.stay.DTO;
 
-import com.sleepseek.image.DTO.ImageDTO;
 import lombok.*;
 
 import java.util.List;

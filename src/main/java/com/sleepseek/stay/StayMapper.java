@@ -1,7 +1,6 @@
 package com.sleepseek.stay;
 
 import com.sleepseek.image.Image;
-import com.sleepseek.image.ImageMapper;
 import com.sleepseek.stay.DTO.StayDTO;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

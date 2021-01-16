@@ -1,6 +1,5 @@
 package com.sleepseek.stay.exception;
 
-import com.sleepseek.stay.StayErrorCodes;
 import com.sleepseek.stay.StaySearchParametersErrorCodes;
 
 import java.util.Set;

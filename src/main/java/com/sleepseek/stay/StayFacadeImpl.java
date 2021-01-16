@@ -5,8 +5,10 @@ import com.sleepseek.image.ImageRepository;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayNotFoundException;
 import com.sleepseek.stay.exception.StaySearchParametersException;
+import com.sleepseek.stay.exception.StayValidationException;
 import com.sleepseek.user.UserFacade;
 import com.sleepseek.user.exception.UserNotFoundException;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.sleepseek.stay.StayConfiguration.MAX_PAGE_SIZE;
+import static com.sleepseek.stay.StayErrorCodes.*;
+import static java.util.Objects.isNull;
 
 class StayFacadeImpl implements StayFacade {
 
@@ -32,6 +36,13 @@ class StayFacadeImpl implements StayFacade {
 
     @Override
     public StayDTO addStay(StayDTO stayDTO) {
+        Set<StayErrorCodes> errors = validateStay(stayDTO);
+        if (!isNull(stayDTO.getId())) {
+            errors.add(ID_SHOULD_NOT_DEFINED);
+        }
+        if (!errors.isEmpty()) {
+            throw new StayValidationException(errors);
+        }
         if (!userFacade.userExists(stayDTO.getUsername())) {
             throw new UserNotFoundException(stayDTO.getUsername());
         }
@@ -63,7 +74,11 @@ class StayFacadeImpl implements StayFacade {
 
     @Override
     public void updateStay(StayDTO stayDTO) {
-        Set<StayErrorCodes> errors = Sets.newHashSet();
+        Set<StayErrorCodes> errors = validateStay(stayDTO);
+        checkId(stayDTO.getId()).ifPresent(errors::add);
+        if (!errors.isEmpty()) {
+            throw new StayValidationException(errors);
+        }
         if (!stayExists(stayDTO.getId())) {
             throw new StayNotFoundException(stayDTO.getId());
         }
@@ -96,9 +111,117 @@ class StayFacadeImpl implements StayFacade {
 
     }
 
-    private Optional<List<StayErrorCodes>> validateStay(StayDTO stayDTO) {
+    private Optional<StayErrorCodes> checkId(Long id) {
+        if (isNull(id)) {
+            return Optional.of(ID_NULL);
+        }
+        return Optional.empty();
+    }
 
+    private Set<StayErrorCodes> validateStay(StayDTO stayDTO) {
+        Set<StayErrorCodes> errorCodes = Sets.newHashSet();
+        checkName(stayDTO.getName()).ifPresent(errorCodes::add);
+        checkDescription(stayDTO.getDescription()).ifPresent(errorCodes::add);
+        checkUsername(stayDTO.getUsername()).ifPresent(errorCodes::add);
+        checkAddress(stayDTO.getAddress()).ifPresent(errorCodes::add);
+        checkEmail(stayDTO.getEmail()).ifPresent(errorCodes::add);
+        checkPhoneNumber(stayDTO.getPhoneNumber()).ifPresent(errorCodes::add);
+        checkCategory(stayDTO.getCategory()).ifPresent(errorCodes::add);
+        checkMinPrice(stayDTO.getMinPrice()).ifPresent(errorCodes::add);
+        if (!isNull(stayDTO.getAddress())) {
+            checkStreet(stayDTO.getAddress().getStreet()).ifPresent(errorCodes::add);
+            checkZipCode(stayDTO.getAddress().getZipCode()).ifPresent(errorCodes::add);
+            checkCountry(stayDTO.getAddress().getCountry()).ifPresent(errorCodes::add);
+            checkCity(stayDTO.getAddress().getCity()).ifPresent(errorCodes::add);
+        }
+        return errorCodes;
+    }
 
+    private Optional<StayErrorCodes> checkCity(String city) {
+        if (isNull(city)) {
+            return Optional.of(CITY_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkCountry(String country) {
+        if (isNull(country)) {
+            return Optional.of(COUNTRY_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkZipCode(String zipCode) {
+        if (isNull(zipCode)) {
+            return Optional.of(ZIPCODE_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkStreet(String street) {
+        if (isNull(street)) {
+            return Optional.of(STREET_NULL);
+        }
+        return Optional.empty();
+
+    }
+
+    private Optional<StayErrorCodes> checkPhoneNumber(String phoneNumber) {
+        if (isNull(phoneNumber)) {
+            return Optional.of(PHONE_NUMBER_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkMinPrice(String minPrice) {
+        if (isNull(minPrice)) {
+            return Optional.of(MIN_PRICE_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkCategory(String category) {
+        if (isNull(category)) {
+            return Optional.of(CATEGORY_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkEmail(String email) {
+        if (isNull(email)) {
+            return Optional.of(EMAIL_NULL);
+        }
+        if (!EmailValidator.getInstance().isValid(email)) {
+            return Optional.of(EMAIL_INVALID);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkAddress(StayDTO.AddressDTO addressDTO) {
+        if (isNull(addressDTO)) {
+            return Optional.of(ADDRESS_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkUsername(String username) {
+        if (isNull(username)) {
+            return Optional.of(USERNAME_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkDescription(String description) {
+        if (isNull(description)) {
+            return Optional.of(DESCRIPTION_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StayErrorCodes> checkName(String name) {
+        if (isNull(name)) {
+            return Optional.of(NAME_NULL);
+        }
         return Optional.empty();
     }
 
@@ -120,7 +243,7 @@ class StayFacadeImpl implements StayFacade {
     @Override
     public List<StayDTO> getStays(StaySearchParameters searchParameters) {
         Set<StaySearchParametersErrorCodes> errorCodes = Sets.newHashSet();
-        if(searchParameters.getPageNumber() < 0 || searchParameters.getPageSize() > MAX_PAGE_SIZE || searchParameters.getPageSize() < 0) {
+        if (searchParameters.getPageNumber() < 0 || searchParameters.getPageSize() > MAX_PAGE_SIZE || searchParameters.getPageSize() < 0) {
             errorCodes.add(StaySearchParametersErrorCodes.WRONG_PAGE_CONSTRAINTS);
             throw new StaySearchParametersException(errorCodes);
         }

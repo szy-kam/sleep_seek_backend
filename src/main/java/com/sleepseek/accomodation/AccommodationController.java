@@ -1,10 +1,7 @@
 package com.sleepseek.accomodation;
 
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -18,13 +15,13 @@ class AccommodationController {
     }
 
 
-    @GetMapping("/accomodation/{stayId}")
-    List<AccommodationDTO> getAccommodations(@PathVariable Long stayId){
+    @GetMapping("/accommodation")
+    List<AccommodationDTO> getAccommodations(@RequestParam Long stayId){
         return accommodationFacade.getAccommodationsByStay(stayId);
 
     }
 
-    @PostMapping("/accomodation")
+    @PostMapping("/accommodation")
     AccommodationDTO addAccommodation(Principal principal, AccommodationDTO accommodationDTO){
         return accommodationFacade.addAccommodation(accommodationDTO);
     }

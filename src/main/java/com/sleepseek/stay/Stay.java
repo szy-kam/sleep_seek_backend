@@ -23,7 +23,7 @@ public class Stay extends BaseEntity {
     private Address address;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name="user")
+    @JoinColumn(name = "user")
     private User user;
 
     @Column
