@@ -3,6 +3,7 @@ package com.sleepseek.review;
 import com.sleepseek.review.DTO.ReviewDTO;
 import com.sleepseek.stay.StayFacade;
 import com.sleepseek.user.UserFacade;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ class ReviewFacadeImpl implements ReviewFacade {
     }
 
     @Override
-    public List<ReviewDTO> findByStayId(Long stayId) {
-        return reviewRepository.findByStay(stayFacade.loadStay(stayId)).stream().map(ReviewMapper::toDTO).collect(Collectors.toList());
+    public List<ReviewDTO> findByStayId(Long stayId, Pageable pageable) {
+        return reviewRepository.findByStay(stayFacade.loadStay(stayId), pageable).stream().map(ReviewMapper::toDTO).collect(Collectors.toList());
     }
 }

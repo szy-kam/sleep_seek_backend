@@ -1,6 +1,7 @@
 package com.sleepseek.review;
 
 import com.sleepseek.review.DTO.ReviewDTO;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ public interface ReviewFacade {
 
     boolean existsById(Long id);
 
-    List<ReviewDTO> findByStayId(Long stayId);
+    List<ReviewDTO> findByStayId(Long stayId, Pageable pageable);
 }

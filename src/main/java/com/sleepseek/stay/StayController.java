@@ -24,8 +24,8 @@ class StayController {
     }
 
     @GetMapping("/stays")
-    List<StayDTO> getStays(@RequestParam(required = false) Integer pageNumber,
-                           @RequestParam(required = false) Integer pageSize,
+    List<StayDTO> getStays(@RequestParam Integer pageNumber,
+                           @RequestParam Integer pageSize,
                            @RequestParam(required = false) String username,
                            @RequestParam(required = false) String s) {
         return stayFacade.getStays(StaySearchParameters.builder()

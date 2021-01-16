@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.sleepseek.image.ImageRepository;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayNotFoundException;
+import com.sleepseek.stay.exception.StaySearchParametersException;
 import com.sleepseek.user.UserFacade;
 import com.sleepseek.user.exception.UserNotFoundException;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.sleepseek.stay.StayConfiguration.MAX_PAGE_SIZE;
 
 class StayFacadeImpl implements StayFacade {
 
@@ -116,7 +119,11 @@ class StayFacadeImpl implements StayFacade {
 
     @Override
     public List<StayDTO> getStays(StaySearchParameters searchParameters) {
-
+        Set<StaySearchParametersErrorCodes> errorCodes = Sets.newHashSet();
+        if(searchParameters.getPageNumber() < 0 || searchParameters.getPageSize() > MAX_PAGE_SIZE || searchParameters.getPageSize() < 0) {
+            errorCodes.add(StaySearchParametersErrorCodes.WRONG_PAGE_CONSTRAINTS);
+            throw new StaySearchParametersException(errorCodes);
+        }
         Pageable pageable = PageRequest.of(searchParameters.getPageNumber(), searchParameters.getPageSize());
         Page<Stay> stays;
         if (searchParameters.getUsername() != null) {
