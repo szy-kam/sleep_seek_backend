@@ -2,6 +2,7 @@ package com.sleepseek.image;
 
 import com.sleepseek.common.BaseEntity;
 import com.sleepseek.stay.Stay;
+import com.sleepseek.user.User;
 import lombok.*;
 
 import javax.persistence.Column;
@@ -25,4 +26,7 @@ public class Image extends BaseEntity {
 
     @ManyToOne
     private Stay stay;
+
+    @ManyToOne
+    private User owner;
 }

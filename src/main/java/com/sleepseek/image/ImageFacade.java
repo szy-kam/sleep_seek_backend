@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface ImageFacade {
 
-    Optional<ImageDTO> addImage(MultipartFile image) throws IOException;
+   ImageDTO addImage(String username, MultipartFile image) throws IOException;
 
 }

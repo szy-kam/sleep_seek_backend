@@ -1,6 +1,11 @@
 package com.sleepseek.image;
 
+import com.google.common.collect.Sets;
 import com.sleepseek.image.DTO.ImageDTO;
+import com.sleepseek.image.exception.ImageStorageException;
+import com.sleepseek.image.exception.ImageValidationException;
+import com.sleepseek.user.UserFacade;
+import com.sleepseek.user.exception.UserNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -8,29 +13,60 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
+
+import static com.sleepseek.image.ImageErrorCodes.USER_NULL;
+import static java.util.Objects.isNull;
 
 class ImageFacadeImpl implements ImageFacade {
     private final ImageStorage imageStorage;
     private final ImageRepository imageRepository;
+    private final UserFacade userFacade;
 
-    public ImageFacadeImpl(ImageStorage imageStorage, ImageRepository imageRepository) {
+    public ImageFacadeImpl(ImageStorage imageStorage, ImageRepository imageRepository, UserFacade userFacade) {
         this.imageStorage = imageStorage;
         this.imageRepository = imageRepository;
+        this.userFacade = userFacade;
     }
 
     @Override
-    public Optional<ImageDTO> addImage(MultipartFile image) throws IOException {
+    public ImageDTO addImage(String username, MultipartFile image) throws IOException {
+        Set<ImageErrorCodes> errors = Sets.newHashSet();
+        checkUsername(username).ifPresent(errors::add);
         String originalFilename = image.getOriginalFilename();
+        checkOriginalFilename(originalFilename).ifPresent(errors::add);
+        if (!errors.isEmpty()) {
+            throw new ImageValidationException(errors);
+        }
+        if (userFacade.userExists(username)) {
+            throw new UserNotFoundException(username);
+        }
         File file = convertMultiPartToFile(image);
         String url = imageStorage.uploadFile(file, generateFileName(image));
-        if(!file.delete()){
-            throw new IOException();
+        if (!file.delete()) {
+            throw new ImageStorageException("errors on delete local temp file");
         }
+
         Image imageEntity = imageRepository.save(Image.builder()
                 .originalFilename(originalFilename)
+                .owner(userFacade.getUserByUsername(username))
                 .url(url)
                 .build());
-        return Optional.of(ImageMapper.toDto(imageEntity));
+        return ImageMapper.toDto(imageEntity);
+    }
+
+    private Optional<ImageErrorCodes> checkOriginalFilename(String filename) {
+        if (isNull(filename)) {
+            return Optional.of(USER_NULL);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<ImageErrorCodes> checkUsername(String username) {
+        if (isNull(username)) {
+            return Optional.of(USER_NULL);
+        }
+        return Optional.empty();
     }
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {

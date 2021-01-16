@@ -4,6 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.sleepseek.user.UserFacade;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,7 +21,7 @@ class ImageConfiguration {
     }
 
     @Bean
-    public ImageFacade imageFacade(ImageRepository imageRepository, AmazonS3 s3client, AmazonProperties amazonProperties) {
-        return new ImageFacadeImpl(new AWSImageStorage(s3client, amazonProperties), imageRepository);
+    public ImageFacade imageFacade(ImageRepository imageRepository, AmazonS3 s3client, AmazonProperties amazonProperties, UserFacade userFacade) {
+        return new ImageFacadeImpl(new AWSImageStorage(s3client, amazonProperties), imageRepository, userFacade);
     }
 }

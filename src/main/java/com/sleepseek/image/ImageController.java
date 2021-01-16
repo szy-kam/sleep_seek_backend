@@ -1,15 +1,15 @@
 package com.sleepseek.image;
 
 import com.sleepseek.image.DTO.ImageDTO;
-import org.springframework.http.HttpStatus;
+import com.sleepseek.image.exception.ImageStorageException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 class ImageController {
@@ -20,11 +20,11 @@ class ImageController {
     }
 
     @PostMapping(value = "/image", produces = MediaType.APPLICATION_JSON_VALUE)
-    ImageDTO uploadImage(@RequestParam MultipartFile image) {
+    ImageDTO uploadImage(Principal principal, @RequestParam MultipartFile image) {
         try {
-            return imageFacade.addImage(image).orElseThrow();
+            return imageFacade.addImage(principal.getName(), image);
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e.getCause());
+            throw new ImageStorageException(" io exception");
         }
     }
 
