@@ -1,7 +1,6 @@
 package com.sleepseek.review;
 
 import com.sleepseek.review.DTO.ReviewDTO;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -19,15 +18,20 @@ public class ReviewController {
     }
 
     @GetMapping("/review")
-    public List<ReviewDTO> getReviews(@RequestParam Long stayId, @RequestParam Integer pageNumber, @RequestParam Integer pageSize){
+    public List<ReviewDTO> getReviews(@RequestParam Long stayId, @RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return reviewFacade.findByStayId(stayId, pageable);
     }
 
     @PostMapping("/review")
-    public ReviewDTO addReview(@RequestParam Long stayId, Principal principal, @RequestBody ReviewDTO reviewDTO){
+    public ReviewDTO addReview(@RequestParam Long stayId, Principal principal, @RequestBody ReviewDTO reviewDTO) {
         reviewDTO.setUsername(principal.getName());
         reviewDTO.setStayId(stayId);
         return reviewFacade.addReview(reviewDTO);
+    }
+
+    @DeleteMapping("/review/{reviewId}")
+    public void deleteReview(@PathVariable Long reviewId){
+        reviewFacade.deleteReview(reviewId);
     }
 }

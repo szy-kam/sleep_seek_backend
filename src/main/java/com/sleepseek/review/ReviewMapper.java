@@ -4,7 +4,7 @@ import com.sleepseek.review.DTO.ReviewDTO;
 
 public class ReviewMapper {
 
-    public static ReviewDTO toDTO(Review review){
+    public static ReviewDTO toDTO(Review review) {
         return ReviewDTO.builder()
                 .reviewId(review.getId())
                 .username(review.getUser().getUsername())

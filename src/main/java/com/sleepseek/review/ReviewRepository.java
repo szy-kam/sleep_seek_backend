@@ -1,7 +1,6 @@
 package com.sleepseek.review;
 
 import com.sleepseek.stay.Stay;
-import com.sleepseek.user.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -10,6 +10,8 @@ public interface ReviewFacade {
 
     void updateReview(ReviewDTO reviewDTO);
 
+    void deleteReview(Long id);
+
     boolean existsById(Long id);
 
     List<ReviewDTO> findByStayId(Long stayId, Pageable pageable);

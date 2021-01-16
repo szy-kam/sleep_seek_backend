@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class ReviewConfiguration {
 
     @Bean
-    ReviewFacade reviewFacade(StayFacade stayFacade, ReviewRepository reviewRepository, UserFacade userFacade){
+    ReviewFacade reviewFacade(StayFacade stayFacade, ReviewRepository reviewRepository, UserFacade userFacade) {
         return new ReviewFacadeImpl(stayFacade, reviewRepository, userFacade);
     }
 }
