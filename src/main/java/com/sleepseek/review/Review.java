@@ -27,5 +27,5 @@ public class Review extends BaseEntity {
     private String message;
 
     @Column
-    private Long rating;
+    private Double rating;
 }

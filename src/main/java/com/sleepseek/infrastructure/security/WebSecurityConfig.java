@@ -38,6 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/review/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/accommodationProperty").permitAll()
                 .antMatchers(HttpMethod.GET, "/stayProperty").permitAll()
+                .antMatchers(HttpMethod.GET, "/review").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), securityConstants))

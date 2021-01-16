@@ -1,6 +1,5 @@
 package com.sleepseek.stayProperty;
 
-import com.sleepseek.accommodationProperty.DTO.AccommodationPropertyDTO;
 import com.sleepseek.stayProperty.DTO.StayPropertyDTO;
 
 import java.util.List;

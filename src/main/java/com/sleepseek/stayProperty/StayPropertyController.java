@@ -17,12 +17,12 @@ public class StayPropertyController {
     }
 
     @GetMapping("/stayProperty")
-    List<StayPropertyDTO> getByStayId(@RequestParam Long stayId){
+    List<StayPropertyDTO> getByStayId(@RequestParam Long stayId) {
         return stayPropertyFacade.findByStay(stayId);
     }
 
     @PostMapping("/stayProperty")
-    StayPropertyDTO add(StayPropertyDTO stayPropertyDTO){
+    StayPropertyDTO add(StayPropertyDTO stayPropertyDTO) {
         return stayPropertyFacade.add(stayPropertyDTO);
     }
 }

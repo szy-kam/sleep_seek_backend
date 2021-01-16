@@ -17,6 +17,6 @@ public class ReviewDTO {
 
     private String message;
 
-    private Long rating;
+    private Double rating;
 
 }

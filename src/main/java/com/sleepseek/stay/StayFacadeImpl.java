@@ -1,5 +1,6 @@
 package com.sleepseek.stay;
 
+import com.google.common.collect.Sets;
 import com.sleepseek.image.ImageRepository;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayNotFoundException;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class StayFacadeImpl implements StayFacade {
@@ -57,44 +60,48 @@ class StayFacadeImpl implements StayFacade {
 
     @Override
     public void updateStay(StayDTO stayDTO) {
-        if (stayExists(stayDTO.getId())) {
-            if (!userFacade.userExists(stayDTO.getUsername())) {
-                throw new UserNotFoundException(stayDTO.getUsername());
-            }
-            Stay stay = stayRepository.findById(stayDTO.getId()).orElseThrow();
-            stay.setName(stayDTO.getName());
-            stay.setEmail(stayDTO.getPhoneNumber());
-            stay.setDescription(stayDTO.getDescription());
-            stay.setMainPhoto(stayDTO.getMainPhoto());
-            stay.setMinPrice(stayDTO.getMinPrice());
-            stay.setUser(userFacade.getUserByUsername(stayDTO.getUsername()));
-            stay.setEmail(stayDTO.getEmail());
-            stay.setPhoneNumber(stayDTO.getPhoneNumber());
-            stay.setCategory(stayDTO.getCategory());
-            stay.setPhotos(stayDTO.getPhotos().stream().map(url ->
-                    imageRepository.findByUrl(url).stream().filter(image ->
-                            image.getStay().getName().equals(stayDTO.getName())
-                    ).findAny().orElseThrow()
-            ).collect(Collectors.toList()));
-            Address address = stay.getAddress();
-            address.setCity(stayDTO.getAddress().getCity());
-            address.setStreet(stayDTO.getAddress().getStreet());
-            address.setZipCode(stayDTO.getAddress().getZipCode());
-            address.setCountry(stayDTO.getAddress().getCountry());
-            address.setLatitude(stayDTO.getAddress().getLatitude());
-            address.setLongitude(stayDTO.getAddress().getLongitude());
-            stayRepository.save(stay);
-        } else {
+        Set<StayErrorCodes> errors = Sets.newHashSet();
+        if (!stayExists(stayDTO.getId())) {
             throw new StayNotFoundException(stayDTO.getId());
         }
+        if (!userFacade.userExists(stayDTO.getUsername())) {
+            throw new UserNotFoundException(stayDTO.getUsername());
+        }
+        Stay stay = stayRepository.findById(stayDTO.getId()).orElseThrow();
+        stay.setName(stayDTO.getName());
+        stay.setEmail(stayDTO.getPhoneNumber());
+        stay.setDescription(stayDTO.getDescription());
+        stay.setMainPhoto(stayDTO.getMainPhoto());
+        stay.setMinPrice(stayDTO.getMinPrice());
+        stay.setUser(userFacade.getUserByUsername(stayDTO.getUsername()));
+        stay.setEmail(stayDTO.getEmail());
+        stay.setPhoneNumber(stayDTO.getPhoneNumber());
+        stay.setCategory(stayDTO.getCategory());
+        stay.setPhotos(stayDTO.getPhotos().stream().map(url ->
+                imageRepository.findByUrl(url).stream().filter(image ->
+                        image.getStay().getName().equals(stayDTO.getName())
+                ).findAny().orElseThrow()
+        ).collect(Collectors.toList()));
+        Address address = stay.getAddress();
+        address.setCity(stayDTO.getAddress().getCity());
+        address.setStreet(stayDTO.getAddress().getStreet());
+        address.setZipCode(stayDTO.getAddress().getZipCode());
+        address.setCountry(stayDTO.getAddress().getCountry());
+        address.setLatitude(stayDTO.getAddress().getLatitude());
+        address.setLongitude(stayDTO.getAddress().getLongitude());
+        stayRepository.save(stay);
+
+    }
+
+    private Optional<List<StayErrorCodes>> validateStay(StayDTO stayDTO) {
+
+
+        return Optional.empty();
     }
 
     @Override
     public StayDTO getStay(Long id) {
-        if (!stayExists(id)) {
-            throw new StayNotFoundException(id);
-        }
-        return stayRepository.findById(id).map(StayMapper::toDto).orElseThrow();
+        return stayRepository.findById(id).map(StayMapper::toDto).orElseThrow(() -> new StayNotFoundException(id));
     }
 
     @Override
