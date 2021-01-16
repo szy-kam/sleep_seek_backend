@@ -16,13 +16,24 @@ class AccommodationController {
 
 
     @GetMapping("/accommodation")
-    List<AccommodationDTO> getAccommodations(@RequestParam Long stayId){
+    List<AccommodationDTO> getAccommodations(@RequestParam Long stayId) {
         return accommodationFacade.getAccommodationsByStay(stayId);
 
     }
 
     @PostMapping("/accommodation")
-    AccommodationDTO addAccommodation(Principal principal, AccommodationDTO accommodationDTO){
+    AccommodationDTO addAccommodation(Principal principal, AccommodationDTO accommodationDTO) {
         return accommodationFacade.addAccommodation(accommodationDTO);
+    }
+
+    @DeleteMapping("/accommodation/{accommodationId}")
+    void deleteAccommodation(Principal principal, @RequestParam Long accommodationId) {
+        accommodationFacade.deleteAccommodation(accommodationId);
+    }
+
+    @PutMapping("/accommodation/{accommodationId}")
+    AccommodationDTO updateAccommodation(Principal principal, @RequestParam Long accommodationId, @RequestBody AccommodationDTO accommodationDTO) {
+        accommodationDTO.setId(accommodationId);
+        return accommodationFacade.updateAccommodation(accommodationDTO);
     }
 }
