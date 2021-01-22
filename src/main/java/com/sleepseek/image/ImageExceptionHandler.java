@@ -1,6 +1,7 @@
 package com.sleepseek.image;
 
 import com.sleepseek.common.ApiError;
+import com.sleepseek.image.exception.ImageNotFoundException;
 import com.sleepseek.image.exception.ImageStorageException;
 import com.sleepseek.image.exception.ImageValidationException;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,11 @@ public class ImageExceptionHandler {
     @ExceptionHandler(ImageValidationException.class)
     public ResponseEntity<?> handleImageValidationException(ImageValidationException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Image is invalid", exception));
+    }
+
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<?> handleImageNotFoundException(ImageNotFoundException exception) {
+        return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "Image not found", exception));
     }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {

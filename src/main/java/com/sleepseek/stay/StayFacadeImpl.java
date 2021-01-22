@@ -2,6 +2,7 @@ package com.sleepseek.stay;
 
 import com.google.common.collect.Sets;
 import com.sleepseek.image.ImageRepository;
+import com.sleepseek.image.exception.ImageNotFoundException;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayNotFoundException;
 import com.sleepseek.stay.exception.StaySearchParametersException;
@@ -58,7 +59,7 @@ class StayFacadeImpl implements StayFacade {
                 .photos(stayDTO.getPhotos().stream().map(url ->
                         imageRepository.findByUrl(url).stream().filter(image ->
                                 image.getStay().getName().equals(stayDTO.getName())
-                        ).findAny().orElseThrow()
+                        ).findAny().orElseThrow(() -> new ImageNotFoundException(url))
                 ).collect(Collectors.toList()))
                 .address(Address.builder()
                         .city(stayDTO.getAddress().getCity())
