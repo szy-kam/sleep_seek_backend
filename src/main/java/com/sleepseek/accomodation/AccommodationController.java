@@ -22,13 +22,13 @@ class AccommodationController {
     }
 
     @PostMapping("/accommodation")
-    AccommodationDTO addAccommodation(Principal principal, AccommodationDTO accommodationDTO) {
+    AccommodationDTO addAccommodation(Principal principal, @RequestBody AccommodationDTO accommodationDTO) {
         return accommodationFacade.addAccommodation(accommodationDTO);
     }
 
     @DeleteMapping("/accommodation/{accommodationId}")
     void deleteAccommodation(Principal principal, @PathVariable Long accommodationId) {
-        accommodationFacade.deleteAccommodation(accommodationId);
+        accommodationFacade.deleteAccommodation(accommodationId );
     }
 
     @PutMapping("/accommodation/{accommodationId}")
