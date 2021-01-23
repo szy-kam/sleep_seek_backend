@@ -38,7 +38,7 @@ class ImageFacadeImpl implements ImageFacade {
         if (!errors.isEmpty()) {
             throw new ImageValidationException(errors);
         }
-        if (userFacade.userExists(username)) {
+        if (!userFacade.userExists(username)) {
             throw new UserNotFoundException(username);
         }
         File file = convertMultiPartToFile(image);
