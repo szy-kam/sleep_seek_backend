@@ -34,6 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/stays").permitAll()
                 .antMatchers(HttpMethod.GET, "/stays/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/stays").permitAll()
+                .antMatchers(HttpMethod.GET, "/accommodation").permitAll()
                 .antMatchers(HttpMethod.GET, "/accommodation/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/review/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/accommodationProperty").permitAll()

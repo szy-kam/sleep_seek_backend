@@ -27,7 +27,7 @@ class AccommodationController {
     }
 
     @DeleteMapping("/accommodation/{accommodationId}")
-    void deleteAccommodation(Principal principal, @RequestParam Long accommodationId) {
+    void deleteAccommodation(Principal principal, @PathVariable Long accommodationId) {
         accommodationFacade.deleteAccommodation(accommodationId);
     }
 
