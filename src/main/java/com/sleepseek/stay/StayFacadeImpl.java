@@ -192,7 +192,8 @@ class StayFacadeImpl implements StayFacade {
         if (isNull(email)) {
             return Optional.of(EMAIL_NULL);
         }
-        if (!EmailValidator.getInstance().isValid(email)) {
+
+        if (!email.equals("") && !EmailValidator.getInstance().isValid(email)) {
             return Optional.of(EMAIL_INVALID);
         }
         return Optional.empty();
