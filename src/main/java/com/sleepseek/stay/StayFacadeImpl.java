@@ -97,9 +97,7 @@ class StayFacadeImpl implements StayFacade {
         stay.setPhoneNumber(stayDTO.getPhoneNumber());
         stay.setCategory(stayDTO.getCategory());
         stay.setPhotos(stayDTO.getPhotos().stream().map(url ->
-                imageRepository.findByUrl(url).stream().filter(image ->
-                        image.getStay().getName().equals(stayDTO.getName())
-                ).findAny().orElseThrow()
+                imageRepository.findByUrl(url).stream().findAny().orElseThrow(() -> new ImageNotFoundException(url))
         ).collect(Collectors.toList()));
         Address address = stay.getAddress();
         address.setCity(stayDTO.getAddress().getCity());
