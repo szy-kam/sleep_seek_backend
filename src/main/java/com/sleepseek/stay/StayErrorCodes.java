@@ -20,6 +20,7 @@ public enum StayErrorCodes {
     EMAIL_NULL("email is null"),
     EMAIL_INVALID("email is in invalid format"),
     PHONE_NUMBER_NULL("phone number is null"),
+    PHOTOS_NULL("photos list is null")
     ;
     @Getter
     private final String message;

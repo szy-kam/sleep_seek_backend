@@ -129,6 +129,7 @@ class StayFacadeImpl implements StayFacade {
         checkPhoneNumber(stayDTO.getPhoneNumber()).ifPresent(errorCodes::add);
         checkCategory(stayDTO.getCategory()).ifPresent(errorCodes::add);
         checkMinPrice(stayDTO.getMinPrice()).ifPresent(errorCodes::add);
+        checkPhotos(stayDTO.getPhotos()).ifPresent(errorCodes::add);
         if (!isNull(stayDTO.getAddress())) {
             checkStreet(stayDTO.getAddress().getStreet()).ifPresent(errorCodes::add);
             checkZipCode(stayDTO.getAddress().getZipCode()).ifPresent(errorCodes::add);
@@ -136,6 +137,13 @@ class StayFacadeImpl implements StayFacade {
             checkCity(stayDTO.getAddress().getCity()).ifPresent(errorCodes::add);
         }
         return errorCodes;
+    }
+
+    private Optional<StayErrorCodes> checkPhotos(List<String> photos) {
+        if (isNull(photos)) {
+            return Optional.of(PHOTOS_NULL);
+        }
+        return Optional.empty();
     }
 
     private Optional<StayErrorCodes> checkCity(String city) {
