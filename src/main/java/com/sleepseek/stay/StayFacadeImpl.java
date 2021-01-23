@@ -57,9 +57,7 @@ class StayFacadeImpl implements StayFacade {
                 .category(stayDTO.getCategory())
                 .user(userFacade.getUserByUsername(stayDTO.getUsername()))
                 .photos(stayDTO.getPhotos().stream().map(url ->
-                        imageRepository.findByUrl(url).stream().filter(image ->
-                                image.getStay().getName().equals(stayDTO.getName())
-                        ).findAny().orElseThrow(() -> new ImageNotFoundException(url))
+                        imageRepository.findByUrl(url).stream().findAny().orElseThrow(() -> new ImageNotFoundException(url))
                 ).collect(Collectors.toList()))
                 .address(Address.builder()
                         .city(stayDTO.getAddress().getCity())
