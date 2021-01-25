@@ -2,6 +2,7 @@ package com.sleepseek.image;
 
 import com.google.common.collect.Sets;
 import com.sleepseek.image.DTO.ImageDTO;
+import com.sleepseek.image.exception.ImageNotFoundException;
 import com.sleepseek.image.exception.ImageStorageException;
 import com.sleepseek.image.exception.ImageValidationException;
 import com.sleepseek.user.UserFacade;
@@ -53,6 +54,11 @@ class ImageFacadeImpl implements ImageFacade {
                 .url(url)
                 .build());
         return ImageMapper.toDto(imageEntity);
+    }
+
+    @Override
+    public Image findImage(String url) {
+        return imageRepository.findByUrl(url).stream().findAny().orElseThrow(() -> new ImageNotFoundException(url));
     }
 
     private Optional<ImageErrorCodes> checkOriginalFilename(String filename) {
