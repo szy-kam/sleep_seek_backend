@@ -26,7 +26,7 @@ public class Stay extends BaseEntity {
     @JoinColumn(name = "user")
     private User user;
 
-    @Column
+    @Column(length = 10000)
     private String description;
 
     @Column
