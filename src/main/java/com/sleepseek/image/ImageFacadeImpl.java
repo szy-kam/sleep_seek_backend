@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.sleepseek.image.ImageErrorCodes.FILE_NULL;
 import static com.sleepseek.image.ImageErrorCodes.USER_NULL;
 import static java.util.Objects.isNull;
 
@@ -34,8 +35,7 @@ class ImageFacadeImpl implements ImageFacade {
     public ImageDTO addImage(String username, MultipartFile image) throws IOException {
         Set<ImageErrorCodes> errors = Sets.newHashSet();
         checkUsername(username).ifPresent(errors::add);
-        String originalFilename = image.getOriginalFilename();
-        checkOriginalFilename(originalFilename).ifPresent(errors::add);
+        checkImage(image).ifPresent(errors::add);
         if (!errors.isEmpty()) {
             throw new ImageValidationException(errors);
         }
@@ -43,6 +43,7 @@ class ImageFacadeImpl implements ImageFacade {
             throw new UserNotFoundException(username);
         }
         File file = convertMultiPartToFile(image);
+        String originalFilename = image.getOriginalFilename();
         String url = imageStorage.uploadFile(file, generateFileName(image));
         if (!file.delete()) {
             throw new ImageStorageException("errors on delete local temp file");
@@ -56,16 +57,16 @@ class ImageFacadeImpl implements ImageFacade {
         return ImageMapper.toDto(imageEntity);
     }
 
+    private Optional<ImageErrorCodes> checkImage(MultipartFile image) {
+        if (isNull(image)) {
+            return Optional.of(FILE_NULL);
+        }
+        return Optional.empty();
+    }
+
     @Override
     public Image findImage(String url) {
         return imageRepository.findByUrl(url).stream().findAny().orElseThrow(() -> new ImageNotFoundException(url));
-    }
-
-    private Optional<ImageErrorCodes> checkOriginalFilename(String filename) {
-        if (isNull(filename)) {
-            return Optional.of(USER_NULL);
-        }
-        return Optional.empty();
     }
 
     private Optional<ImageErrorCodes> checkUsername(String username) {

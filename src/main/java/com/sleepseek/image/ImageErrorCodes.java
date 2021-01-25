@@ -7,6 +7,7 @@ import lombok.Getter;
 public enum ImageErrorCodes {
 
     URL_NULL("url is null"),
+    FILE_NULL("file is null"),
     USER_NULL("user is null");
 
 
