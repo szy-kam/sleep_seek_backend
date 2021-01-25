@@ -18,6 +18,7 @@ import static java.util.Objects.isNull;
 
 class UserFacadeImpl implements UserFacade {
 
+    private static final int PASSWORD_MAX_LENGTH = 32;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -33,7 +34,7 @@ class UserFacadeImpl implements UserFacade {
         checkUsernameErrors(userDTO.getUsername()).ifPresent(errorCodes::add);
         checkDisplayNameErrors(userDTO.getDisplayName()).ifPresent(errorCodes::add);
         checkPasswordErrors(userDTO.getPassword()).ifPresent(errorCodes::add);
-        if(!errorCodes.isEmpty()){
+        if (!errorCodes.isEmpty()) {
             throw new UserValidationException(errorCodes);
         }
 
@@ -51,6 +52,9 @@ class UserFacadeImpl implements UserFacade {
     private Optional<UserErrorCodes> checkPasswordErrors(String password) {
         if (isNull(password)) {
             return Optional.of(PASSWORD_IS_NULL);
+        }
+        if (password.length() > PASSWORD_MAX_LENGTH) {
+            return Optional.of(PASSWORD_IS_TOO_LONG);
         }
         return Optional.empty();
     }
