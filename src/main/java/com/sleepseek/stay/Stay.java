@@ -30,7 +30,7 @@ public class Stay extends BaseEntity {
     private String description;
 
     @Column
-    private String minPrice;
+    private Long minPrice;
 
     @Column
     private String email;

@@ -20,7 +20,7 @@ public class StayDTO {
 
     private String description;
 
-    private String minPrice;
+    private Long minPrice;
 
     private String phoneNumber;
 
