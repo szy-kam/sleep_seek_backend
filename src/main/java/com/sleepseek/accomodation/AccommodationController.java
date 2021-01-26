@@ -4,7 +4,9 @@ import com.sleepseek.accomodation.DTO.AccommodationDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 class AccommodationController {
@@ -28,12 +30,17 @@ class AccommodationController {
 
     @DeleteMapping("/accommodation/{accommodationId}")
     void deleteAccommodation(Principal principal, @PathVariable Long accommodationId) {
-        accommodationFacade.deleteAccommodation(accommodationId );
+        accommodationFacade.deleteAccommodation(accommodationId);
     }
 
     @PutMapping("/accommodation/{accommodationId}")
-    AccommodationDTO updateAccommodation(Principal principal, @RequestParam Long accommodationId, @RequestBody AccommodationDTO accommodationDTO) {
+    void updateAccommodation(Principal principal, @PathVariable Long accommodationId, @RequestBody AccommodationDTO accommodationDTO) {
         accommodationDTO.setId(accommodationId);
-        return accommodationFacade.updateAccommodation(accommodationDTO);
+        accommodationFacade.updateAccommodation(accommodationDTO);
+    }
+
+    @GetMapping("/accommodationProperties")
+    List<String> getProperties() {
+        return Arrays.stream(AccommodationPropertyDefinition.values()).map(AccommodationPropertyDefinition::getName).collect(Collectors.toList());
     }
 }

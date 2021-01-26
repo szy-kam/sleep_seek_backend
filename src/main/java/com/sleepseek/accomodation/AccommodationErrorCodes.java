@@ -11,6 +11,8 @@ public enum AccommodationErrorCodes {
     SLEEPERS_CAP_BOUNDARIES("sleepersCapacity out of boundaries"),
     QUANTITY_BOUNDARIES("quantity out of boundaries"),
     QUANTITY_NULL("quantity is null"),
+    PROPERTIES_NULL("properties are null"),
+    PRICE_OUT_OF_BOUNDS("price is out of bounds"),
     PRICE_NULL("price is null");
 
     @Getter

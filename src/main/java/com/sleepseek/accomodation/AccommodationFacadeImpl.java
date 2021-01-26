@@ -3,6 +3,7 @@ package com.sleepseek.accomodation;
 import com.google.common.collect.Sets;
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
 import com.sleepseek.accomodation.exception.AccommodationNotFoundException;
+import com.sleepseek.accomodation.exception.AccommodationPropertyNotFound;
 import com.sleepseek.accomodation.exception.AccommodationValidationException;
 import com.sleepseek.stay.StayFacade;
 import com.sleepseek.stay.exception.StayNotFoundException;
@@ -17,10 +18,12 @@ import static java.util.Objects.isNull;
 
 class AccommodationFacadeImpl implements AccommodationFacade {
     private final AccommodationRepository accommodationRepository;
+    private final AccommodationPropertyRepository propertyRepository;
     private final StayFacade stayFacade;
 
-    AccommodationFacadeImpl(AccommodationRepository accommodationRepository, StayFacade stayFacade) {
+    AccommodationFacadeImpl(AccommodationRepository accommodationRepository, AccommodationPropertyRepository propertyRepository, StayFacade stayFacade) {
         this.accommodationRepository = accommodationRepository;
+        this.propertyRepository = propertyRepository;
         this.stayFacade = stayFacade;
     }
 
@@ -32,9 +35,10 @@ class AccommodationFacadeImpl implements AccommodationFacade {
                 .quantity(accommodationDTO.getQuantity())
                 .sleepersCapacity(accommodationDTO.getSleepersCapacity())
                 .stay(stayFacade.loadStay(accommodationDTO.getStayId()))
+                .properties(propertyRepository.saveAll(accommodationDTO.getProperties().stream().map(property -> AccommodationProperty.builder().name(property).build()).collect(Collectors.toList())))
                 .build());
 
-        return AccommodationMapper.toDTO(newAccommodation);
+        return AccommodationMapper.toDTO(accommodationRepository.getOne(newAccommodation.getId()));
     }
 
     private Optional<AccommodationErrorCodes> checkSleepersCapacity(Long sleepersCapacity) {
@@ -47,9 +51,12 @@ class AccommodationFacadeImpl implements AccommodationFacade {
         return Optional.empty();
     }
 
-    private Optional<AccommodationErrorCodes> checkPrice(String price) {
+    private Optional<AccommodationErrorCodes> checkPrice(Long price) {
         if (isNull(price)) {
             return Optional.of(PRICE_NULL);
+        }
+        if (price < 0L) {
+            return Optional.of(PRICE_OUT_OF_BOUNDS);
         }
         return Optional.empty();
     }
@@ -95,6 +102,8 @@ class AccommodationFacadeImpl implements AccommodationFacade {
         accommodation.setStay(stayFacade.loadStay(accommodationDTO.getStayId()));
         accommodation.setQuantity(accommodationDTO.getQuantity());
         accommodation.setSleepersCapacity(accommodationDTO.getSleepersCapacity());
+        accommodation.setProperties(propertyRepository.saveAll(accommodationDTO.getProperties().stream().map(property -> AccommodationProperty.builder().name(property).build()).collect(Collectors.toList())));
+        accommodationRepository.save(accommodation);
         return AccommodationMapper.toDTO(accommodation);
     }
 
@@ -107,6 +116,7 @@ class AccommodationFacadeImpl implements AccommodationFacade {
         checkQuantity(accommodationDTO.getQuantity()).ifPresent(errors::add);
         checkPrice(accommodationDTO.getPrice()).ifPresent(errors::add);
         checkSleepersCapacity(accommodationDTO.getSleepersCapacity()).ifPresent(errors::add);
+        checkProperties(accommodationDTO.getProperties()).ifPresent(errors::add);
         if (!errors.isEmpty()) {
             throw new AccommodationValidationException(errors);
         }
@@ -115,9 +125,23 @@ class AccommodationFacadeImpl implements AccommodationFacade {
         }
     }
 
+    private Optional<AccommodationErrorCodes> checkProperties(List<String> properties) {
+        if (isNull(properties)) {
+            return Optional.of(PROPERTIES_NULL);
+        }
+        for (String property : properties) {
+            try {
+                AccommodationPropertyDefinition.valueOf(property);
+            } catch (IllegalArgumentException exception) {
+                throw new AccommodationPropertyNotFound(property);
+            }
+        }
+        return Optional.empty();
+    }
+
     private Optional<AccommodationErrorCodes> checkId(Long id) {
         if (isNull(id)) {
-            Optional.of(ID_NULL);
+            return Optional.of(ID_NULL);
         }
         return Optional.empty();
     }

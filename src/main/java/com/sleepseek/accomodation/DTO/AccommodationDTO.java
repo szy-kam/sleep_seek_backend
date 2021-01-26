@@ -2,6 +2,8 @@ package com.sleepseek.accomodation.DTO;
 
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @Getter
 @Setter
@@ -12,6 +14,6 @@ public class AccommodationDTO {
     private Long stayId;
     private Long sleepersCapacity;
     private Long quantity;
-    private String price;
-
+    private Long price;
+    private List<String> properties;
 }
