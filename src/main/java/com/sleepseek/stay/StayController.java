@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 class StayController {
@@ -27,12 +29,28 @@ class StayController {
     List<StayDTO> getStays(@RequestParam Integer pageNumber,
                            @RequestParam Integer pageSize,
                            @RequestParam(required = false) String username,
-                           @RequestParam(required = false) String s) {
+                           @RequestParam(required = false) String name,
+                           @RequestParam(required = false) String city,
+                           @RequestParam(required = false) String category,
+                           @RequestParam(required = false) String country,
+                           @RequestParam(required = false) List<String> prop,
+                           @RequestParam(required = false) Long priceFrom,
+                           @RequestParam(required = false) Long priceTo,
+                           @RequestParam(required = false) Long dateFrom,
+                           @RequestParam(required = false) Long dateTo) {
         return stayFacade.getStays(StaySearchParameters.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .username(username)
-                .searchString(s)
+                .name(name)
+                .city(city)
+                .country(country)
+                .category(category)
+                .property(prop)
+                .priceFrom(priceFrom)
+                .priceTo(priceTo)
+                .dateFrom(dateFrom)
+                .dateTo(dateTo)
                 .build());
     }
 
@@ -53,6 +71,11 @@ class StayController {
     Object deleteStay(@PathVariable Long stayId) {
         stayFacade.deleteStay(stayId);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/stayCategories")
+    List<String> getCategories() {
+        return Arrays.stream(StayCategoryDefinition.values()).map(StayCategoryDefinition::getName).collect(Collectors.toList());
     }
 
 }

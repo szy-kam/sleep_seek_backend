@@ -1,9 +1,9 @@
 package com.sleepseek.stay;
 
 import com.google.common.collect.Sets;
-import com.sleepseek.image.ImageRepository;
-import com.sleepseek.image.exception.ImageNotFoundException;
+import com.sleepseek.image.ImageFacade;
 import com.sleepseek.stay.DTO.StayDTO;
+import com.sleepseek.stay.exception.StayCategoryNotFoundException;
 import com.sleepseek.stay.exception.StayNotFoundException;
 import com.sleepseek.stay.exception.StaySearchParametersException;
 import com.sleepseek.stay.exception.StayValidationException;
@@ -26,12 +26,14 @@ import static java.util.Objects.isNull;
 class StayFacadeImpl implements StayFacade {
 
     private final StayRepository stayRepository;
-    private final ImageRepository imageRepository;
+    private final StayCategoryRepository categoryRepository;
+    private final ImageFacade imageFacade;
     private final UserFacade userFacade;
 
-    StayFacadeImpl(StayRepository stayRepository, ImageRepository imageRepository, UserFacade userFacade) {
+    StayFacadeImpl(StayRepository stayRepository, StayCategoryRepository categoryRepository, ImageFacade imageFacade, UserFacade userFacade) {
         this.stayRepository = stayRepository;
-        this.imageRepository = imageRepository;
+        this.categoryRepository = categoryRepository;
+        this.imageFacade = imageFacade;
         this.userFacade = userFacade;
     }
 
@@ -54,11 +56,9 @@ class StayFacadeImpl implements StayFacade {
                 .mainPhoto(stayDTO.getMainPhoto())
                 .phoneNumber(stayDTO.getPhoneNumber())
                 .minPrice(stayDTO.getMinPrice())
-                .category(stayDTO.getCategory())
+                .category(categoryRepository.save(StayCategory.builder().name(stayDTO.getCategory()).build()))
                 .user(userFacade.getUserByUsername(stayDTO.getUsername()))
-                .photos(stayDTO.getPhotos().stream().map(url ->
-                        imageRepository.findByUrl(url).stream().findAny().orElseThrow(() -> new ImageNotFoundException(url))
-                ).collect(Collectors.toList()))
+                .photos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()))
                 .address(Address.builder()
                         .city(stayDTO.getAddress().getCity())
                         .zipCode(stayDTO.getAddress().getZipCode())
@@ -93,10 +93,8 @@ class StayFacadeImpl implements StayFacade {
         stay.setUser(userFacade.getUserByUsername(stayDTO.getUsername()));
         stay.setEmail(stayDTO.getEmail());
         stay.setPhoneNumber(stayDTO.getPhoneNumber());
-        stay.setCategory(stayDTO.getCategory());
-        stay.setPhotos(stayDTO.getPhotos().stream().map(url ->
-                imageRepository.findByUrl(url).stream().findAny().orElseThrow(() -> new ImageNotFoundException(url))
-        ).collect(Collectors.toList()));
+        stay.setCategory(categoryRepository.save(StayCategory.builder().name(stayDTO.getCategory()).build()));
+        stay.setPhotos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()));
         Address address = stay.getAddress();
         address.setCity(stayDTO.getAddress().getCity());
         address.setStreet(stayDTO.getAddress().getStreet());
@@ -188,6 +186,11 @@ class StayFacadeImpl implements StayFacade {
     private Optional<StayErrorCodes> checkCategory(String category) {
         if (isNull(category)) {
             return Optional.of(CATEGORY_NULL);
+        }
+        try {
+            StayCategoryDefinition.valueOf(category);
+        } catch (IllegalArgumentException e) {
+            throw new StayCategoryNotFoundException(category);
         }
         return Optional.empty();
     }

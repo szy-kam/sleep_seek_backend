@@ -1,10 +1,7 @@
 package com.sleepseek.stay;
 
 import com.sleepseek.common.ApiError;
-import com.sleepseek.stay.exception.StayAlreadyExistsException;
-import com.sleepseek.stay.exception.StayNotFoundException;
-import com.sleepseek.stay.exception.StaySearchParametersException;
-import com.sleepseek.stay.exception.StayValidationException;
+import com.sleepseek.stay.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +24,11 @@ public class StayExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = StayNotFoundException.class)
     public ResponseEntity<?> handleStayNotFoundException(StayNotFoundException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "Stay not found", exception));
+    }
+
+    @ExceptionHandler(value = StayCategoryNotFoundException.class)
+    public ResponseEntity<?> handleStayCategoryNotFoundException(StayCategoryNotFoundException exception) {
+        return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "Stay category not found", exception));
     }
 
     @ExceptionHandler(value = StaySearchParametersException.class)

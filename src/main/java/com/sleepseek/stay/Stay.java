@@ -41,8 +41,9 @@ public class Stay extends BaseEntity {
     @Column
     private String mainPhoto;
 
-    @Column
-    private String category;
+    @ManyToOne
+    private StayCategory category;
+
 
     @OneToMany(targetEntity = Image.class)
     private List<Image> photos;

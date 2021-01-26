@@ -20,7 +20,7 @@ class StayMapper {
                 .description(stay.getDescription())
                 .mainPhoto(stay.getMainPhoto())
                 .minPrice(stay.getMinPrice())
-                .category(stay.getCategory())
+                .category(stay.getCategory().getName())
                 .username(stay.getUser().getUsername())
                 .address(StayDTO.AddressDTO.builder()
                         .city(stay.getAddress().getCity())
