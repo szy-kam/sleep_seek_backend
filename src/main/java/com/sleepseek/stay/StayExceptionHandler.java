@@ -26,6 +26,11 @@ public class StayExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "Stay not found", exception));
     }
 
+    @ExceptionHandler(value = StayPropertyNotFoundException.class)
+    public ResponseEntity<?> handleStayPropertyNotFoundException(StayPropertyNotFoundException exception) {
+        return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "Stay property not found", exception));
+    }
+
     @ExceptionHandler(value = StayCategoryNotFoundException.class)
     public ResponseEntity<?> handleStayCategoryNotFoundException(StayCategoryNotFoundException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "Stay category not found", exception));

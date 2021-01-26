@@ -3,10 +3,7 @@ package com.sleepseek.stay;
 import com.google.common.collect.Sets;
 import com.sleepseek.image.ImageFacade;
 import com.sleepseek.stay.DTO.StayDTO;
-import com.sleepseek.stay.exception.StayCategoryNotFoundException;
-import com.sleepseek.stay.exception.StayNotFoundException;
-import com.sleepseek.stay.exception.StaySearchParametersException;
-import com.sleepseek.stay.exception.StayValidationException;
+import com.sleepseek.stay.exception.*;
 import com.sleepseek.user.UserFacade;
 import com.sleepseek.user.exception.UserNotFoundException;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -29,12 +26,14 @@ class StayFacadeImpl implements StayFacade {
     private final StayCategoryRepository categoryRepository;
     private final ImageFacade imageFacade;
     private final UserFacade userFacade;
+    private final StayPropertyRepository propertyRepository;
 
-    StayFacadeImpl(StayRepository stayRepository, StayCategoryRepository categoryRepository, ImageFacade imageFacade, UserFacade userFacade) {
+    StayFacadeImpl(StayRepository stayRepository, StayCategoryRepository categoryRepository, ImageFacade imageFacade, UserFacade userFacade, StayPropertyRepository propertyRepository) {
         this.stayRepository = stayRepository;
         this.categoryRepository = categoryRepository;
         this.imageFacade = imageFacade;
         this.userFacade = userFacade;
+        this.propertyRepository = propertyRepository;
     }
 
     @Override
@@ -59,6 +58,7 @@ class StayFacadeImpl implements StayFacade {
                 .category(categoryRepository.save(StayCategory.builder().name(stayDTO.getCategory()).build()))
                 .user(userFacade.getUserByUsername(stayDTO.getUsername()))
                 .photos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()))
+                .properties(propertyRepository.saveAll(stayDTO.getProperties().stream().map(property -> StayProperty.builder().name(property).build()).collect(Collectors.toList())))
                 .address(Address.builder()
                         .city(stayDTO.getAddress().getCity())
                         .zipCode(stayDTO.getAddress().getZipCode())
@@ -95,6 +95,7 @@ class StayFacadeImpl implements StayFacade {
         stay.setPhoneNumber(stayDTO.getPhoneNumber());
         stay.setCategory(categoryRepository.save(StayCategory.builder().name(stayDTO.getCategory()).build()));
         stay.setPhotos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()));
+        stay.setProperties(propertyRepository.saveAll(stayDTO.getProperties().stream().map(property -> StayProperty.builder().name(property).build()).collect(Collectors.toList())));
         Address address = stay.getAddress();
         address.setCity(stayDTO.getAddress().getCity());
         address.setStreet(stayDTO.getAddress().getStreet());
@@ -124,6 +125,7 @@ class StayFacadeImpl implements StayFacade {
         checkCategory(stayDTO.getCategory()).ifPresent(errorCodes::add);
         checkMinPrice(stayDTO.getMinPrice()).ifPresent(errorCodes::add);
         checkPhotos(stayDTO.getPhotos()).ifPresent(errorCodes::add);
+        checkProperties(stayDTO.getProperties()).ifPresent(errorCodes::add);
         if (!isNull(stayDTO.getAddress())) {
             checkStreet(stayDTO.getAddress().getStreet()).ifPresent(errorCodes::add);
             checkZipCode(stayDTO.getAddress().getZipCode()).ifPresent(errorCodes::add);
@@ -131,6 +133,22 @@ class StayFacadeImpl implements StayFacade {
             checkCity(stayDTO.getAddress().getCity()).ifPresent(errorCodes::add);
         }
         return errorCodes;
+    }
+
+    private Optional<StayErrorCodes> checkProperties(List<String> properties) {
+        if(isNull(properties)){
+            return Optional.of(PROPERTIES_NULL);
+        }
+
+        for(String property: properties){
+            try {
+                StayPropertyDefinition.valueOf(property);
+            }catch (IllegalArgumentException e){
+                throw new StayPropertyNotFoundException(property);
+            }
+        }
+
+        return Optional.empty();
     }
 
     private Optional<StayErrorCodes> checkPhotos(List<String> photos) {

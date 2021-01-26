@@ -78,4 +78,9 @@ class StayController {
         return Arrays.stream(StayCategoryDefinition.values()).map(StayCategoryDefinition::getName).collect(Collectors.toList());
     }
 
+    @GetMapping("/stayProperties")
+    List<String> getProperties(){
+        return Arrays.stream(StayPropertyDefinition.values()).map(StayPropertyDefinition::getName).collect(Collectors.toList());
+    }
+
 }

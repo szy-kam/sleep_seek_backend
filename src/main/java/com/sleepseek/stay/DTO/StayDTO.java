@@ -34,6 +34,8 @@ public class StayDTO {
 
     private List<String> photos;
 
+    private List<String> properties;
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

@@ -44,6 +44,8 @@ public class Stay extends BaseEntity {
     @ManyToOne
     private StayCategory category;
 
+    @OneToMany(targetEntity = StayProperty.class)
+    private List<StayProperty> properties;
 
     @OneToMany(targetEntity = Image.class)
     private List<Image> photos;

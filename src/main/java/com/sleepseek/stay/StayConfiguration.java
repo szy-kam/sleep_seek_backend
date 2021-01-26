@@ -10,7 +10,7 @@ class StayConfiguration {
     public static Long MAX_PAGE_SIZE = 50L;
 
     @Bean
-    public StayFacade stayFacade(StayRepository stayRepository, StayCategoryRepository categoryRepository, ImageFacade imageFacade, UserFacade userFacade) {
-        return new StayFacadeImpl(stayRepository, categoryRepository, imageFacade, userFacade);
+    public StayFacade stayFacade(StayRepository stayRepository, StayCategoryRepository categoryRepository, ImageFacade imageFacade, UserFacade userFacade, StayPropertyRepository propertyRepository) {
+        return new StayFacadeImpl(stayRepository, categoryRepository, imageFacade, userFacade, propertyRepository);
     }
 }
