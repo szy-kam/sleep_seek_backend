@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-public class ReviewFacadeTest {
+class ReviewFacadeTest {
 
     private static final Long NOT_EXISTING_REVIEW_ID = 1L;
 

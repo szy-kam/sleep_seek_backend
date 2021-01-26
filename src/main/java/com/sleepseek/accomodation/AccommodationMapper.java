@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
-class AccommodationMapper {
+public class AccommodationMapper {
 
-    static AccommodationDTO toDTO(Accommodation accommodation) {
+    public static AccommodationDTO toDTO(Accommodation accommodation) {
         List<String> properties;
-        if(isNull(accommodation.getProperties())){
+        if (isNull(accommodation.getProperties())) {
             properties = new ArrayList<>();
-        }else {
+        } else {
             properties = accommodation.getProperties().stream().map(AccommodationProperty::getName).collect(Collectors.toList());
         }
 

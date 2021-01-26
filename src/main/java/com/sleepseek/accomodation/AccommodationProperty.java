@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-class AccommodationProperty extends BaseEntity {
+public class AccommodationProperty extends BaseEntity {
     @Column
     private String name;
 

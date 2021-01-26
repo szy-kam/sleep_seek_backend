@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
+public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
     List<Accommodation> findAccommodationsByStay(Stay stay);
 }
