@@ -81,6 +81,9 @@ class AccommodationFacadeImpl implements AccommodationFacade {
 
     @Override
     public void deleteAccommodation(Long id) {
+        if (!accommodationRepository.existsById(id)) {
+            throw new AccommodationNotFoundException(id);
+        }
         accommodationRepository.deleteById(id);
     }
 
@@ -97,6 +100,9 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     @Override
     public AccommodationDTO updateAccommodation(AccommodationDTO accommodationDTO) {
         validateAccommodation(accommodationDTO, true);
+        if (!accommodationRepository.existsById(accommodationDTO.getId())) {
+            throw new AccommodationNotFoundException(accommodationDTO.getId());
+        }
         Accommodation accommodation = loadById(accommodationDTO.getId());
         accommodation.setPrice(accommodation.getPrice());
         accommodation.setStay(stayFacade.loadStay(accommodationDTO.getStayId()));
