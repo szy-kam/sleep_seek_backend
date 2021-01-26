@@ -19,4 +19,6 @@ public class ReviewDTO {
 
     private Double rating;
 
+    private String createdAt;
+
 }

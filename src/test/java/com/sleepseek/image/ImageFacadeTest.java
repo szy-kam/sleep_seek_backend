@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ImageFacadeTest {
 
     private static final String VALID_USERNAME = "test@test.com";
-    
+
     private ImageFacade imageFacade;
 
     @Mock

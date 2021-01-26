@@ -33,16 +33,9 @@ class ReviewFacadeImpl implements ReviewFacade {
     @Override
     public ReviewDTO addReview(ReviewDTO reviewDTO) {
         Set<ReviewErrorCodes> errors = validateReview(reviewDTO);
-        if (!stayFacade.stayExists(reviewDTO.getStayId())) {
-            throw new StayNotFoundException(reviewDTO.getStayId());
-        }
-        if (!userFacade.userExists(reviewDTO.getUsername())) {
-            throw new UserNotFoundException(reviewDTO.getUsername());
-        }
 
-        if (!errors.isEmpty()) {
-            throw new ReviewValidationException(errors);
-        }
+        validate(reviewDTO, errors);
+
         Review newReview = reviewRepository.save(
                 Review.builder()
                         .message(reviewDTO.getMessage())
@@ -97,8 +90,23 @@ class ReviewFacadeImpl implements ReviewFacade {
     @Override
     public void updateReview(ReviewDTO reviewDTO) {
         Set<ReviewErrorCodes> errors = validateReview(reviewDTO);
-        if (isNull(reviewDTO.getStayId())) {
+        if (isNull(reviewDTO.getReviewId())) {
             errors.add(ID_NULL);
+        }
+        validate(reviewDTO, errors);
+        if (!existsById(reviewDTO.getReviewId())) {
+            throw new ReviewNotFoundException(reviewDTO.getReviewId());
+        }
+        Review review = reviewRepository.findById(reviewDTO.getReviewId()).orElseThrow();
+        review.setMessage(reviewDTO.getMessage());
+        review.setRating(reviewDTO.getRating());
+        review.setUser(userFacade.getUserByUsername(reviewDTO.getUsername()));
+        review.setStay(stayFacade.loadStay(reviewDTO.getStayId()));
+    }
+
+    private void validate(ReviewDTO reviewDTO, Set<ReviewErrorCodes> errors) {
+        if (!errors.isEmpty()) {
+            throw new ReviewValidationException(errors);
         }
         if (!stayFacade.stayExists(reviewDTO.getStayId())) {
             throw new StayNotFoundException(reviewDTO.getStayId());
@@ -106,11 +114,6 @@ class ReviewFacadeImpl implements ReviewFacade {
         if (!userFacade.userExists(reviewDTO.getUsername())) {
             throw new UserNotFoundException(reviewDTO.getUsername());
         }
-        Review review = reviewRepository.findById(reviewDTO.getReviewId()).orElseThrow();
-        review.setMessage(reviewDTO.getMessage());
-        review.setRating(reviewDTO.getRating());
-        review.setUser(userFacade.getUserByUsername(reviewDTO.getUsername()));
-        review.setStay(stayFacade.loadStay(reviewDTO.getStayId()));
     }
 
     @Override

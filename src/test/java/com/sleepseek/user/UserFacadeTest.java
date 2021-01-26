@@ -121,7 +121,7 @@ class UserFacadeTest {
     }
 
     @Test
-    void postUser_userExists() {
+    void postUser_userExists_throwsExceptionUserAlreadyExists() {
         UserDTO newUser = UserDTO.builder().displayName(VALID_DISPLAY_NAME).username(VALID_EMAIL).password(VALID_PASSWORD).build();
         Mockito.when(userRepository.existsByUsername(VALID_EMAIL)).thenReturn(true);
         assertThrows(UserAlreadyExistsException.class, () -> userFacade.postUser(newUser));

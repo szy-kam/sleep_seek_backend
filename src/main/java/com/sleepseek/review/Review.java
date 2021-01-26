@@ -23,7 +23,7 @@ public class Review extends BaseEntity {
     @ManyToOne
     private User user;
 
-    @Column
+    @Column(length = 1000)
     private String message;
 
     @Column

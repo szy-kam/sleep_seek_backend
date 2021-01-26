@@ -30,8 +30,14 @@ public class ReviewController {
         return reviewFacade.addReview(reviewDTO);
     }
 
+    @PutMapping("/review/{reviewId}")
+    public void updateReview(@PathVariable Long reviewId, @RequestBody ReviewDTO reviewDTO) {
+        reviewDTO.setReviewId(reviewId);
+        reviewFacade.updateReview(reviewDTO);
+    }
+
     @DeleteMapping("/review/{reviewId}")
-    public void deleteReview(@PathVariable Long reviewId){
+    public void deleteReview(@PathVariable Long reviewId) {
         reviewFacade.deleteReview(reviewId);
     }
 }
