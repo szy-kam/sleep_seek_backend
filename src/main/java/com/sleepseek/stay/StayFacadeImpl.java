@@ -194,7 +194,7 @@ class StayFacadeImpl implements StayFacade {
         return Optional.empty();
     }
 
-    private Optional<StayErrorCodes> checkMinPrice(String minPrice) {
+    private Optional<StayErrorCodes> checkMinPrice(Long minPrice) {
         if (isNull(minPrice)) {
             return Optional.of(MIN_PRICE_NULL);
         }
