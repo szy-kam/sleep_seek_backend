@@ -46,7 +46,7 @@ class StayMapper {
         for (Review review : stay.getReviews()) {
             sum += review.getRating();
         }
-        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        DecimalFormat decimalFormat = new DecimalFormat("#.0");
         return decimalFormat.format(sum / (double) stay.getReviews().size());
     }
 }
