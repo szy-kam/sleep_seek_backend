@@ -5,9 +5,6 @@ import com.sleepseek.stay.Stay;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -30,9 +27,9 @@ public class Accommodation extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Stay stay;
 
-    @ElementCollection(targetClass = AccommodationPropertyDefinition.class)
+    @ElementCollection(targetClass = AccommodationProperty.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "accommodation_properties")
     @Column(name = "properties")
-    private Set<AccommodationPropertyDefinition> properties;
+    private Set<AccommodationProperty> properties;
 }

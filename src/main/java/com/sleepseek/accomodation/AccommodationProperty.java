@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public enum AccommodationPropertyDefinition {
+public enum AccommodationProperty {
     BATH("BATH"),
     SHOWER("SHOWER"),
     USER_PLUS("USER_PLUS"),

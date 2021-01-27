@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-enum StayCategoryDefinition {
+enum StayCategory {
     HOTEL("HOTEL"),
     PENSION("PENSION"),
     HOSTEL("HOSTEL"),

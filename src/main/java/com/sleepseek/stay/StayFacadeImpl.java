@@ -56,7 +56,7 @@ class StayFacadeImpl implements StayFacade {
                 .mainPhoto(stayDTO.getMainPhoto())
                 .phoneNumber(stayDTO.getPhoneNumber())
                 .minPrice(stayDTO.getMinPrice())
-                .category(StayCategoryDefinition.valueOf(stayDTO.getCategory()))
+                .category(StayCategory.valueOf(stayDTO.getCategory()))
                 .user(userFacade.getUserByUsername(stayDTO.getUsername()))
                 .photos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()))
                 .properties(new HashSet<>())
@@ -97,7 +97,7 @@ class StayFacadeImpl implements StayFacade {
         stay.setUser(userFacade.getUserByUsername(stayDTO.getUsername()));
         stay.setEmail(stayDTO.getEmail());
         stay.setPhoneNumber(stayDTO.getPhoneNumber());
-        stay.setCategory(StayCategoryDefinition.valueOf(stayDTO.getCategory()));
+        stay.setCategory(StayCategory.valueOf(stayDTO.getCategory()));
         stay.setPhotos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()));
         stay.setProperties(new HashSet<>());
         stayDTO.getProperties().forEach(property -> stay.getProperties().add(StayPropertyDefinition.valueOf(property)));
@@ -211,7 +211,7 @@ class StayFacadeImpl implements StayFacade {
             return Optional.of(CATEGORY_NULL);
         }
         try {
-            StayCategoryDefinition.valueOf(category);
+            StayCategory.valueOf(category);
         } catch (IllegalArgumentException e) {
             throw new StayCategoryNotFoundException(category);
         }

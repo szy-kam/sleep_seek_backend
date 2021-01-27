@@ -37,7 +37,7 @@ class AccommodationFacadeImpl implements AccommodationFacade {
                 .sleepersCapacity(accommodationDTO.getSleepersCapacity())
                 .properties(new HashSet<>())
                 .build();
-        accommodationDTO.getProperties().forEach(property -> newAccommodation.getProperties().add(AccommodationPropertyDefinition.valueOf(property)));
+        accommodationDTO.getProperties().forEach(property -> newAccommodation.getProperties().add(AccommodationProperty.valueOf(property)));
         stayFacade.addAccommodation(stay, newAccommodation);
         return AccommodationMapper.toDTO(newAccommodation);
     }
@@ -108,7 +108,7 @@ class AccommodationFacadeImpl implements AccommodationFacade {
         accommodation.setPrice(accommodation.getPrice());
         accommodation.setQuantity(accommodationDTO.getQuantity());
         accommodation.setSleepersCapacity(accommodationDTO.getSleepersCapacity());
-        accommodationDTO.getProperties().forEach(property -> accommodation.getProperties().add(AccommodationPropertyDefinition.valueOf(property)));
+        accommodationDTO.getProperties().forEach(property -> accommodation.getProperties().add(AccommodationProperty.valueOf(property)));
 
         accommodationRepository.save(accommodation);
         return AccommodationMapper.toDTO(accommodation);
@@ -140,7 +140,7 @@ class AccommodationFacadeImpl implements AccommodationFacade {
         }
         for (String property : properties) {
             try {
-                AccommodationPropertyDefinition.valueOf(property);
+                AccommodationProperty.valueOf(property);
             } catch (IllegalArgumentException exception) {
                 throw new AccommodationPropertyNotFound(property);
             }

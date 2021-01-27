@@ -38,7 +38,7 @@ class AccommodationFacadeTest {
     private static final Long INVALID_PRICE = -1L;
 
 
-    private final List<String> VALID_PROPERTIES = Arrays.asList(AccommodationPropertyDefinition.BATH.getName(), AccommodationPropertyDefinition.COOLING.getName());
+    private final List<String> VALID_PROPERTIES = Arrays.asList(AccommodationProperty.BATH.getName(), AccommodationProperty.COOLING.getName());
     private final List<String> INVALID_PROPERTIES = Arrays.asList("bar", "foo");
 
 

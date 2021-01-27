@@ -75,7 +75,7 @@ class StayController {
 
     @GetMapping("/stayCategories")
     List<String> getCategories() {
-        return Arrays.stream(StayCategoryDefinition.values()).map(StayCategoryDefinition::getName).collect(Collectors.toList());
+        return Arrays.stream(StayCategory.values()).map(StayCategory::getName).collect(Collectors.toList());
     }
 
     @GetMapping("/stayProperties")

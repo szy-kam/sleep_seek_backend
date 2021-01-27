@@ -53,7 +53,7 @@ public class Stay extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private StayCategoryDefinition category;
+    private StayCategory category;
 
     @OneToMany(targetEntity = Image.class)
     private List<Image> photos = new ArrayList<>();

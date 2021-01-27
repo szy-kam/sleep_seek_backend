@@ -41,6 +41,6 @@ class AccommodationController {
 
     @GetMapping("/accommodationProperties")
     List<String> getProperties() {
-        return Arrays.stream(AccommodationPropertyDefinition.values()).map(AccommodationPropertyDefinition::getName).collect(Collectors.toList());
+        return Arrays.stream(AccommodationProperty.values()).map(AccommodationProperty::getName).collect(Collectors.toList());
     }
 }
