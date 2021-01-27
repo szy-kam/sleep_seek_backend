@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-enum StayPropertyDefinition {
+enum StayProperty {
     PARKING("PARKING"),
     GYM("GYM"),
     POOL("POOL"),

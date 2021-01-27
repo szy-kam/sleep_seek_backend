@@ -45,11 +45,11 @@ public class Stay extends BaseEntity {
     @Column
     private String mainPhoto;
 
-    @ElementCollection(targetClass = StayPropertyDefinition.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = StayProperty.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "stay_properties")
     @Column(name = "properties")
-    private Set<StayPropertyDefinition> properties;
+    private Set<StayProperty> properties;
 
     @Enumerated(EnumType.STRING)
     @Column

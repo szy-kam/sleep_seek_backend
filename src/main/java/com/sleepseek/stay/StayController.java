@@ -80,7 +80,7 @@ class StayController {
 
     @GetMapping("/stayProperties")
     List<String> getProperties(){
-        return Arrays.stream(StayPropertyDefinition.values()).map(StayPropertyDefinition::getName).collect(Collectors.toList());
+        return Arrays.stream(StayProperty.values()).map(StayProperty::getName).collect(Collectors.toList());
     }
 
 }

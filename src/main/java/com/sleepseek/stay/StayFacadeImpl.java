@@ -70,7 +70,7 @@ class StayFacadeImpl implements StayFacade {
                         .latitude(stayDTO.getAddress().getLatitude())
                         .build())
                 .build();
-        stayDTO.getProperties().forEach(property -> newStay.getProperties().add(StayPropertyDefinition.valueOf(property)));
+        stayDTO.getProperties().forEach(property -> newStay.getProperties().add(StayProperty.valueOf(property)));
 
         return StayMapper.toDto(stayRepository.save(newStay));
     }
@@ -100,7 +100,7 @@ class StayFacadeImpl implements StayFacade {
         stay.setCategory(StayCategory.valueOf(stayDTO.getCategory()));
         stay.setPhotos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()));
         stay.setProperties(new HashSet<>());
-        stayDTO.getProperties().forEach(property -> stay.getProperties().add(StayPropertyDefinition.valueOf(property)));
+        stayDTO.getProperties().forEach(property -> stay.getProperties().add(StayProperty.valueOf(property)));
         Address address = stay.getAddress();
         address.setCity(stayDTO.getAddress().getCity());
         address.setStreet(stayDTO.getAddress().getStreet());
@@ -147,7 +147,7 @@ class StayFacadeImpl implements StayFacade {
 
         for (String property : properties) {
             try {
-                StayPropertyDefinition.valueOf(property);
+                StayProperty.valueOf(property);
             } catch (IllegalArgumentException e) {
                 throw new StayPropertyNotFoundException(property);
             }
