@@ -40,13 +40,13 @@ class StayMapper {
 
     private static String countAvgRating(Stay stay) {
         if (stay.getReviews() == null || stay.getReviews().size() == 0) {
-            return "0.0";
+            return "0";
         }
         Double sum = 0.0;
         for (Review review : stay.getReviews()) {
             sum += review.getRating();
         }
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
         return decimalFormat.format(sum / (double) stay.getReviews().size());
     }
 }
