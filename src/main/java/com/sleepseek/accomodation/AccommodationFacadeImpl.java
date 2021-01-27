@@ -5,6 +5,7 @@ import com.sleepseek.accomodation.DTO.AccommodationDTO;
 import com.sleepseek.accomodation.exception.AccommodationNotFoundException;
 import com.sleepseek.accomodation.exception.AccommodationPropertyNotFound;
 import com.sleepseek.accomodation.exception.AccommodationValidationException;
+import com.sleepseek.reservation.Reservation;
 import com.sleepseek.stay.Stay;
 import com.sleepseek.stay.StayFacade;
 import com.sleepseek.stay.exception.StayNotFoundException;
@@ -121,6 +122,17 @@ class AccommodationFacadeImpl implements AccommodationFacade {
             throw new AccommodationNotFoundException(id);
         }
         return AccommodationMapper.toDTO(accommodationRepository.getOne(id));
+    }
+
+    @Override
+    public void addReservation(Accommodation accommodation, Reservation reservation) {
+        accommodation.addReservation(reservation);
+        accommodationRepository.save(accommodation);
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return accommodationRepository.existsById(id);
     }
 
     private void validateAccommodation(AccommodationDTO accommodationDTO, boolean shouldCheckId, boolean shouldCheckStayId) {

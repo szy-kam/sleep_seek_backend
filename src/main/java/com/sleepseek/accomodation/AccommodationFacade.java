@@ -1,6 +1,7 @@
 package com.sleepseek.accomodation;
 
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
+import com.sleepseek.reservation.Reservation;
 
 import java.util.List;
 
@@ -17,4 +18,8 @@ public interface AccommodationFacade {
     AccommodationDTO updateAccommodation(AccommodationDTO accommodationDTO);
 
     AccommodationDTO getAccommodation(Long id);
+
+    void addReservation(Accommodation accommodation, Reservation reservation);
+
+    boolean existsById(Long id);
 }
