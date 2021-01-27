@@ -25,7 +25,7 @@ class ImageFacadeImpl implements ImageFacade {
     private final ImageRepository imageRepository;
     private final UserFacade userFacade;
 
-    public ImageFacadeImpl(ImageStorage imageStorage, ImageRepository imageRepository, UserFacade userFacade) {
+    ImageFacadeImpl(ImageStorage imageStorage, ImageRepository imageRepository, UserFacade userFacade) {
         this.imageStorage = imageStorage;
         this.imageRepository = imageRepository;
         this.userFacade = userFacade;

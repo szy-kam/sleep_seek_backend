@@ -11,20 +11,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class UserExceptionHandler extends ResponseEntityExceptionHandler {
+class UserExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = UserAlreadyExistsException.class)
-    public ResponseEntity<?> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
+    ResponseEntity<?> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "User already exists", exception));
     }
 
     @ExceptionHandler(value = UserNotFoundException.class)
-    public ResponseEntity<?> handleUserAlreadyExistsException(UserNotFoundException exception) {
+    ResponseEntity<?> handleUserAlreadyExistsException(UserNotFoundException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "User not found", exception));
     }
 
     @ExceptionHandler(value = UserValidationException.class)
-    public ResponseEntity<?> handleUserValidationException(UserValidationException exception) {
+    ResponseEntity<?> handleUserValidationException(UserValidationException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "User validation error", exception));
     }
 

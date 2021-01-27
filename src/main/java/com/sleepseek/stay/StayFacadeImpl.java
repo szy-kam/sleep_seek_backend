@@ -2,7 +2,6 @@ package com.sleepseek.stay;
 
 import com.google.common.collect.Sets;
 import com.sleepseek.accomodation.Accommodation;
-import com.sleepseek.accomodation.AccommodationRepository;
 import com.sleepseek.image.ImageFacade;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.*;
@@ -28,13 +27,11 @@ class StayFacadeImpl implements StayFacade {
     private final StayRepository stayRepository;
     private final ImageFacade imageFacade;
     private final UserFacade userFacade;
-    private final AccommodationRepository accommodationRepository;
 
-    StayFacadeImpl(StayRepository stayRepository, ImageFacade imageFacade, UserFacade userFacade, AccommodationRepository accommodationRepository) {
+    StayFacadeImpl(StayRepository stayRepository, ImageFacade imageFacade, UserFacade userFacade) {
         this.stayRepository = stayRepository;
         this.imageFacade = imageFacade;
         this.userFacade = userFacade;
-        this.accommodationRepository = accommodationRepository;
     }
 
     @Override

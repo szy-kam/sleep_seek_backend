@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class ImageExceptionHandler {
+class ImageExceptionHandler {
 
     @ExceptionHandler(ImageStorageException.class)
-    public ResponseEntity<?> handleImageStorageException(ImageStorageException exception) {
+    ResponseEntity<?> handleImageStorageException(ImageStorageException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Image storage error", exception));
     }
 
     @ExceptionHandler(ImageValidationException.class)
-    public ResponseEntity<?> handleImageValidationException(ImageValidationException exception) {
+    ResponseEntity<?> handleImageValidationException(ImageValidationException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Image is invalid", exception));
     }
 
     @ExceptionHandler(ImageNotFoundException.class)
-    public ResponseEntity<?> handleImageNotFoundException(ImageNotFoundException exception) {
+    ResponseEntity<?> handleImageNotFoundException(ImageNotFoundException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "Image not found", exception));
     }
 

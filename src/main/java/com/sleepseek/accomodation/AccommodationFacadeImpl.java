@@ -108,6 +108,7 @@ class AccommodationFacadeImpl implements AccommodationFacade {
         accommodation.setPrice(accommodation.getPrice());
         accommodation.setQuantity(accommodationDTO.getQuantity());
         accommodation.setSleepersCapacity(accommodationDTO.getSleepersCapacity());
+        accommodation.setProperties(new HashSet<>());
         accommodationDTO.getProperties().forEach(property -> accommodation.getProperties().add(AccommodationProperty.valueOf(property)));
 
         accommodationRepository.save(accommodation);

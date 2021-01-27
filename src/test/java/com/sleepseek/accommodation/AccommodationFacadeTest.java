@@ -6,7 +6,6 @@ import com.sleepseek.accomodation.exception.AccommodationNotFoundException;
 import com.sleepseek.accomodation.exception.AccommodationPropertyNotFound;
 import com.sleepseek.accomodation.exception.AccommodationValidationException;
 import com.sleepseek.stay.StayFacade;
-import com.sleepseek.stay.StayRepository;
 import com.sleepseek.stay.exception.StayNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,11 +44,8 @@ class AccommodationFacadeTest {
     @Mock
     private AccommodationRepository accommodationRepository;
 
-
     @Mock
     private StayFacade stayFacade;
-    @Mock
-    private StayRepository stayRepository;
 
     @BeforeEach
     void initAccommodationFacade() {

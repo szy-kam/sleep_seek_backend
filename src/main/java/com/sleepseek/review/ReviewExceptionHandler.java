@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class ReviewExceptionHandler extends ResponseEntityExceptionHandler {
+class ReviewExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ReviewValidationException.class)
-    public ResponseEntity<?> handleReviewValidationException(ReviewValidationException exception) {
+    ResponseEntity<?> handleReviewValidationException(ReviewValidationException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Review is invalid", exception));
     }
 
     @ExceptionHandler(ReviewNotFoundException.class)
-    public ResponseEntity<?> handleReviewNotFoundException(ReviewNotFoundException exception) {
+    ResponseEntity<?> handleReviewNotFoundException(ReviewNotFoundException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "Review not found", exception));
     }
 

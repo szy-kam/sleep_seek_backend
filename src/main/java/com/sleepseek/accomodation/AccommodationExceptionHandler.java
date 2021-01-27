@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class AccommodationExceptionHandler {
+class AccommodationExceptionHandler {
 
     @ExceptionHandler(AccommodationNotFoundException.class)
     public ResponseEntity<?> handleReviewNotFoundException(AccommodationNotFoundException exception) {

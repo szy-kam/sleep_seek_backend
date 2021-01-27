@@ -15,7 +15,7 @@ import java.security.Principal;
 class ImageController {
     private final ImageFacade imageFacade;
 
-    public ImageController(ImageFacade imageFacade) {
+    ImageController(ImageFacade imageFacade) {
         this.imageFacade = imageFacade;
     }
 

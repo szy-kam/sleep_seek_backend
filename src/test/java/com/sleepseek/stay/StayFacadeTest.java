@@ -1,6 +1,5 @@
 package com.sleepseek.stay;
 
-import com.sleepseek.accomodation.AccommodationRepository;
 import com.sleepseek.image.ImageFacade;
 import com.sleepseek.user.UserFacade;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,11 +20,8 @@ public class StayFacadeTest {
     @Mock
     private UserFacade userFacade;
 
-    @Mock
-    private AccommodationRepository accommodationRepository;
-
     @BeforeEach
     void initStayFacade() {
-        stayFacade = new StayFacadeImpl(stayRepository, imageFacade, userFacade, accommodationRepository);
+        stayFacade = new StayFacadeImpl(stayRepository, imageFacade, userFacade);
     }
 }

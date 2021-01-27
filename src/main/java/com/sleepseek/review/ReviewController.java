@@ -9,11 +9,11 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-public class ReviewController {
+class ReviewController {
     private final ReviewFacade reviewFacade;
 
 
-    public ReviewController(ReviewFacade reviewFacade) {
+    ReviewController(ReviewFacade reviewFacade) {
         this.reviewFacade = reviewFacade;
     }
 
