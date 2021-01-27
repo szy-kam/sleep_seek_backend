@@ -24,7 +24,6 @@ class StayMapper {
                 .category(stay.getCategory().getName())
                 .username(stay.getUser().getUsername())
                 .properties(stay.getProperties().stream().map(StayProperty::getName).collect(Collectors.toList()))
-                .accommodations(stay.getAccommodations().stream().map(AccommodationMapper::toDTO).collect(Collectors.toList()))
                 .address(StayDTO.AddressDTO.builder()
                         .city(stay.getAddress().getCity())
                         .street(stay.getAddress().getStreet())

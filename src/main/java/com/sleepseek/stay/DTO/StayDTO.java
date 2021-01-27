@@ -37,8 +37,6 @@ public class StayDTO {
 
     private List<String> photos;
 
-    private List<AccommodationDTO> accommodations;
-
     private List<String> properties;
 
     @Getter
