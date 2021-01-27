@@ -16,4 +16,5 @@ public interface AccommodationFacade {
 
     AccommodationDTO updateAccommodation(AccommodationDTO accommodationDTO);
 
+    AccommodationDTO getAccommodation(Long id);
 }

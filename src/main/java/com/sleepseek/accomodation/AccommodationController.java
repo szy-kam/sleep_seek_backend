@@ -20,7 +20,11 @@ class AccommodationController {
     @GetMapping("/accommodation")
     List<AccommodationDTO> getAccommodations(@RequestParam Long stayId) {
         return accommodationFacade.getAccommodationsByStay(stayId);
+    }
 
+    @GetMapping("/accommodation/{id}")
+    AccommodationDTO getAccommodation(@PathVariable Long id){
+        return accommodationFacade.getAccommodation(id);
     }
 
     @PostMapping("/accommodation")

@@ -115,6 +115,14 @@ class AccommodationFacadeImpl implements AccommodationFacade {
         return AccommodationMapper.toDTO(accommodation);
     }
 
+    @Override
+    public AccommodationDTO getAccommodation(Long id) {
+        if (!accommodationRepository.existsById(id)) {
+            throw new AccommodationNotFoundException(id);
+        }
+        return AccommodationMapper.toDTO(accommodationRepository.getOne(id));
+    }
+
     private void validateAccommodation(AccommodationDTO accommodationDTO, boolean shouldCheckId, boolean shouldCheckStayId) {
         Set<AccommodationErrorCodes> errors = Sets.newHashSet();
         if (shouldCheckId) {
