@@ -15,7 +15,7 @@ public class AccommodationMapper {
         if (isNull(accommodation.getProperties())) {
             properties = new ArrayList<>();
         } else {
-            properties = accommodation.getProperties().stream().map(AccommodationProperty::getName).collect(Collectors.toList());
+            properties = accommodation.getProperties().stream().map(AccommodationPropertyDefinition::getName).collect(Collectors.toList());
         }
 
         return AccommodationDTO.builder()

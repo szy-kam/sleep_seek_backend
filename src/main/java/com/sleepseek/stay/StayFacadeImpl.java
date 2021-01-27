@@ -1,6 +1,8 @@
 package com.sleepseek.stay;
 
 import com.google.common.collect.Sets;
+import com.sleepseek.accomodation.Accommodation;
+import com.sleepseek.accomodation.AccommodationRepository;
 import com.sleepseek.image.ImageFacade;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.*;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,17 +26,15 @@ import static java.util.Objects.isNull;
 class StayFacadeImpl implements StayFacade {
 
     private final StayRepository stayRepository;
-    private final StayCategoryRepository categoryRepository;
     private final ImageFacade imageFacade;
     private final UserFacade userFacade;
-    private final StayPropertyRepository propertyRepository;
+    private final AccommodationRepository accommodationRepository;
 
-    StayFacadeImpl(StayRepository stayRepository, StayCategoryRepository categoryRepository, ImageFacade imageFacade, UserFacade userFacade, StayPropertyRepository propertyRepository) {
+    StayFacadeImpl(StayRepository stayRepository, ImageFacade imageFacade, UserFacade userFacade, AccommodationRepository accommodationRepository) {
         this.stayRepository = stayRepository;
-        this.categoryRepository = categoryRepository;
         this.imageFacade = imageFacade;
         this.userFacade = userFacade;
-        this.propertyRepository = propertyRepository;
+        this.accommodationRepository = accommodationRepository;
     }
 
     @Override
@@ -48,17 +49,18 @@ class StayFacadeImpl implements StayFacade {
         if (!userFacade.userExists(stayDTO.getUsername())) {
             throw new UserNotFoundException(stayDTO.getUsername());
         }
-        Stay newStay = stayRepository.save(Stay.builder()
+        Stay newStay = Stay.builder()
                 .name(stayDTO.getName())
                 .email(stayDTO.getEmail())
                 .description(stayDTO.getDescription())
                 .mainPhoto(stayDTO.getMainPhoto())
                 .phoneNumber(stayDTO.getPhoneNumber())
                 .minPrice(stayDTO.getMinPrice())
-                .category(categoryRepository.save(StayCategory.builder().name(stayDTO.getCategory()).build()))
+                .category(StayCategoryDefinition.valueOf(stayDTO.getCategory()))
                 .user(userFacade.getUserByUsername(stayDTO.getUsername()))
                 .photos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()))
-                .properties(propertyRepository.saveAll(stayDTO.getProperties().stream().map(property -> StayProperty.builder().name(property).build()).collect(Collectors.toList())))
+                .properties(new HashSet<>())
+                .accommodations(new HashSet<>())
                 .address(Address.builder()
                         .city(stayDTO.getAddress().getCity())
                         .zipCode(stayDTO.getAddress().getZipCode())
@@ -67,8 +69,10 @@ class StayFacadeImpl implements StayFacade {
                         .longitude(stayDTO.getAddress().getLongitude())
                         .latitude(stayDTO.getAddress().getLatitude())
                         .build())
-                .build());
-        return StayMapper.toDto(newStay);
+                .build();
+        stayDTO.getProperties().forEach(property -> newStay.getProperties().add(StayPropertyDefinition.valueOf(property)));
+
+        return StayMapper.toDto(stayRepository.save(newStay));
     }
 
     @Override
@@ -93,9 +97,10 @@ class StayFacadeImpl implements StayFacade {
         stay.setUser(userFacade.getUserByUsername(stayDTO.getUsername()));
         stay.setEmail(stayDTO.getEmail());
         stay.setPhoneNumber(stayDTO.getPhoneNumber());
-        stay.setCategory(categoryRepository.save(StayCategory.builder().name(stayDTO.getCategory()).build()));
+        stay.setCategory(StayCategoryDefinition.valueOf(stayDTO.getCategory()));
         stay.setPhotos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()));
-        stay.setProperties(propertyRepository.saveAll(stayDTO.getProperties().stream().map(property -> StayProperty.builder().name(property).build()).collect(Collectors.toList())));
+        stay.setProperties(new HashSet<>());
+        stayDTO.getProperties().forEach(property -> stay.getProperties().add(StayPropertyDefinition.valueOf(property)));
         Address address = stay.getAddress();
         address.setCity(stayDTO.getAddress().getCity());
         address.setStreet(stayDTO.getAddress().getStreet());
@@ -136,14 +141,14 @@ class StayFacadeImpl implements StayFacade {
     }
 
     private Optional<StayErrorCodes> checkProperties(List<String> properties) {
-        if(isNull(properties)){
+        if (isNull(properties)) {
             return Optional.of(PROPERTIES_NULL);
         }
 
-        for(String property: properties){
+        for (String property : properties) {
             try {
                 StayPropertyDefinition.valueOf(property);
-            }catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 throw new StayPropertyNotFoundException(property);
             }
         }
@@ -285,6 +290,12 @@ class StayFacadeImpl implements StayFacade {
             stays = stayRepository.findAll(pageable);
         }
         return stays.get().map(StayMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public void addAccommodation(Stay stay, Accommodation accommodation) {
+        stay.addAccommodation(accommodation);
+        stayRepository.save(stay);
     }
 
     @Override

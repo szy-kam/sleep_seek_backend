@@ -1,5 +1,6 @@
 package com.sleepseek.stay;
 
+import com.sleepseek.accomodation.AccommodationRepository;
 import com.sleepseek.image.ImageFacade;
 import com.sleepseek.user.UserFacade;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +11,7 @@ class StayConfiguration {
     public static Long MAX_PAGE_SIZE = 50L;
 
     @Bean
-    public StayFacade stayFacade(StayRepository stayRepository, StayCategoryRepository categoryRepository, ImageFacade imageFacade, UserFacade userFacade, StayPropertyRepository propertyRepository) {
-        return new StayFacadeImpl(stayRepository, categoryRepository, imageFacade, userFacade, propertyRepository);
+    public StayFacade stayFacade(StayRepository stayRepository, ImageFacade imageFacade, UserFacade userFacade, AccommodationRepository accommodationRepository) {
+        return new StayFacadeImpl(stayRepository, imageFacade, userFacade, accommodationRepository);
     }
 }

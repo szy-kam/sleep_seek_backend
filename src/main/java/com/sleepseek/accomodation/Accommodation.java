@@ -4,11 +4,11 @@ import com.sleepseek.common.BaseEntity;
 import com.sleepseek.stay.Stay;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -18,10 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class Accommodation extends BaseEntity {
-
-    @ManyToOne
-    private Stay stay;
-
     @Column
     private Long sleepersCapacity;
 
@@ -31,7 +27,12 @@ public class Accommodation extends BaseEntity {
     @Column
     private Long price;
 
-    @OneToMany(targetEntity = AccommodationProperty.class)
-    private List<AccommodationProperty> properties;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Stay stay;
 
+    @ElementCollection(targetClass = AccommodationPropertyDefinition.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "accommodation_properties")
+    @Column(name = "properties")
+    private Set<AccommodationPropertyDefinition> properties;
 }

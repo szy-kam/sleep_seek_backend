@@ -1,5 +1,6 @@
 package com.sleepseek.stay;
 
+import com.sleepseek.accomodation.Accommodation;
 import com.sleepseek.stay.DTO.StayDTO;
 
 import java.util.List;
@@ -18,5 +19,7 @@ public interface StayFacade {
     boolean stayExists(Long id);
 
     List<StayDTO> getStays(StaySearchParameters searchParameters);
+
+    void addAccommodation(Stay stay, Accommodation accommodation);
 
 }

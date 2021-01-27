@@ -3,8 +3,10 @@ package com.sleepseek.accommodation;
 import com.sleepseek.accomodation.*;
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
 import com.sleepseek.accomodation.exception.AccommodationNotFoundException;
+import com.sleepseek.accomodation.exception.AccommodationPropertyNotFound;
 import com.sleepseek.accomodation.exception.AccommodationValidationException;
 import com.sleepseek.stay.StayFacade;
+import com.sleepseek.stay.StayRepository;
 import com.sleepseek.stay.exception.StayNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,15 +45,15 @@ class AccommodationFacadeTest {
     @Mock
     private AccommodationRepository accommodationRepository;
 
-    @Mock
-    private AccommodationPropertyRepository propertyRepository;
 
     @Mock
     private StayFacade stayFacade;
+    @Mock
+    private StayRepository stayRepository;
 
     @BeforeEach
     void initAccommodationFacade() {
-        accommodationFacade = new AccommodationConfiguration().accommodationFacade(accommodationRepository, propertyRepository, stayFacade);
+        accommodationFacade = new AccommodationConfiguration().accommodationFacade(accommodationRepository,  stayFacade);
     }
 
     private AccommodationDTO addAccommodation(Long stayId, Long sleepersCapacity, Long quantity, Long price, List<String> properties) {
@@ -85,6 +87,11 @@ class AccommodationFacadeTest {
     void addAccommodation_stayNotExist_throwsExceptionStayNotFound() {
         Mockito.when(stayFacade.stayExists(NOT_EXISTING_STAY_ID)).thenReturn(false);
         assertThrows(StayNotFoundException.class, () -> addAccommodation(NOT_EXISTING_STAY_ID, VALID_SLEEPERS_CAP, VALID_QUANTITY, VALID_PRICE, VALID_PROPERTIES));
+    }
+
+    @Test
+    void addAccommodation_invalidProperties_throwsExceptionStayNotFound() {
+        assertThrows(AccommodationPropertyNotFound.class, () -> addAccommodation(VALID_STAY_ID, VALID_SLEEPERS_CAP, VALID_QUANTITY, VALID_PRICE, INVALID_PROPERTIES));
     }
 
     @Test
