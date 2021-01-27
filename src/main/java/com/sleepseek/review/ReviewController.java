@@ -18,26 +18,26 @@ class ReviewController {
     }
 
     @GetMapping("/review")
-    public List<ReviewDTO> getReviews(@RequestParam Long stayId, @RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
+    List<ReviewDTO> getReviews(@RequestParam Long stayId, @RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return reviewFacade.findByStayId(stayId, pageable);
     }
 
     @PostMapping("/review")
-    public ReviewDTO addReview(@RequestParam Long stayId, Principal principal, @RequestBody ReviewDTO reviewDTO) {
+    void addReview(@RequestParam Long stayId, Principal principal, @RequestBody ReviewDTO reviewDTO) {
         reviewDTO.setUsername(principal.getName());
         reviewDTO.setStayId(stayId);
-        return reviewFacade.addReview(reviewDTO);
+        reviewFacade.addReview(reviewDTO);
     }
 
     @PutMapping("/review/{reviewId}")
-    public void updateReview(@PathVariable Long reviewId, @RequestBody ReviewDTO reviewDTO) {
+    void updateReview(@PathVariable Long reviewId, @RequestBody ReviewDTO reviewDTO) {
         reviewDTO.setReviewId(reviewId);
         reviewFacade.updateReview(reviewDTO);
     }
 
     @DeleteMapping("/review/{reviewId}")
-    public void deleteReview(@PathVariable Long reviewId) {
+    void deleteReview(@PathVariable Long reviewId) {
         reviewFacade.deleteReview(reviewId);
     }
 }

@@ -14,10 +14,10 @@ class StaySearchParameters {
     private Integer pageSize;
     private String username;
     private String name;
-    private String category;
+    private StayCategory category;
     private String city;
     private String country;
-    private List<String> property;
+    private List<StayProperty> property;
     private Long priceFrom;
     private Long priceTo;
     private Long dateFrom;

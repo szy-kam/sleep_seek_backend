@@ -47,14 +47,14 @@ class ReviewFacadeTest {
         reviewFacade = new ReviewFacadeImpl(stayFacade, reviewRepository, userFacade);
     }
 
-    private ReviewDTO addReview(Long stayId, String username, String message, Double rating) {
+    private void addReview(Long stayId, String username, String message, Double rating) {
         ReviewDTO reviewDTO = ReviewDTO.builder()
                 .message(message)
                 .stayId(stayId)
                 .rating(rating)
                 .username(username)
                 .build();
-        return reviewFacade.addReview(reviewDTO);
+        reviewFacade.addReview(reviewDTO);
     }
 
     private void updateReview(Long reviewId, Long stayId, String username, String message, Double rating) {

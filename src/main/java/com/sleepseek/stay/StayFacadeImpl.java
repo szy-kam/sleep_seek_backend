@@ -3,6 +3,8 @@ package com.sleepseek.stay;
 import com.google.common.collect.Sets;
 import com.sleepseek.accomodation.Accommodation;
 import com.sleepseek.image.ImageFacade;
+import com.sleepseek.review.Review;
+import com.sleepseek.review.ReviewFacade;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.*;
 import com.sleepseek.user.UserFacade;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +30,7 @@ class StayFacadeImpl implements StayFacade {
     private final StayRepository stayRepository;
     private final ImageFacade imageFacade;
     private final UserFacade userFacade;
+    private ReviewFacade reviewFacade;
 
     StayFacadeImpl(StayRepository stayRepository, ImageFacade imageFacade, UserFacade userFacade) {
         this.stayRepository = stayRepository;
@@ -277,6 +281,7 @@ class StayFacadeImpl implements StayFacade {
             throw new StaySearchParametersException(errorCodes);
         }
         Pageable pageable = PageRequest.of(searchParameters.getPageNumber(), searchParameters.getPageSize());
+
         Page<Stay> stays;
         if (searchParameters.getUsername() != null) {
             if (!userFacade.userExists(searchParameters.getUsername())) {
@@ -296,10 +301,18 @@ class StayFacadeImpl implements StayFacade {
     }
 
     @Override
+    public void addReview(Stay stay, Review review) {
+        stay.addReview(review);
+        stayRepository.save(stay);
+    }
+
+    @Override
     public void deleteStay(Long id) {
         if (!stayExists(id)) {
             throw new StayNotFoundException(id);
         }
         stayRepository.deleteById(id);
     }
+
+
 }

@@ -3,6 +3,7 @@ package com.sleepseek.stay;
 import com.sleepseek.accomodation.Accommodation;
 import com.sleepseek.common.BaseEntity;
 import com.sleepseek.image.Image;
+import com.sleepseek.review.Review;
 import com.sleepseek.user.User;
 import lombok.*;
 
@@ -61,9 +62,22 @@ public class Stay extends BaseEntity {
     @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<Accommodation> accommodations = new HashSet<>();
 
+    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
+
     public void addAccommodation(Accommodation accommodation) {
         accommodations.add(accommodation);
         accommodation.setStay(this);
+    }
+
+    public void addReview(Review review) {
+        reviews.add(review);
+        review.setStay(this);
+    }
+
+    public void removeReview(Review review) {
+        reviews.remove(review);
+        review.setStay(null);
     }
 
     public void removeAccommodation(Accommodation accommodation) {

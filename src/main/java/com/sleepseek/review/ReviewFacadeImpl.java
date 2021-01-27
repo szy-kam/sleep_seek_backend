@@ -31,20 +31,17 @@ class ReviewFacadeImpl implements ReviewFacade {
 
 
     @Override
-    public ReviewDTO addReview(ReviewDTO reviewDTO) {
+    public void addReview(ReviewDTO reviewDTO) {
         Set<ReviewErrorCodes> errors = validateReview(reviewDTO);
 
         validate(reviewDTO, errors);
 
-        Review newReview = reviewRepository.save(
-                Review.builder()
-                        .message(reviewDTO.getMessage())
-                        .rating(reviewDTO.getRating())
-                        .user(userFacade.getUserByUsername(reviewDTO.getUsername()))
-                        .stay(stayFacade.loadStay(reviewDTO.getStayId()))
-                        .build()
-        );
-        return ReviewMapper.toDTO(newReview);
+        Review newReview = Review.builder()
+                .message(reviewDTO.getMessage())
+                .rating(reviewDTO.getRating())
+                .user(userFacade.getUserByUsername(reviewDTO.getUsername()))
+                .build();
+        stayFacade.addReview(stayFacade.loadStay(reviewDTO.getStayId()), newReview);
     }
 
     private Set<ReviewErrorCodes> validateReview(ReviewDTO reviewDTO) {
@@ -97,11 +94,10 @@ class ReviewFacadeImpl implements ReviewFacade {
         if (!existsById(reviewDTO.getReviewId())) {
             throw new ReviewNotFoundException(reviewDTO.getReviewId());
         }
-        Review review = reviewRepository.findById(reviewDTO.getReviewId()).orElseThrow();
+        Review review = reviewRepository.findById(reviewDTO.getReviewId()).orElseThrow(() -> new ReviewNotFoundException(reviewDTO.getReviewId()));
         review.setMessage(reviewDTO.getMessage());
         review.setRating(reviewDTO.getRating());
-        review.setUser(userFacade.getUserByUsername(reviewDTO.getUsername()));
-        review.setStay(stayFacade.loadStay(reviewDTO.getStayId()));
+        reviewRepository.save(review);
     }
 
     private void validate(ReviewDTO reviewDTO, Set<ReviewErrorCodes> errors) {

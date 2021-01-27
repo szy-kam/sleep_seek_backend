@@ -31,6 +31,8 @@ class StayController {
                            @RequestParam(required = false) String username,
                            @RequestParam(required = false) String name,
                            @RequestParam(required = false) String city,
+                           @RequestParam(required = false) Double latitude,
+                           @RequestParam(required = false) Double longitude,
                            @RequestParam(required = false) String category,
                            @RequestParam(required = false) String country,
                            @RequestParam(required = false) List<String> prop,
@@ -45,8 +47,8 @@ class StayController {
                 .name(name)
                 .city(city)
                 .country(country)
-                .category(category)
-                .property(prop)
+                .category(StayCategory.valueOf(category))
+                .property(prop.stream().map(StayProperty::valueOf).collect(Collectors.toList()))
                 .priceFrom(priceFrom)
                 .priceTo(priceTo)
                 .dateFrom(dateFrom)

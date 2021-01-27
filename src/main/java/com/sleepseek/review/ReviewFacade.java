@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ReviewFacade {
-    ReviewDTO addReview(ReviewDTO reviewDTO);
+    void addReview(ReviewDTO reviewDTO);
 
     void updateReview(ReviewDTO reviewDTO);
 
