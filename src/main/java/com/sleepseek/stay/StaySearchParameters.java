@@ -16,10 +16,10 @@ class StaySearchParameters {
     private Double latitude;
     private Double longitude;
     private String name;
-    private StayCategory category;
+    private String category;
     private String city;
     private String country;
-    private List<StayProperty> property;
+    private List<String> property;
     private Long priceFrom;
     private Long priceTo;
     private Long dateFrom;

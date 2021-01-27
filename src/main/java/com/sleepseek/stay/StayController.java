@@ -40,15 +40,18 @@ class StayController {
                            @RequestParam(required = false) Long priceTo,
                            @RequestParam(required = false) Long dateFrom,
                            @RequestParam(required = false) Long dateTo) {
+
         return stayFacade.getStays(StaySearchParameters.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .username(username)
                 .name(name)
                 .city(city)
+                .latitude(latitude)
+                .longitude(longitude)
                 .country(country)
-                .category(StayCategory.valueOf(category))
-                .property(prop.stream().map(StayProperty::valueOf).collect(Collectors.toList()))
+                .category(category)
+                .property(prop)
                 .priceFrom(priceFrom)
                 .priceTo(priceTo)
                 .dateFrom(dateFrom)
