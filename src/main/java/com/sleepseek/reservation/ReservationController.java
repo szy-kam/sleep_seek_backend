@@ -18,14 +18,20 @@ public class ReservationController {
     }
 
     @GetMapping("/reservation")
-    List<ReservationDTO> getReservationsByAccommodation(@RequestParam(required = false) Long accommodationId, @RequestParam(required = false) String username) {
-        if (isNull(username) && !isNull(accommodationId)) {
-            return reservationFacade.getReservationsByAccommodationId(accommodationId);
-        } else if (isNull(accommodationId) && !isNull(username)) {
+    List<ReservationDTO> getReservationsByAccommodation(@RequestParam(required = false) Long accommodationId, @RequestParam(required = false) String username, @RequestParam(required = false) Long stayId) {
+
+        if (!isNull(username)) {
             return reservationFacade.getReservationsByUsername(username);
-        } else {
-            return null;
         }
+
+        if (!isNull(accommodationId)) {
+            return reservationFacade.getReservationsByAccommodationId(accommodationId);
+        }
+
+        if (!isNull(stayId)) {
+            return reservationFacade.getReservationsByStayId(stayId);
+        }
+        return null;
     }
 
 

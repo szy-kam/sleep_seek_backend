@@ -14,6 +14,7 @@ public interface ReservationFacade {
     void updateReservation(ReservationDTO reservationDTO);
 
     List<ReservationDTO> getReservationsByAccommodationId(Long accommodationId);
+    List<ReservationDTO> getReservationsByStayId(Long stayId);
 
     ReservationDTO getReservation(Long id);
 

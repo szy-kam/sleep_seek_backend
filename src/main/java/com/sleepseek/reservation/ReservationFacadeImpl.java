@@ -80,6 +80,11 @@ public class ReservationFacadeImpl implements ReservationFacade {
     }
 
     @Override
+    public List<ReservationDTO> getReservationsByStayId(Long stayId) {
+        return reservationRepository.findAllByAccommodation_Stay_Id(stayId).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
     public ReservationDTO getReservation(Long id) {
         if (!reservationRepository.existsById(id)) {
             throw new ReservationNotFoundException(id);
