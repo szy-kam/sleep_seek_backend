@@ -21,6 +21,6 @@ public class Customer {
     private String phoneNumber;
 
     @Column
-    private String fullname;
+    private String fullName;
 
 }

@@ -32,7 +32,7 @@ public class ReservationDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class CustomerDTO {
-        private String fullname;
+        private String fullName;
         private String username;
         private String phoneNumber;
     }

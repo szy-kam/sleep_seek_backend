@@ -18,7 +18,7 @@ public class ReservationMapper {
                 .customer(ReservationDTO.CustomerDTO.builder()
                         .username(reservation.getCustomer().getUser().getUsername())
                         .phoneNumber(reservation.getCustomer().getPhoneNumber())
-                        .fullname(reservation.getCustomer().getFullname())
+                        .fullName(reservation.getCustomer().getFullName())
                         .build())
                 .build();
     }
