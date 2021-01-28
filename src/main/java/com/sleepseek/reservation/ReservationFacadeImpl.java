@@ -11,7 +11,6 @@ import com.sleepseek.user.UserFacade;
 import com.sleepseek.user.exception.UserNotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -84,6 +83,14 @@ public class ReservationFacadeImpl implements ReservationFacade {
             throw new ReservationNotFoundException(id);
         }
         return ReservationMapper.toDto(reservationRepository.getOne(id));
+    }
+
+    @Override
+    public List<ReservationDTO> getReservationsByUsername(String username) {
+        if (!userFacade.userExists(username)) {
+            throw new UserNotFoundException(username);
+        }
+        return reservationRepository.findAllByCustomer_User_Username(username).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
     }
 
     private void validateReservation(ReservationDTO reservationDTO, boolean checkId) {

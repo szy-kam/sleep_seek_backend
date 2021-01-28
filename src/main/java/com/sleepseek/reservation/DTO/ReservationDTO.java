@@ -12,6 +12,8 @@ public class ReservationDTO {
 
     private Long accommodationId;
 
+    private Long stayId;
+
     private CustomerDTO customer;
 
     private String dateFrom;
@@ -26,6 +28,7 @@ public class ReservationDTO {
 
     @Builder
     @Getter
+    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class CustomerDTO {

@@ -3,7 +3,10 @@ package com.sleepseek.reservation;
 import com.sleepseek.reservation.DTO.ReservationDTO;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @RestController
 public class ReservationController {
@@ -15,12 +18,19 @@ public class ReservationController {
     }
 
     @GetMapping("/reservation")
-    List<ReservationDTO> getReservationsByAccommodation(@RequestParam Long accommodationId) {
-        return reservationFacade.getReservationsByAccommodationId(accommodationId);
+    List<ReservationDTO> getReservationsByAccommodation(@RequestParam(required = false) Long accommodationId, @RequestParam(required = false) String username) {
+        if (isNull(username) && !isNull(accommodationId)) {
+            return reservationFacade.getReservationsByAccommodationId(accommodationId);
+        } else if (isNull(accommodationId) && !isNull(username)) {
+            return reservationFacade.getReservationsByUsername(username);
+        } else {
+            return null;
+        }
     }
 
+
     @GetMapping("/reservation/{id}")
-    ReservationDTO getReservation(@PathVariable Long id){
+    ReservationDTO getReservation(@PathVariable Long id) {
         return reservationFacade.getReservation(id);
     }
 
@@ -30,7 +40,8 @@ public class ReservationController {
     }
 
     @PostMapping("/reservation")
-    void postReservation(@RequestBody ReservationDTO reservationDTO) {
+    void postReservation(Principal principal, @RequestBody ReservationDTO reservationDTO) {
+        reservationDTO.getCustomer().setUsername(principal.getName());
         reservationFacade.addReservation(reservationDTO);
     }
 

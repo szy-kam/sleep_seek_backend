@@ -8,6 +8,7 @@ public class ReservationMapper {
     static ReservationDTO toDto(Reservation reservation) {
         return ReservationDTO.builder()
                 .id(reservation.getId())
+                .stayId(reservation.getAccommodation().getStay().getId())
                 .completed(reservation.getCompleted())
                 .confirmed(reservation.getConfirmed())
                 .dateFrom(reservation.getDateFrom().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))

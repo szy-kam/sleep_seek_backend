@@ -16,4 +16,6 @@ public interface ReservationFacade {
     List<ReservationDTO> getReservationsByAccommodationId(Long accommodationId);
 
     ReservationDTO getReservation(Long id);
+
+    List<ReservationDTO> getReservationsByUsername(String username);
 }
