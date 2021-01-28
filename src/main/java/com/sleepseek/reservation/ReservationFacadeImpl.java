@@ -42,6 +42,7 @@ public class ReservationFacadeImpl implements ReservationFacade {
                 .customer(Customer.builder()
                         .phoneNumber(reservation.getCustomer().getPhoneNumber())
                         .user(userFacade.getUserByUsername(reservation.getCustomer().getUsername()))
+                        .fullname(reservation.getCustomer().getFullname())
                         .build())
                 .build();
         Accommodation accommodation = accommodationFacade.loadById(reservation.getAccommodationId());
@@ -67,6 +68,7 @@ public class ReservationFacadeImpl implements ReservationFacade {
         reservation.setCustomer(Customer.builder()
                 .phoneNumber(reservationDTO.getCustomer().getPhoneNumber())
                 .user(userFacade.getUserByUsername(reservationDTO.getCustomer().getUsername()))
+                .fullname(reservationDTO.getCustomer().getFullname())
                 .build());
         reservationRepository.save(reservation);
     }

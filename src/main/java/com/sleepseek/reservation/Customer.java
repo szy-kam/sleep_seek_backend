@@ -20,4 +20,7 @@ public class Customer {
     @Column
     private String phoneNumber;
 
+    @Column
+    private String fullname;
+
 }
