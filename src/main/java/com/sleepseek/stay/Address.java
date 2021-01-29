@@ -24,7 +24,7 @@ class Address {
     @Column(name = "country")
     private String country;
 
-    @Column(name = "longtitude")
+    @Column(name = "longitude")
     private Double longitude;
 
     @Column(name = "latitude")

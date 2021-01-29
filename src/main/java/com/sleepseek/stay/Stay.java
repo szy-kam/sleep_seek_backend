@@ -34,7 +34,7 @@ public class Stay extends BaseEntity {
     @Column(length = 10000)
     private String description;
 
-    @Column
+    @Column(name = "min_price")
     private Long minPrice;
 
     @Column

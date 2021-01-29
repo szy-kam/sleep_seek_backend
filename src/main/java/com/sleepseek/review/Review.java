@@ -5,10 +5,7 @@ import com.sleepseek.stay.Stay;
 import com.sleepseek.user.User;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -16,9 +13,11 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "reviews")
 public class Review extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stay_id", nullable = false)
     private Stay stay;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,6 +26,6 @@ public class Review extends BaseEntity {
     @Column(length = 1000)
     private String message;
 
-    @Column
+    @Column(name = "rating")
     private Double rating;
 }

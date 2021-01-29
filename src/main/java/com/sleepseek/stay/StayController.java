@@ -25,6 +25,15 @@ class StayController {
 
     }
 
+    @GetMapping("/stays/user/{username}")
+    List<StayDTO> getStayByUser(@PathVariable String username, @RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
+        return stayFacade.getStays(StaySearchParameters.builder()
+                .username(username)
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .build());
+    }
+
     @GetMapping("/stays")
     List<StayDTO> getStays(@RequestParam Integer pageNumber,
                            @RequestParam Integer pageSize,
@@ -34,12 +43,13 @@ class StayController {
                            @RequestParam(required = false) Double latitude,
                            @RequestParam(required = false) Double longitude,
                            @RequestParam(required = false) String category,
-                           @RequestParam(required = false) String country,
                            @RequestParam(required = false) List<String> prop,
                            @RequestParam(required = false) Long priceFrom,
                            @RequestParam(required = false) Long priceTo,
-                           @RequestParam(required = false) Long dateFrom,
-                           @RequestParam(required = false) Long dateTo) {
+                           @RequestParam(required = false) String dateFrom,
+                           @RequestParam(required = false) String orderBy,
+                           @RequestParam(required = false) String order,
+                           @RequestParam(required = false) String dateTo) {
 
         return stayFacade.getStays(StaySearchParameters.builder()
                 .pageNumber(pageNumber)
@@ -49,13 +59,14 @@ class StayController {
                 .city(city)
                 .latitude(latitude)
                 .longitude(longitude)
-                .country(country)
                 .category(category)
                 .property(prop)
                 .priceFrom(priceFrom)
                 .priceTo(priceTo)
                 .dateFrom(dateFrom)
                 .dateTo(dateTo)
+                .order(order)
+                .orderBy(orderBy)
                 .build());
     }
 
@@ -84,7 +95,7 @@ class StayController {
     }
 
     @GetMapping("/stayProperties")
-    List<String> getProperties(){
+    List<String> getProperties() {
         return Arrays.stream(StayProperty.values()).map(StayProperty::getName).collect(Collectors.toList());
     }
 

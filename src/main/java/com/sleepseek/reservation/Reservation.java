@@ -13,9 +13,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "reservations")
 public class Reservation extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "accommodation", nullable = false)
     private Accommodation accommodation;
 
     @Embedded

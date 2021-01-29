@@ -18,10 +18,12 @@ class StaySearchParameters {
     private String name;
     private String category;
     private String city;
-    private String country;
     private List<String> property;
     private Long priceFrom;
     private Long priceTo;
-    private Long dateFrom;
-    private Long dateTo;
+    private String orderBy;
+    private String order;
+    private Double maxDistance;
+    private String dateFrom;
+    private String dateTo;
 }

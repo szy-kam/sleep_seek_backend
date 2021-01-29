@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import com.sleepseek.accomodation.Accommodation;
 import com.sleepseek.image.ImageFacade;
 import com.sleepseek.review.Review;
-import com.sleepseek.review.ReviewFacade;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.*;
 import com.sleepseek.user.UserFacade;
@@ -14,10 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.sleepseek.stay.StayConfiguration.MAX_PAGE_SIZE;
@@ -26,10 +24,11 @@ import static java.util.Objects.isNull;
 
 class StayFacadeImpl implements StayFacade {
 
+    private static final Long MAX_PRICE = 1000000L;
+    private final List<String> SUPPORTED_ORDER_BY = Arrays.asList("name", "avgRate", "city");
     private final StayRepository stayRepository;
     private final ImageFacade imageFacade;
     private final UserFacade userFacade;
-    private ReviewFacade reviewFacade;
 
     StayFacadeImpl(StayRepository stayRepository, ImageFacade imageFacade, UserFacade userFacade) {
         this.stayRepository = stayRepository;
@@ -274,23 +273,211 @@ class StayFacadeImpl implements StayFacade {
 
     @Override
     public List<StayDTO> getStays(StaySearchParameters searchParameters) {
+        validateSearchParameters(searchParameters);
+        Pageable pageable = PageRequest.of(searchParameters.getPageNumber(), searchParameters.getPageSize());
+        if (!isNull(searchParameters.getUsername())) {
+            return getStaysByUsername(searchParameters.getUsername(), pageable);
+        }
+        Page<Stay> stays = getStaysBySearchParameters(searchParameters, pageable);
+        return stays.get().map(StayMapper::toDto).collect(Collectors.toList());
+    }
+
+    private Page<Stay> getStaysBySearchParameters(StaySearchParameters searchParameters, Pageable pageable) {
+        String orderBy = searchParameters.getOrderBy();
+        if (isNull(orderBy) || orderBy.equals("name")) {
+            return getStaysOrderByName(searchParameters, pageable);
+        } else if (orderBy.equals("avgRate")) {
+            return getStaysOrderByRating(searchParameters, pageable);
+        } else if (orderBy.equals("city")) {
+            return getStaysOrderByCity(searchParameters, pageable);
+        }
+        return Page.empty();
+    }
+
+    private Page<Stay> getStaysOrderByRating(StaySearchParameters searchParameters, Pageable pageable) {
+        boolean descending = isNull(searchParameters.getOrder()) || searchParameters.getOrder().equals("DESC");
+        if (descending) {
+            return stayRepository.findByAvgRateDesc(
+                    searchParameters.getPriceFrom(),
+                    searchParameters.getPriceTo(),
+                    searchParameters.getUsername(),
+                    searchParameters.getCategory(),
+                    searchParameters.getCity(),
+                    searchParameters.getLongitude(),
+                    searchParameters.getLatitude(),
+                    searchParameters.getMaxDistance(),
+                    pageable);
+        } else {
+            return stayRepository.findByAvgRateAsc(
+                    searchParameters.getPriceFrom(),
+                    searchParameters.getPriceTo(),
+                    searchParameters.getUsername(),
+                    searchParameters.getCategory(),
+                    searchParameters.getCity(),
+                    searchParameters.getLongitude(),
+                    searchParameters.getLatitude(),
+                    searchParameters.getMaxDistance(),
+                    pageable);
+        }
+    }
+
+    private Page<Stay> getStaysOrderByName(StaySearchParameters searchParameters, Pageable pageable) {
+        boolean descending = isNull(searchParameters.getOrder()) || searchParameters.getOrder().equals("DESC");
+        if (descending) {
+            return stayRepository.findAllByNameDesc(
+                    searchParameters.getPriceFrom(),
+                    searchParameters.getPriceTo(),
+                    searchParameters.getUsername(),
+                    searchParameters.getCategory(),
+                    searchParameters.getCity(),
+                    searchParameters.getLongitude(),
+                    searchParameters.getLatitude(),
+                    searchParameters.getMaxDistance(),
+                    pageable);
+        } else {
+            return stayRepository.findAllByNameAsc(
+                    searchParameters.getPriceFrom(),
+                    searchParameters.getPriceTo(),
+                    searchParameters.getUsername(),
+                    searchParameters.getCategory(),
+                    searchParameters.getCity(),
+                    searchParameters.getLongitude(),
+                    searchParameters.getLatitude(),
+                    searchParameters.getMaxDistance(),
+                    pageable);
+        }
+    }
+
+    private Page<Stay> getStaysOrderByCity(StaySearchParameters searchParameters, Pageable pageable) {
+        boolean descending = isNull(searchParameters.getOrder()) || searchParameters.getOrder().equals("DESC");
+        if (descending) {
+            return stayRepository.findAllByCityDesc(
+                    searchParameters.getPriceFrom(),
+                    searchParameters.getPriceTo(),
+                    searchParameters.getUsername(),
+                    searchParameters.getCategory(),
+                    searchParameters.getCity(),
+                    searchParameters.getLongitude(),
+                    searchParameters.getLatitude(),
+                    searchParameters.getMaxDistance(),
+                    pageable);
+        } else {
+            return stayRepository.findAllByCityAsc(
+                    searchParameters.getPriceFrom(),
+                    searchParameters.getPriceTo(),
+                    searchParameters.getUsername(),
+                    searchParameters.getCategory(),
+                    searchParameters.getCity(),
+                    searchParameters.getLongitude(),
+                    searchParameters.getLatitude(),
+                    searchParameters.getMaxDistance(),
+                    pageable);
+        }
+    }
+
+
+    private List<StayDTO> getStaysByUsername(String username, Pageable pageable) {
+        if (!userFacade.userExists(username)) {
+            throw new UserNotFoundException(username);
+        }
+        return stayRepository.findAllByUserOrderByName(userFacade.getUserByUsername(username), pageable).get().map(StayMapper::toDto).collect(Collectors.toList());
+    }
+
+    private void validateSearchParameters(StaySearchParameters searchParameters) {
         Set<StaySearchParametersErrorCodes> errorCodes = Sets.newHashSet();
-        if (searchParameters.getPageNumber() < 0 || searchParameters.getPageSize() > MAX_PAGE_SIZE || searchParameters.getPageSize() < 0) {
-            errorCodes.add(StaySearchParametersErrorCodes.WRONG_PAGE_CONSTRAINTS);
+        checkPrice(searchParameters.getPriceFrom()).ifPresent(errorCodes::add);
+        checkPrice(searchParameters.getPriceTo()).ifPresent(errorCodes::add);
+        checkCategorySearch(searchParameters.getCategory()).ifPresent(errorCodes::add);
+        checkPropertiesSearch(searchParameters.getProperty()).ifPresent(errorCodes::add);
+        checkDate(searchParameters.getDateTo()).ifPresent(errorCodes::add);
+        checkDate(searchParameters.getDateFrom()).ifPresent(errorCodes::add);
+        checkPageNumber(searchParameters.getPageNumber()).ifPresent(errorCodes::add);
+        checkPageSize(searchParameters.getPageSize()).ifPresent(errorCodes::add);
+        checkOrderBy(searchParameters.getOrderBy()).ifPresent(errorCodes::add);
+        checkOrder(searchParameters.getOrder()).ifPresent(errorCodes::add);
+        if (!errorCodes.isEmpty()) {
             throw new StaySearchParametersException(errorCodes);
         }
-        Pageable pageable = PageRequest.of(searchParameters.getPageNumber(), searchParameters.getPageSize());
+    }
 
-        Page<Stay> stays;
-        if (searchParameters.getUsername() != null) {
-            if (!userFacade.userExists(searchParameters.getUsername())) {
-                throw new UserNotFoundException(searchParameters.getUsername());
+    private Optional<StaySearchParametersErrorCodes> checkOrder(String order) {
+        if (!isNull(order)) {
+            if (!order.equals("ASC") && !order.equals("DESC")) {
+                return Optional.of(StaySearchParametersErrorCodes.ORDER_INVALID);
             }
-            stays = stayRepository.findAllByUser(userFacade.getUserByUsername(searchParameters.getUsername()), pageable);
-        } else {
-            stays = stayRepository.findAll(pageable);
         }
-        return stays.get().map(StayMapper::toDto).collect(Collectors.toList());
+        return Optional.empty();
+    }
+
+    private Optional<StaySearchParametersErrorCodes> checkOrderBy(String orderBy) {
+        if (!isNull(orderBy)) {
+            if (!SUPPORTED_ORDER_BY.contains(orderBy)) {
+                return Optional.of(StaySearchParametersErrorCodes.ORDER_BY_INVALID);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+
+    private Optional<StaySearchParametersErrorCodes> checkDate(String dateFrom) {
+        if (!isNull(dateFrom)) {
+            try {
+                LocalDate.parse(dateFrom);
+            } catch (DateTimeParseException e) {
+                return Optional.of(StaySearchParametersErrorCodes.DATES_OUT_OF_BOUNDS);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StaySearchParametersErrorCodes> checkPageSize(Integer pageSize) {
+        if (isNull(pageSize) || pageSize < 0 || pageSize > MAX_PAGE_SIZE) {
+            return Optional.of(StaySearchParametersErrorCodes.WRONG_PAGE_CONSTRAINTS);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StaySearchParametersErrorCodes> checkPageNumber(Integer pageNumber) {
+        if (isNull(pageNumber) || pageNumber < 0) {
+            return Optional.of(StaySearchParametersErrorCodes.WRONG_PAGE_CONSTRAINTS);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StaySearchParametersErrorCodes> checkCategorySearch(String category) {
+        if (!isNull(category)) {
+            try {
+                StayCategory.valueOf(category);
+            } catch (IllegalArgumentException e) {
+                return Optional.of(StaySearchParametersErrorCodes.CATEGORY_NOT_FOUND);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StaySearchParametersErrorCodes> checkPropertiesSearch(List<String> properties) {
+        if (!isNull(properties)) {
+            for (String property : properties) {
+                try {
+                    StayProperty.valueOf(property);
+                } catch (IllegalArgumentException e) {
+                    return Optional.of(StaySearchParametersErrorCodes.PROPERTY_NOT_FOUND);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<StaySearchParametersErrorCodes> checkPrice(Long price) {
+        if (!isNull(price)) {
+            if (price < 0 || price > MAX_PRICE) {
+                return Optional.of(StaySearchParametersErrorCodes.PRICE_OUT_OF_BOUNDS);
+            }
+        }
+
+
+        return Optional.empty();
     }
 
     @Override
