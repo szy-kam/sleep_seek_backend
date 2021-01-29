@@ -60,7 +60,7 @@ interface StayRepository extends JpaRepository<Stay, Long> {
             "SELECT * " +
                     "FROM stays s LEFT JOIN users u ON s.user_id = u.id " +
                     "WHERE " +
-                    "(:priceFrom IS NULL OR s.min_price > CAST(:priceFrom AS bigint)) AND (:priceToo IS NULL OR s.min_price < CAST(:priceTo AS bigint))" +
+                    "(:priceFrom IS NULL OR s.min_price > CAST(:priceFrom AS bigint)) AND (:priceTo IS NULL OR s.min_price < CAST(:priceTo AS bigint))" +
                     "AND (:username IS NULL OR u.username LIKE :username) " +
                     "AND (:category IS NULL OR s.category LIKE :category) " +
                     "AND (:city IS NULL OR s.city LIKE :city) " +
@@ -83,7 +83,7 @@ interface StayRepository extends JpaRepository<Stay, Long> {
             "SELECT * " +
                     "FROM stays s LEFT JOIN users u ON s.user_id = u.id " +
                     "WHERE " +
-                    "(:priceFrom IS NULL OR s.min_price > CAST(:priceFrom AS bigint)) AND (:priceTo IS NULL OR s.min_price < CAST(:priceTo AS bigint))" +
+                    "(:priceFrom IS NULL OR CAST(s.min_price AS string) > :priceFrom) AND (:priceTo IS NULL OR CAST(s.min_price AS string) < :priceTo )" +
                     "AND (:username IS NULL OR u.username LIKE :username) " +
                     "AND (:category IS NULL OR s.category LIKE :category) " +
                     "AND (:city IS NULL OR s.city LIKE :city) " +
@@ -92,8 +92,8 @@ interface StayRepository extends JpaRepository<Stay, Long> {
                     "AND (:maxDistance IS NULL OR TRUE)  " +
                     "ORDER BY s.city ASC "
             , nativeQuery = true)
-    Page<Stay> findAllByCityAsc(@Param("priceFrom") Long priceFrom,
-                                @Param("priceTo") Long priceTo,
+    Page<Stay> findAllByCityAsc(@Param("priceFrom") String priceFrom,
+                                @Param("priceTo") String priceTo,
                                 @Param("username") String username,
                                 @Param("category") String category,
                                 @Param("city") String city,

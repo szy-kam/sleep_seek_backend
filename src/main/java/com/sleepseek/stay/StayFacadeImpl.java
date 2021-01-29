@@ -363,8 +363,8 @@ class StayFacadeImpl implements StayFacade {
                     pageable);
         } else {
             return stayRepository.findAllByCityAsc(
-                    searchParameters.getPriceFrom(),
-                    searchParameters.getPriceTo(),
+                    String.valueOf(searchParameters.getPriceFrom()),
+                    String.valueOf(searchParameters.getPriceTo()),
                     searchParameters.getUsername(),
                     searchParameters.getCategory(),
                     searchParameters.getCity(),
