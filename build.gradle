@@ -19,15 +19,20 @@ repositories {
 }
 
 dependencies {
+	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.228')
+	implementation 'com.amazonaws:aws-java-sdk-s3'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.security:spring-security-test'
+	implementation 'com.auth0:java-jwt:3.11.0'
+	implementation group: 'commons-validator', name: 'commons-validator', version: '1.6'
 	compileOnly 'org.projectlombok:lombok'
 	compile "com.google.guava:guava:16+"
 	annotationProcessor 'org.projectlombok:lombok'
-	runtimeOnly 'com.h2database:h2'
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+	compile 'com.h2database:h2'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}

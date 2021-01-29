@@ -1,6 +1,9 @@
 package com.sleepseek.stay.DTO;
 
+import com.sleepseek.accomodation.DTO.AccommodationDTO;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,17 +17,27 @@ public class StayDTO {
 
     private AddressDTO address;
 
-    private Long userId;
+    private String username;
 
     private String description;
 
-    private String price;
+    private Long minPrice;
 
-    private String contactInfo;
+    private String phoneNumber;
+
+    private String email;
 
     private String mainPhoto;
 
+    private String category;
+
     private String createdAt;
+
+    private String avgRate;
+
+    private List<String> photos;
+
+    private List<String> properties;
 
     @Getter
     @NoArgsConstructor
@@ -34,6 +47,9 @@ public class StayDTO {
         private String city;
         private String street;
         private String zipCode;
+        private String country;
+        private Double longitude;
+        private Double latitude;
     }
 }
 
