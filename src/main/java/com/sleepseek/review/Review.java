@@ -17,7 +17,7 @@ import javax.persistence.*;
 public class Review extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stay_id", nullable = false)
+    @JoinColumn(name = "stay", nullable = false)
     private Stay stay;
 
     @ManyToOne(fetch = FetchType.LAZY)

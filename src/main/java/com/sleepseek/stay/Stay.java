@@ -56,10 +56,11 @@ public class Stay extends BaseEntity {
 
     @OneToMany(targetEntity = Image.class)
     private List<Image> photos;
-    @OneToMany(mappedBy = "stay_id", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+
+    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<Accommodation> accommodations;
 
-    @OneToMany(mappedBy = "stay_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
     public void addAccommodation(Accommodation accommodation) {
