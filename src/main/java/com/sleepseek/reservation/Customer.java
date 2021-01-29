@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Embeddable
@@ -15,6 +16,7 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 public class Customer {
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column

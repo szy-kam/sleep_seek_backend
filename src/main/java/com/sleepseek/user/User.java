@@ -17,12 +17,12 @@ import javax.persistence.Table;
 @Table(name = "users")
 public class User extends BaseEntity {
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, name = "username")
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "password")
     private String password;
 
-    @Column
+    @Column(name = "displayName")
     private String displayName;
 }

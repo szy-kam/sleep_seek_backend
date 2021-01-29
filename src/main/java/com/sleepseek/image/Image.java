@@ -5,10 +5,7 @@ import com.sleepseek.stay.Stay;
 import com.sleepseek.user.User;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -25,8 +22,10 @@ public class Image extends BaseEntity {
     private String originalFilename;
 
     @ManyToOne
+    @JoinColumn(name = "stay_id")
     private Stay stay;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User owner;
 }

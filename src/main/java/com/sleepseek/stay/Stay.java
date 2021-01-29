@@ -26,7 +26,7 @@ public class Stay extends BaseEntity {
     private Address address;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(length = 10000)
@@ -56,10 +56,10 @@ public class Stay extends BaseEntity {
 
     @OneToMany(targetEntity = Image.class)
     private List<Image> photos;
-    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "stay_id", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<Accommodation> accommodations;
 
-    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "stay_id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
     public void addAccommodation(Accommodation accommodation) {

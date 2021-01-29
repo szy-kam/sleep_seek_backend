@@ -12,7 +12,7 @@ interface StayRepository extends JpaRepository<Stay, Long> {
 
     @Query(value =
             "SELECT * " +
-                    "FROM stays s LEFT JOIN users u ON s.user = u.id " +
+                    "FROM stays s LEFT JOIN users u ON s.user_id = u.id " +
                     "WHERE " +
                     "(:priceFrom IS NULL OR s.min_price > :priceFrom) AND (:priceToo IS NULL OR s.min_price < :priceToo)" +
                     "AND (:username IS NULL OR u.username LIKE :username) " +
@@ -23,28 +23,6 @@ interface StayRepository extends JpaRepository<Stay, Long> {
                     "ORDER BY s.name ASC"
             , nativeQuery = true)
     Page<Stay> findAllByNameAsc(@Param("priceFrom") Long priceFrom,
-                                   @Param("priceToo") Long priceToo,
-                                   @Param("username") String username,
-                                   @Param("category") String category,
-                                   @Param("city") String city,
-                                   @Param("longitude") Double longitude,
-                                   @Param("latitude") Double latitude,
-                                   @Param("maxDistance") Double maxDistance,
-                                   Pageable pageable);
-
-    @Query(value =
-            "SELECT * " +
-                    "FROM stays s LEFT JOIN users u ON s.user = u.id " +
-                    "WHERE " +
-                    "(:priceFrom IS NULL OR s.min_price > :priceFrom) AND (:priceToo IS NULL OR s.min_price < :priceToo)" +
-                    "AND (:username IS NULL OR u.username LIKE :username) " +
-                    "AND (:category IS NULL OR s.category LIKE :category) " +
-                    "AND (:city IS NULL OR s.city LIKE :city) " +
-                    "AND (:longitude IS NULL OR ABS(s.longitude - :longitude) < :maxDistance) " +
-                    "AND (:latitude IS NULL OR ABS(s.latitude - :latitude) < :maxDistance) " +
-                    "ORDER BY s.name DESC"
-            , nativeQuery = true)
-    Page<Stay> findAllByNameDesc(@Param("priceFrom") Long priceFrom,
                                 @Param("priceToo") Long priceToo,
                                 @Param("username") String username,
                                 @Param("category") String category,
@@ -56,7 +34,29 @@ interface StayRepository extends JpaRepository<Stay, Long> {
 
     @Query(value =
             "SELECT * " +
-                    "FROM stays s LEFT JOIN users u ON s.user = u.id " +
+                    "FROM stays s LEFT JOIN users u ON s.user_id = u.id " +
+                    "WHERE " +
+                    "(:priceFrom IS NULL OR s.min_price > :priceFrom) AND (:priceToo IS NULL OR s.min_price < :priceToo)" +
+                    "AND (:username IS NULL OR u.username LIKE :username) " +
+                    "AND (:category IS NULL OR s.category LIKE :category) " +
+                    "AND (:city IS NULL OR s.city LIKE :city) " +
+                    "AND (:longitude IS NULL OR ABS(s.longitude - :longitude) < :maxDistance) " +
+                    "AND (:latitude IS NULL OR ABS(s.latitude - :latitude) < :maxDistance) " +
+                    "ORDER BY s.name DESC"
+            , nativeQuery = true)
+    Page<Stay> findAllByNameDesc(@Param("priceFrom") Long priceFrom,
+                                 @Param("priceToo") Long priceToo,
+                                 @Param("username") String username,
+                                 @Param("category") String category,
+                                 @Param("city") String city,
+                                 @Param("longitude") Double longitude,
+                                 @Param("latitude") Double latitude,
+                                 @Param("maxDistance") Double maxDistance,
+                                 Pageable pageable);
+
+    @Query(value =
+            "SELECT * " +
+                    "FROM stays s LEFT JOIN users u ON s.user_id = u.id " +
                     "WHERE " +
                     "(:priceFrom IS NULL OR s.min_price > :priceFrom) AND (:priceToo IS NULL OR s.min_price < :priceToo)" +
                     "AND (:username IS NULL OR u.username LIKE :username) " +
@@ -78,7 +78,7 @@ interface StayRepository extends JpaRepository<Stay, Long> {
 
     @Query(value =
             "SELECT * " +
-                    "FROM stays s LEFT JOIN users u ON s.user = u.id " +
+                    "FROM stays s LEFT JOIN users u ON s.user_id = u.id " +
                     "WHERE " +
                     "(:priceFrom IS NULL OR s.min_price > :priceFrom) AND (:priceToo IS NULL OR s.min_price < :priceToo)" +
                     "AND (:username IS NULL OR u.username LIKE :username) " +
@@ -89,20 +89,21 @@ interface StayRepository extends JpaRepository<Stay, Long> {
                     "ORDER BY s.city ASC "
             , nativeQuery = true)
     Page<Stay> findAllByCityAsc(@Param("priceFrom") Long priceFrom,
-                                 @Param("priceToo") Long priceToo,
-                                 @Param("username") String username,
-                                 @Param("category") String category,
-                                 @Param("city") String city,
-                                 @Param("longitude") Double longitude,
-                                 @Param("latitude") Double latitude,
-                                 @Param("maxDistance") Double maxDistance,
-                                 Pageable pageable);
+                                @Param("priceToo") Long priceToo,
+                                @Param("username") String username,
+                                @Param("category") String category,
+                                @Param("city") String city,
+                                @Param("longitude") Double longitude,
+                                @Param("latitude") Double latitude,
+                                @Param("maxDistance") Double maxDistance,
+                                Pageable pageable);
 
     @Query(value =
             "SELECT * " +
                     "FROM stays s LEFT OUTER JOIN " +
                     "(SELECT stay_id, AVG(r.rating) avgRate FROM reviews r GROUP BY stay_id) res " +
                     "ON s.id = res.stay_id " +
+                    "LEFT JOIN users u ON u.id = s.user_id " +
                     "WHERE " +
                     "(:priceFrom IS NULL OR s.min_price > :priceFrom) AND (:priceToo IS NULL OR s.min_price < :priceToo)" +
                     "AND (:username IS NULL OR u.username LIKE :username) " +
@@ -127,6 +128,7 @@ interface StayRepository extends JpaRepository<Stay, Long> {
             "SELECT * " +
                     "FROM stays s LEFT OUTER JOIN " +
                     "(SELECT stay_id, AVG(r.rating) avgRate FROM reviews r GROUP BY stay_id) res " +
+                    "LEFT JOIN users u ON u.id = s.user_id " +
                     "WHERE " +
                     "(:priceFrom IS NULL OR s.min_price > :priceFrom) AND (:priceToo IS NULL OR s.min_price < :priceToo)" +
                     "AND (:username IS NULL OR u.username LIKE :username) " +

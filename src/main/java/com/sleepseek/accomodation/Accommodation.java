@@ -28,6 +28,7 @@ public class Accommodation extends BaseEntity {
     private Long price;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stay_id")
     private Stay stay;
 
     @ElementCollection(targetClass = AccommodationProperty.class)
