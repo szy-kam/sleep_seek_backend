@@ -8,8 +8,6 @@ import com.sleepseek.user.User;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -57,13 +55,12 @@ public class Stay extends BaseEntity {
     private StayCategory category;
 
     @OneToMany(targetEntity = Image.class)
-    private List<Image> photos = new ArrayList<>();
-
+    private List<Image> photos;
     @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<Accommodation> accommodations = new HashSet<>();
+    private Set<Accommodation> accommodations;
 
     @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews;
 
     public void addAccommodation(Accommodation accommodation) {
         accommodations.add(accommodation);
