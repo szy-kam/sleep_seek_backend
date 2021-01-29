@@ -37,7 +37,7 @@ public class Accommodation extends BaseEntity {
     private Set<AccommodationProperty> properties;
 
     @OneToMany(mappedBy = "accommodation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Reservation> reservations = new ArrayList<>();
+    private List<Reservation> reservations;
 
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);
