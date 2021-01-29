@@ -18,6 +18,9 @@ interface StayRepository extends JpaRepository<Stay, Long> {
                     "AND (:username IS NULL OR u.username LIKE :username) " +
                     "AND (:category IS NULL OR s.category LIKE :category) " +
                     "AND (:city IS NULL OR s.city LIKE :city) " +
+                    "AND (:longitude IS NULL OR TRUE) " +
+                    "AND (:latitude IS NULL OR TRUE) " +
+                    "AND (:maxDistance IS NULL OR TRUE)  " +
                     "ORDER BY s.name ASC"
             , nativeQuery = true)
     Page<Stay> findAllByNameAsc(@Param("priceFrom") Long priceFrom,
@@ -38,6 +41,9 @@ interface StayRepository extends JpaRepository<Stay, Long> {
                     "AND (:username IS NULL OR u.username LIKE :username) " +
                     "AND (:category IS NULL OR s.category LIKE :category) " +
                     "AND (:city IS NULL OR s.city LIKE :city) " +
+                    "AND (:longitude IS NULL OR TRUE) " +
+                    "AND (:latitude IS NULL OR TRUE) " +
+                    "AND (:maxDistance IS NULL OR TRUE)  " +
                     "ORDER BY s.name DESC"
             , nativeQuery = true)
     Page<Stay> findAllByNameDesc(@Param("priceFrom") Long priceFrom,
@@ -58,6 +64,9 @@ interface StayRepository extends JpaRepository<Stay, Long> {
                     "AND (:username IS NULL OR u.username LIKE :username) " +
                     "AND (:category IS NULL OR s.category LIKE :category) " +
                     "AND (:city IS NULL OR s.city LIKE :city) " +
+                    "AND (:longitude IS NULL OR TRUE) " +
+                    "AND (:latitude IS NULL OR TRUE) " +
+                    "AND (:maxDistance IS NULL OR TRUE)  " +
                     "ORDER BY s.city DESC "
             , nativeQuery = true)
     Page<Stay> findAllByCityDesc(@Param("priceFrom") Long priceFrom,
@@ -78,6 +87,9 @@ interface StayRepository extends JpaRepository<Stay, Long> {
                     "AND (:username IS NULL OR u.username LIKE :username) " +
                     "AND (:category IS NULL OR s.category LIKE :category) " +
                     "AND (:city IS NULL OR s.city LIKE :city) " +
+                    "AND (:longitude IS NULL OR TRUE) " +
+                    "AND (:latitude IS NULL OR TRUE) " +
+                    "AND (:maxDistance IS NULL OR TRUE)  " +
                     "ORDER BY s.city ASC "
             , nativeQuery = true)
     Page<Stay> findAllByCityAsc(@Param("priceFrom") Long priceFrom,
@@ -101,6 +113,9 @@ interface StayRepository extends JpaRepository<Stay, Long> {
                     "AND (:username IS NULL OR u.username LIKE :username) " +
                     "AND (:category IS NULL OR s.category LIKE :category) " +
                     "AND (:city IS NULL OR s.city LIKE :city) " +
+                    "AND (:longitude IS NULL OR TRUE) " +
+                    "AND (:latitude IS NULL OR TRUE) " +
+                    "AND (:maxDistance IS NULL OR TRUE)  " +
                     "ORDER BY res.avgRate DESC ", nativeQuery = true)
     Page<Stay> findByAvgRateDesc(
             @Param("priceFrom") Long priceFrom,
@@ -124,6 +139,9 @@ interface StayRepository extends JpaRepository<Stay, Long> {
                     "AND (:username IS NULL OR u.username LIKE :username) " +
                     "AND (:category IS NULL OR s.category LIKE :category) " +
                     "AND (:city IS NULL OR s.city LIKE :city) " +
+                    "AND (:longitude IS NULL OR TRUE) " +
+                    "AND (:latitude IS NULL OR TRUE) " +
+                    "AND (:maxDistance IS NULL OR TRUE)  " +
                     "ON s.id = res.stay_id ORDER BY res.avgRate ASC ", nativeQuery = true)
     Page<Stay> findByAvgRateAsc(
             @Param("priceFrom") Long priceFrom,
