@@ -83,10 +83,11 @@ interface StayRepository extends JpaRepository<Stay, Long> {
             "SELECT * " +
                     "FROM stays s LEFT JOIN users u ON s.user_id = u.id " +
                     "WHERE " +
-                    "(:priceFrom IS NULL OR CAST(s.min_price AS varchar ) > :priceFrom) AND (:priceTo IS NULL OR CAST(s.min_price AS varchar) < :priceTo )" +
                     "AND (:username IS NULL OR u.username LIKE :username) " +
                     "AND (:category IS NULL OR s.category LIKE :category) " +
                     "AND (:city IS NULL OR s.city LIKE :city) " +
+                    "AND (:priceFrom IS NULL OR TRUE ) "+
+                    "AND (:priceTo is NULL OR TRUE ) " +
                     "AND (:longitude IS NULL OR TRUE) " +
                     "AND (:latitude IS NULL OR TRUE) " +
                     "AND (:maxDistance IS NULL OR TRUE)  " +
