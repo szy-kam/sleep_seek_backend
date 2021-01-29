@@ -26,11 +26,11 @@ class StayFacadeImpl implements StayFacade {
 
     private static final Long MAX_PRICE = 1000000L;
     private final List<String> SUPPORTED_ORDER_BY = Arrays.asList("name", "avgRate", "city");
-    private final StayRepository stayRepository;
+    private final StayRepositoryAdapter stayRepository;
     private final ImageFacade imageFacade;
     private final UserFacade userFacade;
 
-    StayFacadeImpl(StayRepository stayRepository, ImageFacade imageFacade, UserFacade userFacade) {
+    StayFacadeImpl(StayRepositoryAdapter stayRepository, ImageFacade imageFacade, UserFacade userFacade) {
         this.stayRepository = stayRepository;
         this.imageFacade = imageFacade;
         this.userFacade = userFacade;
@@ -276,111 +276,10 @@ class StayFacadeImpl implements StayFacade {
         validateSearchParameters(searchParameters);
         Pageable pageable = PageRequest.of(searchParameters.getPageNumber(), searchParameters.getPageSize());
         if (!isNull(searchParameters.getUsername())) {
-            return getStaysByUsername(searchParameters.getUsername(), pageable);
+            return stayRepository.findAllByUser_Username(searchParameters.getUsername(), pageable).map(StayMapper::toDto).toList();
         }
-        Page<Stay> stays = getStaysBySearchParameters(searchParameters, pageable);
+        Page<Stay> stays = stayRepository.findAllByParameters(searchParameters);
         return stays.get().map(StayMapper::toDto).collect(Collectors.toList());
-    }
-
-    private Page<Stay> getStaysBySearchParameters(StaySearchParameters searchParameters, Pageable pageable) {
-        String orderBy = searchParameters.getOrderBy();
-        if (isNull(orderBy) || orderBy.equals("name")) {
-            return getStaysOrderByName(searchParameters, pageable);
-        } else if (orderBy.equals("avgRate")) {
-            return getStaysOrderByRating(searchParameters, pageable);
-        } else if (orderBy.equals("city")) {
-            return getStaysOrderByCity(searchParameters, pageable);
-        }
-        return Page.empty();
-    }
-
-    private Page<Stay> getStaysOrderByRating(StaySearchParameters searchParameters, Pageable pageable) {
-        boolean descending = isNull(searchParameters.getOrder()) || searchParameters.getOrder().equals("DESC");
-        if (descending) {
-            return stayRepository.findByAvgRateDesc(
-                    searchParameters.getPriceFrom(),
-                    searchParameters.getPriceTo(),
-                    searchParameters.getUsername(),
-                    searchParameters.getCategory(),
-                    searchParameters.getCity(),
-                    searchParameters.getLongitude(),
-                    searchParameters.getLatitude(),
-                    searchParameters.getMaxDistance(),
-                    pageable);
-        } else {
-            return stayRepository.findByAvgRateAsc(
-                    searchParameters.getPriceFrom(),
-                    searchParameters.getPriceTo(),
-                    searchParameters.getUsername(),
-                    searchParameters.getCategory(),
-                    searchParameters.getCity(),
-                    searchParameters.getLongitude(),
-                    searchParameters.getLatitude(),
-                    searchParameters.getMaxDistance(),
-                    pageable);
-        }
-    }
-
-    private Page<Stay> getStaysOrderByName(StaySearchParameters searchParameters, Pageable pageable) {
-        boolean descending = isNull(searchParameters.getOrder()) || searchParameters.getOrder().equals("DESC");
-        if (descending) {
-            return stayRepository.findAllByNameDesc(
-                    searchParameters.getPriceFrom(),
-                    searchParameters.getPriceTo(),
-                    searchParameters.getUsername(),
-                    searchParameters.getCategory(),
-                    searchParameters.getCity(),
-                    searchParameters.getLongitude(),
-                    searchParameters.getLatitude(),
-                    searchParameters.getMaxDistance(),
-                    pageable);
-        } else {
-            return stayRepository.findAllByNameAsc(
-                    searchParameters.getPriceFrom(),
-                    searchParameters.getPriceTo(),
-                    searchParameters.getUsername(),
-                    searchParameters.getCategory(),
-                    searchParameters.getCity(),
-                    searchParameters.getLongitude(),
-                    searchParameters.getLatitude(),
-                    searchParameters.getMaxDistance(),
-                    pageable);
-        }
-    }
-
-    private Page<Stay> getStaysOrderByCity(StaySearchParameters searchParameters, Pageable pageable) {
-        boolean descending = isNull(searchParameters.getOrder()) || searchParameters.getOrder().equals("DESC");
-        if (descending) {
-            return stayRepository.findAllByCityDesc(
-                    searchParameters.getPriceFrom(),
-                    searchParameters.getPriceTo(),
-                    searchParameters.getUsername(),
-                    searchParameters.getCategory(),
-                    searchParameters.getCity(),
-                    searchParameters.getLongitude(),
-                    searchParameters.getLatitude(),
-                    searchParameters.getMaxDistance(),
-                    pageable);
-        } else {
-            return stayRepository.findAllByCityAsc(
-                    String.valueOf(searchParameters.getPriceFrom()),
-                    String.valueOf(searchParameters.getPriceTo()),
-                    searchParameters.getUsername(),
-                    searchParameters.getCategory(),
-                    searchParameters.getCity(),
-                    searchParameters.getLongitude(),
-                    searchParameters.getLatitude(),
-                    searchParameters.getMaxDistance(),
-                    pageable);
-        }
-    }
-
-
-    private List<StayDTO> getStaysByUsername(String username, Pageable pageable) {
-        if (!userFacade.userExists(username)) {
-            throw new UserNotFoundException(username);
-        }
-        return stayRepository.findAllByUserOrderByName(userFacade.getUserByUsername(username), pageable).get().map(StayMapper::toDto).collect(Collectors.toList());
     }
 
     private void validateSearchParameters(StaySearchParameters searchParameters) {
