@@ -20,6 +20,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
 
     @Override
     public Page<Stay> findAllByParameters(StaySearchParameters parameters) {
+        new StaySearchParametersValidator().validateSearchParameters(parameters);
         return stayRepository.findAll(PageRequest.of(parameters.getPageNumber(), parameters.getPageSize()));
     }
 

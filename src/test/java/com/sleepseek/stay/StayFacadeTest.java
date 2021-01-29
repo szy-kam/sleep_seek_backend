@@ -28,7 +28,7 @@ public class StayFacadeTest {
     private StayFacade stayFacade;
 
     @Mock
-    private StayRepository stayRepository;
+    private StayRepositoryAdapter stayRepository;
 
     @Mock
     private ImageFacade imageFacade;
