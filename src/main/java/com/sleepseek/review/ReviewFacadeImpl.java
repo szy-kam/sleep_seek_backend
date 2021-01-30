@@ -39,6 +39,7 @@ class ReviewFacadeImpl implements ReviewFacade {
         Review newReview = Review.builder()
                 .message(reviewDTO.getMessage())
                 .rating(reviewDTO.getRating())
+                .stay(stayFacade.loadStay(reviewDTO.getStayId()))
                 .user(userFacade.getUserByUsername(reviewDTO.getUsername()))
                 .build();
         stayFacade.addReview(stayFacade.loadStay(reviewDTO.getStayId()), newReview);
