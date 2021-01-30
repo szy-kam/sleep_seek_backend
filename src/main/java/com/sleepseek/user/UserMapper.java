@@ -1,5 +1,6 @@
 package com.sleepseek.user;
 
+import com.sleepseek.user.DTO.UserDTO;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,13 @@ class UserMapper {
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .roles("USER")
+                .build();
+    }
+
+    static UserDTO toDto(User user) {
+        return UserDTO.builder()
+                .username(user.getUsername())
+                .displayName(user.getDisplayName())
                 .build();
     }
 

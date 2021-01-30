@@ -28,7 +28,7 @@ class UserController {
     }
 
     @GetMapping("/currentUser")
-    User currentUser(Principal principal) {
-        return userFacade.getUserByUsername(principal.getName());
+    UserDTO currentUser(Principal principal) {
+        return UserMapper.toDto(userFacade.getUserByUsername(principal.getName()));
     }
 }
