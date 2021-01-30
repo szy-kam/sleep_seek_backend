@@ -26,4 +26,9 @@ class UserController {
     String currentUserName(Principal principal) {
         return principal.getName();
     }
+
+    @GetMapping("/currentUser")
+    User currentUser(Principal principal) {
+        return userFacade.getUserByUsername(principal.getName());
+    }
 }
