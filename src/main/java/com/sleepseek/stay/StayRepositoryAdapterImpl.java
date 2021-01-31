@@ -79,7 +79,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             }
         }
     }
-    
+
 
     private StringBuilder createQuery(StaySearchParameters parameters) {
         StringBuilder query = new StringBuilder();
@@ -104,7 +104,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
                 query.append(" AND ");
             }
             for (int i = 0; i < properties.size(); i++) {
-                if (i < properties.size() - 1 && i > 0) {
+                if (i > 0) {
                     query.append(" AND ");
                 }
                 query.append(":" + propertyParamPrefix)
