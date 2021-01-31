@@ -24,6 +24,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
     private static final String priceToParam = "priceTo";
     private static final String dateFromParam = "dateFrom";
     private static final String dateToParam = "dateTo";
+    private static final String categoryParam = "category";
 
     StayRepositoryAdapterImpl(StayRepository stayRepository) {
         this.stayRepository = stayRepository;
@@ -52,18 +53,93 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         if (!isNull(parameters.getName())) {
             query.setParameter(nameParam, parameters.getName());
         }
+        if (!isNull(parameters.getCity())) {
+            query.setParameter(cityParam, parameters.getCity());
+        }
+        if (!isNull(parameters.getCountry())) {
+            query.setParameter(countryParam, parameters.getCountry());
+        }
+        if (!isNull(parameters.getPriceFrom())) {
+            query.setParameter(priceFromParam, parameters.getPriceFrom());
+        }
+        if (!isNull(parameters.getPriceTo())) {
+            query.setParameter(priceToParam, parameters.getPriceTo());
+        }
+        if (!isNull(parameters.getCategory())) {
+            query.setParameter(categoryParam, parameters.getCategory());
+        }
 
     }
 
     private StringBuilder createQuery(StaySearchParameters parameters) {
         StringBuilder query = new StringBuilder();
-        query.append("SELECT s FROM Stay s JOIN s.user u ");
+        query.append("SELECT DISTINCT s FROM Stay s INNER JOIN s.address a JOIN s.user u ");
         if (shouldAppendWhere(parameters)) {
             query.append("WHERE ");
             boolean shouldAppendAnd = false;
             shouldAppendAnd = addName(query, parameters.getName(), shouldAppendAnd);
+            shouldAppendAnd = addCityParam(query, parameters.getCity(), shouldAppendAnd);
+            shouldAppendAnd = addCountryParam(query, parameters.getCountry(), shouldAppendAnd);
+            shouldAppendAnd = addCategoryParam(query, parameters.getCategory(), shouldAppendAnd);
+            shouldAppendAnd = addPriceFromParam(query, parameters.getPriceFrom(), shouldAppendAnd);
+            shouldAppendAnd = addPriceToParam(query, parameters.getPriceTo(), shouldAppendAnd);
         }
         return query;
+    }
+
+    private boolean addPriceToParam(StringBuilder query, Long priceTo, boolean shouldAppendAnd) {
+        if (!isNull(priceTo)) {
+            if (shouldAppendAnd) {
+                query.append(" AND ");
+            }
+            query.append("s.minPrice < :" + priceToParam + " ");
+            return true;
+        }
+        return shouldAppendAnd;
+    }
+
+    private boolean addPriceFromParam(StringBuilder query, Long priceFrom, boolean shouldAppendAnd) {
+        if (!isNull(priceFrom)) {
+            if (shouldAppendAnd) {
+                query.append(" AND ");
+            }
+            query.append("s.minPrice < :" + priceFromParam + " ");
+            return true;
+        }
+        return shouldAppendAnd;
+    }
+
+    private boolean addCategoryParam(StringBuilder query, String category, boolean shouldAppendAnd) {
+        if (!isNull(category)) {
+            if (shouldAppendAnd) {
+                query.append(" AND ");
+            }
+            query.append("s.category LIKE %:" + categoryParam + "% ");
+            return true;
+        }
+        return shouldAppendAnd;
+    }
+
+    private boolean addCountryParam(StringBuilder query, String country, boolean shouldAppendAnd) {
+        if (!isNull(country)) {
+            if (shouldAppendAnd) {
+                query.append(" AND ");
+            }
+            query.append("a.country LIKE %:" + countryParam + "% ");
+            return true;
+        }
+        return shouldAppendAnd;
+    }
+
+    private boolean addCityParam(StringBuilder query, String city, boolean shouldAppendAnd) {
+        if (!isNull(city)) {
+            if (shouldAppendAnd) {
+                query.append(" AND ");
+            }
+            query.append("a.city LIKE %:" + cityParam + "% ");
+            return true;
+        }
+        return shouldAppendAnd;
     }
 
 
