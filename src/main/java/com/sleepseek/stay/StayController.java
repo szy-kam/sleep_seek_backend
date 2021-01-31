@@ -41,9 +41,10 @@ class StayController {
                            @RequestParam(required = false) String name,
                            @RequestParam(required = false) String city,
                            @RequestParam(required = false) String country,
-                           @RequestParam(required = false) Double latitude,
-                           @RequestParam(required = false) Double longitude,
-                           @RequestParam(required = false) Long distance,
+                           @RequestParam(required = false) Double southWestLatitude,
+                           @RequestParam(required = false) Double southWestLongitude,
+                           @RequestParam(required = false) Double northEastLatitude,
+                           @RequestParam(required = false) Double northEastLongitude,
                            @RequestParam(required = false) String category,
                            @RequestParam(required = false) List<String> prop,
                            @RequestParam(required = false) Long priceFrom,
@@ -60,9 +61,10 @@ class StayController {
                 .country(country)
                 .name(name)
                 .city(city)
-                .distance(distance)
-                .latitude(latitude)
-                .longitude(longitude)
+                .southWestLatitude(southWestLatitude)
+                .southWestLongitude(southWestLongitude)
+                .northEastLatitude(northEastLatitude)
+                .northEastLongitude(northEastLongitude)
                 .category(category)
                 .property(prop)
                 .priceFrom(priceFrom)

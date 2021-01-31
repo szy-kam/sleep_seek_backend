@@ -1,5 +1,6 @@
 package com.sleepseek.stay;
 
+import com.sleepseek.accomodation.Accommodation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,16 +21,6 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private static final String cityParam = "city";
-    private static final String countryParam = "country";
-    private static final String nameParam = "name";
-    private static final String priceFromParam = "priceFrom";
-    private static final String priceToParam = "priceTo";
-    private static final String dateFromParam = "dateFrom";
-    private static final String dateToParam = "dateTo";
-    private static final String categoryParam = "category";
-    private static final String propertyParamPrefix = "category";
-
     StayRepositoryAdapterImpl(StayRepository stayRepository) {
         this.stayRepository = stayRepository;
     }
@@ -48,7 +39,8 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         Root<Stay> stays = query.from(Stay.class);
         //Join<Stay, User> users = stays.join("user");
         Join<Stay, Address> address = stays.join("address");
-        //Join<Stay, Accommodation> accommodations = stays.join("accommodations");
+        Join<Stay, Accommodation> accommodations = stays.join("accommodations");
+        //Join<Reservation, Accommodation> reservations = accommodations.join("reservations");
 
 
         List<Predicate> conditions = new ArrayList<>();
@@ -75,6 +67,18 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
                 conditions.add(builder.isMember(property, stays.get("properties")));
             }
         }
+        if (!isNull(parameters.getSleepersCapacity())) {
+            conditions.add(builder.equal(accommodations.get("sleepersCapacity"), parameters.getSleepersCapacity()));
+        }
+
+
+        if (!isNull(parameters.getSouthWestLatitude()) && !isNull(parameters.getSouthWestLongitude()) && !isNull(parameters.getNorthEastLongitude()) && !isNull(parameters.getNorthEastLatitude())) {
+            conditions.add(builder.between(address.get("longitude"), parameters.getSouthWestLongitude(), parameters.getNorthEastLongitude()));
+            conditions.add(builder.between(address.get("latitude"), parameters.getSouthWestLatitude(), parameters.getNorthEastLatitude()));
+        }
+        if(!isNull(parameters.getOrder()) && parameters.getOrder().equals("ASC")){
+            query.orderBy();
+        }
         query.where(conditions.toArray(Predicate[]::new));
         TypedQuery<Stay> typedQuery = entityManager.createQuery(query.select(stays));
         typedQuery.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
@@ -86,150 +90,6 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
 
     private String containsValue(String value) {
         return '%' + value + '%';
-    }
-
-    private void applyParameters(TypedQuery<Stay> query, StaySearchParameters parameters) {
-        if (!isNull(parameters.getName())) {
-            query.setParameter(nameParam, containsValue(parameters.getName()));
-        }
-        if (!isNull(parameters.getCity())) {
-            query.setParameter(cityParam, containsValue(parameters.getCity()));
-        }
-        if (!isNull(parameters.getCountry())) {
-            query.setParameter(countryParam, containsValue(parameters.getCountry()));
-        }
-        if (!isNull(parameters.getPriceFrom())) {
-            query.setParameter(priceFromParam, parameters.getPriceFrom());
-        }
-        if (!isNull(parameters.getPriceTo())) {
-            query.setParameter(priceToParam, parameters.getPriceTo());
-        }
-        if (!isNull(parameters.getCategory())) {
-            query.setParameter(categoryParam, parameters.getCategory());
-        }
-        if (!isNull(parameters.getProperty())) {
-            for (int i = 0; i < parameters.getProperty().size(); i++) {
-                query.setParameter(propertyParamPrefix + i, parameters.getProperty().get(i));
-            }
-        }
-    }
-
-
-    private StringBuilder createQuery(StaySearchParameters parameters) {
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT DISTINCT s FROM Stay s INNER JOIN s.address a INNER JOIN s.properties p JOIN s.user u ");
-        if (shouldAppendWhere(parameters)) {
-            query.append("WHERE ");
-            boolean shouldAppendAnd = false;
-            shouldAppendAnd = addName(query, parameters.getName(), shouldAppendAnd);
-            shouldAppendAnd = addCityParam(query, parameters.getCity(), shouldAppendAnd);
-            shouldAppendAnd = addCountryParam(query, parameters.getCountry(), shouldAppendAnd);
-            shouldAppendAnd = addCategoryParam(query, parameters.getCategory(), shouldAppendAnd);
-            shouldAppendAnd = addPriceFromParam(query, parameters.getPriceFrom(), shouldAppendAnd);
-            shouldAppendAnd = addPriceToParam(query, parameters.getPriceTo(), shouldAppendAnd);
-            shouldAppendAnd = addPropertiesParam(query, parameters.getProperty(), shouldAppendAnd);
-        }
-        return query;
-    }
-
-    private boolean addPropertiesParam(StringBuilder query, List<String> properties, boolean shouldAppendAnd) {
-        if (!isNull(properties)) {
-            if (shouldAppendAnd) {
-                query.append(" AND ");
-            }
-            for (int i = 0; i < properties.size(); i++) {
-                if (i > 0) {
-                    query.append(" AND ");
-                }
-                query.append(":" + propertyParamPrefix)
-                        .append(i)
-                        .append(" IN p ");
-            }
-            return true;
-        }
-        return shouldAppendAnd;
-    }
-
-    private boolean addPriceToParam(StringBuilder query, Long priceTo, boolean shouldAppendAnd) {
-        if (!isNull(priceTo)) {
-            if (shouldAppendAnd) {
-                query.append(" AND ");
-            }
-            query.append("s.minPrice <= :" + priceToParam + " ");
-            return true;
-        }
-        return shouldAppendAnd;
-    }
-
-    private boolean addPriceFromParam(StringBuilder query, Long priceFrom, boolean shouldAppendAnd) {
-        if (!isNull(priceFrom)) {
-            if (shouldAppendAnd) {
-                query.append(" AND ");
-            }
-            query.append("s.minPrice >= :" + priceFromParam + " ");
-            return true;
-        }
-        return shouldAppendAnd;
-    }
-
-    private boolean addCategoryParam(StringBuilder query, String category, boolean shouldAppendAnd) {
-        if (!isNull(category)) {
-            if (shouldAppendAnd) {
-                query.append(" AND ");
-            }
-            query.append("s.category LIKE :" + categoryParam + " ");
-            return true;
-        }
-        return shouldAppendAnd;
-    }
-
-    private boolean addCountryParam(StringBuilder query, String country, boolean shouldAppendAnd) {
-        if (!isNull(country)) {
-            if (shouldAppendAnd) {
-                query.append(" AND ");
-            }
-            query.append("a.country LIKE :" + countryParam + " ");
-            return true;
-        }
-        return shouldAppendAnd;
-    }
-
-    private boolean addCityParam(StringBuilder query, String city, boolean shouldAppendAnd) {
-        if (!isNull(city)) {
-            if (shouldAppendAnd) {
-                query.append(" AND ");
-            }
-            query.append("a.city LIKE :" + cityParam + " ");
-            return true;
-        }
-        return shouldAppendAnd;
-    }
-
-
-    private boolean addName(StringBuilder query, String name, boolean shouldAppendAnd) {
-        if (!isNull(name)) {
-            if (shouldAppendAnd) {
-                query.append(" AND ");
-            }
-            query.append("s.name LIKE :" + nameParam + " ");
-            return true;
-        }
-        return shouldAppendAnd;
-    }
-
-    private boolean shouldAppendWhere(StaySearchParameters parameters) {
-        return !(isNull(parameters.getName())
-                && isNull(parameters.getCity())
-                && isNull(parameters.getCountry())
-                && isNull(parameters.getCategory())
-                && isNull(parameters.getProperty())
-                && isNull(parameters.getPriceFrom())
-                && isNull(parameters.getPriceTo())
-                && isNull(parameters.getLongitude())
-                && isNull(parameters.getLatitude())
-                && isNull(parameters.getDistance())
-                && isNull(parameters.getDateFrom())
-                && isNull(parameters.getDateTo()));
     }
 
     @Override
