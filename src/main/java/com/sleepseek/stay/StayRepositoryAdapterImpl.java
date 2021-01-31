@@ -71,7 +71,9 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             conditions.add(builder.lessThanOrEqualTo(stays.get("minPrice"), parameters.getPriceTo()));
         }
         if (!isNull(parameters.getProperty())) {
-            conditions.add(stays.get("properties").in(parameters.getProperty().stream().map(StayProperty::valueOf).collect(Collectors.toList())));
+            for (StayProperty property : parameters.getProperty().stream().map(StayProperty::valueOf).collect(Collectors.toList())) {
+                conditions.add(stays.get("properties").in(property));
+            }
         }
         query.where(conditions.toArray(Predicate[]::new));
         TypedQuery<Stay> typedQuery = entityManager.createQuery(query.select(stays));
