@@ -6,7 +6,10 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,14 +43,46 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
     @Transactional
     public List<Stay> findAllByParameters(StaySearchParameters parameters) {
         new StaySearchParametersValidator().validateSearchParameters(parameters);
-        StringBuilder jpqlQuery = createQuery(parameters);
-        TypedQuery<Stay> query = entityManager.createQuery(jpqlQuery.toString(), Stay.class);
-        applyParameters(query, parameters);
-        query.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
-        query.setMaxResults(parameters.getPageSize());
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Stay> query = builder.createQuery(Stay.class);
+        Root<Stay> stays = query.from(Stay.class);
+        //Join<Stay, User> users = stays.join("user");
+        Join<Stay, Address> address = stays.join("address");
+        //Join<Stay, Accommodation> accommodations = stays.join("accommodations");
 
 
-        return query.getResultList();
+        List<Predicate> conditions = new ArrayList<>();
+        if (!isNull(parameters.getName())) {
+            conditions.add(builder.like(stays.get("name"), containsValue(parameters.getName())));
+        }
+        if (!isNull(parameters.getCity())) {
+            conditions.add(builder.like(address.get("city"), containsValue(parameters.getCategory())));
+        }
+        if (!isNull(parameters.getCountry())) {
+            conditions.add(builder.like(address.get("country"), containsValue(parameters.getCountry())));
+        }
+        if (!isNull(parameters.getCategory())) {
+            conditions.add(builder.equal(stays.get("category"), parameters.getCategory()));
+        }
+        if (!isNull(parameters.getPriceFrom())) {
+            conditions.add(builder.greaterThanOrEqualTo(stays.get("minPrice"), parameters.getPriceFrom()));
+        }
+        if (!isNull(parameters.getPriceTo())) {
+            conditions.add(builder.lessThanOrEqualTo(stays.get("minPrice"), parameters.getPriceTo()));
+        }
+        Expression<Collection<String>> properties = stays.get("properties");
+        if (!isNull(parameters.getProperty())) {
+            for (String property : parameters.getProperty()) {
+                conditions.add(builder.isMember(property, properties));
+            }
+        }
+        query.where(conditions.toArray(Predicate[]::new));
+        TypedQuery<Stay> typedQuery = entityManager.createQuery(query.select(stays));
+        typedQuery.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
+        typedQuery.setMaxResults(parameters.getPageSize());
+
+
+        return typedQuery.getResultList();
     }
 
     private String containsValue(String value) {
