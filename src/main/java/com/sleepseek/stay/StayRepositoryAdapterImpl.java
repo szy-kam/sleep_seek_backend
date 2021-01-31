@@ -72,7 +72,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         }
         if (!isNull(parameters.getProperty())) {
             for (StayProperty property : parameters.getProperty().stream().map(StayProperty::valueOf).collect(Collectors.toList())) {
-                conditions.add(stays.get("properties").in(property));
+                conditions.add(builder.isMember(property, stays.get("properties")));
             }
         }
         query.where(conditions.toArray(Predicate[]::new));
