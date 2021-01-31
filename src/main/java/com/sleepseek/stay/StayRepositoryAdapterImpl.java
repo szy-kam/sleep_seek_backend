@@ -96,7 +96,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             if (shouldAppendAnd) {
                 query.append(" AND ");
             }
-            query.append("s.minPrice < :" + priceToParam + " ");
+            query.append("s.minPrice <= :" + priceToParam + " ");
             return true;
         }
         return shouldAppendAnd;
@@ -107,7 +107,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             if (shouldAppendAnd) {
                 query.append(" AND ");
             }
-            query.append("s.minPrice < :" + priceFromParam + " ");
+            query.append("s.minPrice >= :" + priceFromParam + " ");
             return true;
         }
         return shouldAppendAnd;
