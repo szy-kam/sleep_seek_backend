@@ -40,11 +40,13 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
     @Transactional
     public List<Stay> findAllByParameters(StaySearchParameters parameters) {
         new StaySearchParametersValidator().validateSearchParameters(parameters);
-        StringBuilder jpqlQuery = createQuery(parameters);
+        /*StringBuilder jpqlQuery = createQuery(parameters);
         TypedQuery<Stay> query = entityManager.createQuery(jpqlQuery.toString(), Stay.class);
         applyParameters(query, parameters);
         query.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
         query.setMaxResults(parameters.getPageSize());
+        */
+        
         //return query.getResultList();
         return stayRepository.findAll(PageRequest.of(parameters.getPageNumber(), parameters.getPageSize())).toList();
     }
