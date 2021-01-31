@@ -1,11 +1,13 @@
 package com.sleepseek.stay;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +37,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
     }
 
     @Override
+    @Transactional
     public List<Stay> findAllByParameters(StaySearchParameters parameters) {
         new StaySearchParametersValidator().validateSearchParameters(parameters);
         StringBuilder jpqlQuery = createQuery(parameters);
@@ -42,7 +45,8 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         applyParameters(query, parameters);
         query.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
         query.setMaxResults(parameters.getPageSize());
-        return query.getResultList();
+        //return query.getResultList();
+        return stayRepository.findAll(PageRequest.of(parameters.getPageNumber(), parameters.getPageSize())).toList();
     }
 
     private void applyParameters(TypedQuery<Stay> query, StaySearchParameters parameters) {
