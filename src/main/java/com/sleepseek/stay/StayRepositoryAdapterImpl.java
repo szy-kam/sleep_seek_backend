@@ -1,9 +1,6 @@
 package com.sleepseek.stay;
 
-import org.hibernate.query.NativeQuery;
-import org.hibernate.query.Query;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
@@ -97,7 +94,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
     }
 
     private boolean shouldAppendWhere(StaySearchParameters parameters) {
-        return isNull(parameters.getName())
+        return !(isNull(parameters.getName())
                 && isNull(parameters.getCity())
                 && isNull(parameters.getCountry())
                 && isNull(parameters.getCategory())
@@ -109,7 +106,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
                 && isNull(parameters.getDistance())
                 && isNull(parameters.getUsername())
                 && isNull(parameters.getDateFrom())
-                && isNull(parameters.getDateTo());
+                && isNull(parameters.getDateTo()));
     }
 
     @Override
