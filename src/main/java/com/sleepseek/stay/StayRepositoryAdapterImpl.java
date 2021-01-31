@@ -106,7 +106,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         }
         query.distinct(true);
         query.where(conditions.toArray(Predicate[]::new));
-        TypedQuery<Stay> typedQuery = entityManager.createQuery(query);
+        TypedQuery<Stay> typedQuery = entityManager.createQuery(query.select(stays));
         typedQuery.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
         typedQuery.setMaxResults(parameters.getPageSize());
 
