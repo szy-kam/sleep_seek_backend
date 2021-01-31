@@ -1,5 +1,7 @@
 package com.sleepseek.stay;
 
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,15 +42,15 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
     @Transactional
     public List<Stay> findAllByParameters(StaySearchParameters parameters) {
         new StaySearchParametersValidator().validateSearchParameters(parameters);
-        /*StringBuilder jpqlQuery = createQuery(parameters);
+        StringBuilder jpqlQuery = createQuery(parameters);
         TypedQuery<Stay> query = entityManager.createQuery(jpqlQuery.toString(), Stay.class);
         applyParameters(query, parameters);
         query.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
         query.setMaxResults(parameters.getPageSize());
-        */
-        
-        //return query.getResultList();
-        return stayRepository.findAll(PageRequest.of(parameters.getPageNumber(), parameters.getPageSize())).toList();
+
+
+        return query.getResultList();
+        //return stayRepository.findAll(PageRequest.of(parameters.getPageNumber(), parameters.getPageSize())).toList();
     }
 
     private void applyParameters(TypedQuery<Stay> query, StaySearchParameters parameters) {
@@ -62,7 +64,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
 
     private StringBuilder createQuery(StaySearchParameters parameters) {
         StringBuilder query = new StringBuilder();
-        query.append("SELECT s FROM stays s JOIN users u ON s.user_id = u.id ");
+        query.append("SELECT s FROM Stay s JOIN User u ON s.user_id = u.id ");
         if (shouldAppendWhere(parameters)) {
             query.append("WHERE ");
             boolean shouldAppendAnd = false;
