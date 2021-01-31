@@ -9,9 +9,9 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -56,13 +56,13 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             conditions.add(builder.like(stays.get("name"), containsValue(parameters.getName())));
         }
         if (!isNull(parameters.getCity())) {
-            conditions.add(builder.like(address.get("city"), containsValue(parameters.getCategory())));
+            conditions.add(builder.like(address.get("city"), containsValue(parameters.getCity())));
         }
         if (!isNull(parameters.getCountry())) {
             conditions.add(builder.like(address.get("country"), containsValue(parameters.getCountry())));
         }
         if (!isNull(parameters.getCategory())) {
-            conditions.add(builder.equal(stays.get("category"), parameters.getCategory()));
+            conditions.add(builder.equal(stays.get("category"), StayCategory.valueOf(parameters.getCategory())));
         }
         if (!isNull(parameters.getPriceFrom())) {
             conditions.add(builder.greaterThanOrEqualTo(stays.get("minPrice"), parameters.getPriceFrom()));
@@ -70,11 +70,8 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         if (!isNull(parameters.getPriceTo())) {
             conditions.add(builder.lessThanOrEqualTo(stays.get("minPrice"), parameters.getPriceTo()));
         }
-        Expression<Collection<String>> properties = stays.get("properties");
         if (!isNull(parameters.getProperty())) {
-            for (String property : parameters.getProperty()) {
-                conditions.add(builder.isMember(property, properties));
-            }
+            conditions.add(stays.get("properties").in(parameters.getProperty().stream().map(StayProperty::valueOf).collect(Collectors.toList())));
         }
         query.where(conditions.toArray(Predicate[]::new));
         TypedQuery<Stay> typedQuery = entityManager.createQuery(query.select(stays));
