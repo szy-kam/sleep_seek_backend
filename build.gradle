@@ -16,6 +16,9 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven {
+		url "http://download.osgeo.org/webdav/geotools/"
+	}
 }
 
 dependencies {
@@ -34,6 +37,7 @@ dependencies {
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 	compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
 	compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.2.2'
+	compile group: 'org.geotools', name: 'gt-shapefile', version: '11-SNAPSHOT'
 	compile 'com.h2database:h2'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

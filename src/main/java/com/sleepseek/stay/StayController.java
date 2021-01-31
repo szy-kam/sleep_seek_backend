@@ -40,23 +40,27 @@ class StayController {
                            @RequestParam(required = false) String username,
                            @RequestParam(required = false) String name,
                            @RequestParam(required = false) String city,
+                           @RequestParam(required = false) String country,
                            @RequestParam(required = false) Double latitude,
                            @RequestParam(required = false) Double longitude,
+                           @RequestParam(required = false) Long distance,
                            @RequestParam(required = false) String category,
                            @RequestParam(required = false) List<String> prop,
                            @RequestParam(required = false) Long priceFrom,
                            @RequestParam(required = false) Long priceTo,
-                           @RequestParam(required = false) String dateFrom,
                            @RequestParam(required = false) String orderBy,
                            @RequestParam(required = false) String order,
+                           @RequestParam(required = false) String dateFrom,
                            @RequestParam(required = false) String dateTo) {
 
         return stayFacade.getStays(StaySearchParameters.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .username(username)
+                .country(country)
                 .name(name)
                 .city(city)
+                .distance(distance)
                 .latitude(latitude)
                 .longitude(longitude)
                 .category(category)

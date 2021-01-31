@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 class StayConfiguration {
-    public static Long MAX_PAGE_SIZE = 50L;
+    public static final Long MAX_PAGE_SIZE = 50L;
 
     @Bean
     public StayRepositoryAdapter stayRepositoryAdapter(StayRepository stayRepository) {

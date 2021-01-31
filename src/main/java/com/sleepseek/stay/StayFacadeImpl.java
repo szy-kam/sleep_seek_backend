@@ -117,8 +117,8 @@ class StayFacadeImpl implements StayFacade {
         if (!isNull(searchParameters.getUsername())) {
             return stayRepository.findAllByUser_Username(searchParameters.getUsername(), pageable).map(StayMapper::toDto).toList();
         }
-        Page<Stay> stays = stayRepository.findAllByParameters(searchParameters);
-        return stays.get().map(StayMapper::toDto).collect(Collectors.toList());
+        List<Stay> stays = stayRepository.findAllByParameters(searchParameters);
+        return stays.stream().map(StayMapper::toDto).collect(Collectors.toList());
     }
 
 
