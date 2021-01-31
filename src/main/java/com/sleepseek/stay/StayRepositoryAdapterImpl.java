@@ -25,6 +25,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
     private static final String dateFromParam = "dateFrom";
     private static final String dateToParam = "dateTo";
     private static final String categoryParam = "category";
+    private static final String propertyParamPrefix = "category";
 
     StayRepositoryAdapterImpl(StayRepository stayRepository) {
         this.stayRepository = stayRepository;
@@ -72,12 +73,17 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         if (!isNull(parameters.getCategory())) {
             query.setParameter(categoryParam, parameters.getCategory());
         }
-
+        if (!isNull(parameters.getProperty())) {
+            for (int i = 0; i < parameters.getProperty().size(); i++) {
+                query.setParameter(propertyParamPrefix + i, parameters.getProperty().get(i));
+            }
+        }
     }
+    
 
     private StringBuilder createQuery(StaySearchParameters parameters) {
         StringBuilder query = new StringBuilder();
-        query.append("SELECT DISTINCT s FROM Stay s INNER JOIN s.address a JOIN s.user u ");
+        query.append("SELECT DISTINCT s FROM Stay s INNER JOIN s.address a INNER JOIN s.properties p JOIN s.user u ");
         if (shouldAppendWhere(parameters)) {
             query.append("WHERE ");
             boolean shouldAppendAnd = false;
@@ -87,8 +93,27 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             shouldAppendAnd = addCategoryParam(query, parameters.getCategory(), shouldAppendAnd);
             shouldAppendAnd = addPriceFromParam(query, parameters.getPriceFrom(), shouldAppendAnd);
             shouldAppendAnd = addPriceToParam(query, parameters.getPriceTo(), shouldAppendAnd);
+            shouldAppendAnd = addPropertiesParam(query, parameters.getProperty(), shouldAppendAnd);
         }
         return query;
+    }
+
+    private boolean addPropertiesParam(StringBuilder query, List<String> properties, boolean shouldAppendAnd) {
+        if (!isNull(properties)) {
+            if (shouldAppendAnd) {
+                query.append(" AND ");
+            }
+            for (int i = 0; i < properties.size(); i++) {
+                if (i < properties.size() - 1 && i > 0) {
+                    query.append(" AND ");
+                }
+                query.append(":" + propertyParamPrefix)
+                        .append(i)
+                        .append(" IN p ");
+            }
+            return true;
+        }
+        return shouldAppendAnd;
     }
 
     private boolean addPriceToParam(StringBuilder query, Long priceTo, boolean shouldAppendAnd) {
