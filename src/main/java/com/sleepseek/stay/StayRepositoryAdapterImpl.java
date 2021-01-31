@@ -49,15 +49,19 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         return query.getResultList();
     }
 
+    private String containsValue(String value) {
+        return '%' + value + '%';
+    }
+
     private void applyParameters(TypedQuery<Stay> query, StaySearchParameters parameters) {
         if (!isNull(parameters.getName())) {
-            query.setParameter(nameParam, parameters.getName());
+            query.setParameter(nameParam, containsValue(parameters.getName()));
         }
         if (!isNull(parameters.getCity())) {
-            query.setParameter(cityParam, parameters.getCity());
+            query.setParameter(cityParam, containsValue(parameters.getCity()));
         }
         if (!isNull(parameters.getCountry())) {
-            query.setParameter(countryParam, parameters.getCountry());
+            query.setParameter(countryParam, containsValue(parameters.getCountry()));
         }
         if (!isNull(parameters.getPriceFrom())) {
             query.setParameter(priceFromParam, parameters.getPriceFrom());
@@ -114,7 +118,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             if (shouldAppendAnd) {
                 query.append(" AND ");
             }
-            query.append("s.category LIKE %:" + categoryParam + "% ");
+            query.append("s.category LIKE :" + categoryParam + " ");
             return true;
         }
         return shouldAppendAnd;
@@ -125,7 +129,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             if (shouldAppendAnd) {
                 query.append(" AND ");
             }
-            query.append("a.country LIKE %:" + countryParam + "% ");
+            query.append("a.country LIKE :" + countryParam + " ");
             return true;
         }
         return shouldAppendAnd;
@@ -136,7 +140,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             if (shouldAppendAnd) {
                 query.append(" AND ");
             }
-            query.append("a.city LIKE %:" + cityParam + "% ");
+            query.append("a.city LIKE :" + cityParam + " ");
             return true;
         }
         return shouldAppendAnd;
@@ -148,7 +152,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             if (shouldAppendAnd) {
                 query.append(" AND ");
             }
-            query.append("s.name LIKE %:" + nameParam + "% ");
+            query.append("s.name LIKE :" + nameParam + " ");
             return true;
         }
         return shouldAppendAnd;
