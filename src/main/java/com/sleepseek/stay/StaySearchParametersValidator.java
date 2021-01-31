@@ -16,7 +16,7 @@ import static java.util.Objects.isNull;
 class StaySearchParametersValidator {
 
     private static final Long MAX_PRICE = 1000000L;
-    private final List<String> SUPPORTED_ORDER_BY = Arrays.asList("name", "avgRate", "city");
+    private final List<String> SUPPORTED_ORDER_BY = Arrays.asList("name", "avgRate", "city", "createdAt");
 
     void validateSearchParameters(StaySearchParameters searchParameters) {
         Set<StaySearchParametersErrorCodes> errorCodes = Sets.newHashSet();

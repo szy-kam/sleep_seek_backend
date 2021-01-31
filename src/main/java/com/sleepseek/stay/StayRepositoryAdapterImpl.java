@@ -1,6 +1,7 @@
 package com.sleepseek.stay;
 
 import com.sleepseek.accomodation.Accommodation;
+import com.sleepseek.review.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -37,6 +38,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Stay> query = builder.createQuery(Stay.class);
         Root<Stay> stays = query.from(Stay.class);
+        Root<Review> reviews = query.from(Review.class);
         //Join<Stay, User> users = stays.join("user");
         Join<Stay, Address> address = stays.join("address");
         Join<Stay, Accommodation> accommodations = stays.join("accommodations");
@@ -76,11 +78,35 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             conditions.add(builder.between(address.get("longitude"), parameters.getSouthWestLongitude(), parameters.getNorthEastLongitude()));
             conditions.add(builder.between(address.get("latitude"), parameters.getSouthWestLatitude(), parameters.getNorthEastLatitude()));
         }
-        if(!isNull(parameters.getOrder()) && parameters.getOrder().equals("ASC")){
-            query.orderBy();
+        if (!isNull(parameters.getOrder()) && !isNull(parameters.getOrderBy())) {
+
+            String attribute = parameters.getOrderBy();
+            Expression<Stay> expression;
+            switch (attribute) {
+                case "name":
+                    expression = stays.get("name");
+                    break;
+                case "city":
+                    expression = address.get("city");
+                    break;
+                case "avgRate":
+                    expression = null;
+                    break;
+                default:
+                    expression = stays.get("createdAt");
+                    break;
+            }
+            if (parameters.getOrder().equals("ASC")) {
+                query.orderBy(builder.asc(expression));
+            } else {
+                query.orderBy(builder.desc(expression));
+            }
+        } else {
+            query.orderBy(builder.desc(stays.get("createdAt")));
         }
+        query.distinct(true);
         query.where(conditions.toArray(Predicate[]::new));
-        TypedQuery<Stay> typedQuery = entityManager.createQuery(query.select(stays));
+        TypedQuery<Stay> typedQuery = entityManager.createQuery(query);
         typedQuery.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
         typedQuery.setMaxResults(parameters.getPageSize());
 
