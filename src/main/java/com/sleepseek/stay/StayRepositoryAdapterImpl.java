@@ -1,5 +1,6 @@
 package com.sleepseek.stay;
 
+import com.google.common.collect.Lists;
 import com.sleepseek.accomodation.Accommodation;
 import com.sleepseek.review.Review;
 import org.springframework.data.domain.Page;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
@@ -107,6 +109,12 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         query.distinct(true);
         query.where(conditions.toArray(Predicate[]::new));
         TypedQuery<Stay> typedQuery = entityManager.createQuery(query.select(stays));
+        Query queryTotal = entityManager.createQuery
+                ("Select count(s.id) from Stay s");
+        long maxRows = (long) queryTotal.getSingleResult();
+        if(maxRows < (long)parameters.getPageNumber() * (long)parameters.getPageSize()){
+            return Lists.newArrayList();
+        }
         typedQuery.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
         typedQuery.setMaxResults(parameters.getPageSize());
 
