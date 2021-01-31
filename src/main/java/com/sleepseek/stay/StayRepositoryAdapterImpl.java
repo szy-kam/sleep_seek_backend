@@ -64,7 +64,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
 
     private StringBuilder createQuery(StaySearchParameters parameters) {
         StringBuilder query = new StringBuilder();
-        query.append("SELECT s FROM Stay s JOIN User u ON s.user_id = u.id ");
+        query.append("SELECT s FROM Stay s JOIN User u ");
         if (shouldAppendWhere(parameters)) {
             query.append("WHERE ");
             boolean shouldAppendAnd = false;
