@@ -19,7 +19,6 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
 
     private static final String cityParam = "city";
     private static final String countryParam = "country";
-    private static final String usernameParam = "username";
     private static final String nameParam = "name";
     private static final String priceFromParam = "priceFrom";
     private static final String priceToParam = "priceTo";
@@ -47,16 +46,13 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
 
 
         return query.getResultList();
-        //return stayRepository.findAll(PageRequest.of(parameters.getPageNumber(), parameters.getPageSize())).toList();
     }
 
     private void applyParameters(TypedQuery<Stay> query, StaySearchParameters parameters) {
         if (!isNull(parameters.getName())) {
             query.setParameter(nameParam, parameters.getName());
         }
-        if (!isNull(parameters.getUsername())) {
-            query.setParameter(usernameParam, parameters.getUsername());
-        }
+
     }
 
     private StringBuilder createQuery(StaySearchParameters parameters) {
@@ -66,28 +62,17 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             query.append("WHERE ");
             boolean shouldAppendAnd = false;
             shouldAppendAnd = addName(query, parameters.getName(), shouldAppendAnd);
-            shouldAppendAnd = addUsername(query, parameters.getUsername(), shouldAppendAnd);
         }
         return query;
     }
 
-    private boolean addUsername(StringBuilder query, String username, boolean shouldAppendAnd) {
-        if (!isNull(username)) {
-            if (shouldAppendAnd) {
-                query.append(" AND ");
-            }
-            query.append("u.username LIKE :" + usernameParam + " ");
-            return true;
-        }
-        return shouldAppendAnd;
-    }
 
     private boolean addName(StringBuilder query, String name, boolean shouldAppendAnd) {
         if (!isNull(name)) {
             if (shouldAppendAnd) {
                 query.append(" AND ");
             }
-            query.append("s.name LIKE :" + nameParam + " ");
+            query.append("s.name LIKE %:" + nameParam + "% ");
             return true;
         }
         return shouldAppendAnd;
@@ -104,7 +89,6 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
                 && isNull(parameters.getLongitude())
                 && isNull(parameters.getLatitude())
                 && isNull(parameters.getDistance())
-                && isNull(parameters.getUsername())
                 && isNull(parameters.getDateFrom())
                 && isNull(parameters.getDateTo()));
     }
