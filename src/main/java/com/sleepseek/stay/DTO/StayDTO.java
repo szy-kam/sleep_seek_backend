@@ -1,6 +1,5 @@
 package com.sleepseek.stay.DTO;
 
-import com.sleepseek.accomodation.DTO.AccommodationDTO;
 import lombok.*;
 
 import java.util.List;

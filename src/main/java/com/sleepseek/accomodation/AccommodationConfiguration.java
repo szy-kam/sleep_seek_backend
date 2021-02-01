@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class AccommodationConfiguration {
 
     @Bean
-    public AccommodationFacade accommodationFacade(AccommodationRepository accommodationRepository, StayFacade stayFacade) {
-        return new AccommodationFacadeImpl(accommodationRepository, stayFacade);
+    public AccommodationFacade accommodationFacade(AccommodationRepository accommodationRepository, AccommodationTemplateRepository accommodationTemplaterepository, StayFacade stayFacade) {
+        return new AccommodationFacadeImpl(accommodationRepository, accommodationTemplaterepository, stayFacade);
     }
 }

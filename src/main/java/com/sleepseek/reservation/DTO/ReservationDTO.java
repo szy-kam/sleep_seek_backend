@@ -22,9 +22,10 @@ public class ReservationDTO {
 
     private String createdAt;
 
-    private Boolean confirmed;
+    private String status;
 
-    private Boolean completed;
+
+    ;
 
     @Builder
     @Getter

@@ -1,6 +1,5 @@
 package com.sleepseek.stay;
 
-import com.sleepseek.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

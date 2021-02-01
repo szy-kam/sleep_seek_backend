@@ -1,6 +1,7 @@
 package com.sleepseek.accomodation;
 
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
+import com.sleepseek.accomodation.DTO.AccommodationTemplateDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -17,24 +18,48 @@ class AccommodationController {
     }
 
 
+    @GetMapping("/accommodation-template")
+    List<AccommodationTemplateDTO> getAccommodationTemplates(
+            @RequestParam Integer pageNumber,
+            @RequestParam Integer pageSize,
+            @RequestParam Long stayId) {
+        return accommodationFacade.getAccommodationTemplatesByStay(stayId);
+    }
+
     @GetMapping("/accommodation")
-    List<AccommodationDTO> getAccommodations(@RequestParam Long stayId) {
-        return accommodationFacade.getAccommodationsByStay(stayId);
+    List<AccommodationDTO> getAccommodations(
+            @RequestParam Integer pageNumber,
+            @RequestParam Integer pageSize,
+            @RequestParam Long accommodationTemplateId) {
+        return accommodationFacade.getAccommodations(accommodationTemplateId);
     }
 
     @GetMapping("/accommodation/{id}")
-    AccommodationDTO getAccommodation(@PathVariable Long id){
+    AccommodationDTO getAccommodation(
+            @PathVariable Long id) {
         return accommodationFacade.getAccommodation(id);
     }
 
+    @GetMapping("/accommodation-template/{id}")
+    AccommodationTemplateDTO getAccommodationTemplate(
+            @PathVariable Long id) {
+        return accommodationFacade.getAccommodationTemplate(id);
+    }
+
     @PostMapping("/accommodation")
-    AccommodationDTO addAccommodation(Principal principal, @RequestBody AccommodationDTO accommodationDTO) {
-        return accommodationFacade.addAccommodation(accommodationDTO);
+    void addAccommodation(Principal principal, @RequestBody AccommodationTemplateDTO accommodationTemplateDTO) {
+        accommodationFacade.addAccommodationTemplate(accommodationTemplateDTO);
     }
 
     @DeleteMapping("/accommodation/{accommodationId}")
     void deleteAccommodation(Principal principal, @PathVariable Long accommodationId) {
-        accommodationFacade.deleteAccommodation(accommodationId);
+        accommodationFacade.deleteAccommodationTemplate(accommodationId);
+    }
+
+    @PutMapping("/accommodation-template/{accommodationTemplateId}")
+    void updateAccommodationTemplate(Principal principal, @PathVariable Long accommodationTemplateId, @RequestBody AccommodationTemplateDTO accommodationTemplateDTO) {
+        accommodationTemplateDTO.setId(accommodationTemplateId);
+        accommodationFacade.updateAccommodationTemplate(accommodationTemplateDTO);
     }
 
     @PutMapping("/accommodation/{accommodationId}")

@@ -1,21 +1,17 @@
 package com.sleepseek.stay;
 
-import com.google.common.collect.Lists;
-import com.sleepseek.accomodation.Accommodation;
-import com.sleepseek.review.Review;
+import com.sleepseek.accomodation.AccommodationTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -40,10 +36,10 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Stay> query = builder.createQuery(Stay.class);
         Root<Stay> stays = query.from(Stay.class);
-        Root<Review> reviews = query.from(Review.class);
+        //Root<Review> reviews = query.from(Review.class);
         //Join<Stay, User> users = stays.join("user");
         Join<Stay, Address> address = stays.join("address");
-        Join<Stay, Accommodation> accommodations = stays.join("accommodations");
+        Join<Stay, AccommodationTemplate> accommodations = stays.join("accommodationTemplates", JoinType.LEFT);
         //Join<Reservation, Accommodation> reservations = accommodations.join("reservations");
 
 
@@ -51,9 +47,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         if (!isNull(parameters.getName())) {
             conditions.add(builder.like(stays.get("name"), containsValue(parameters.getName())));
         }
-        if (!isNull(parameters.getCity())) {
-            conditions.add(builder.like(address.get("city"), containsValue(parameters.getCity())));
-        }
+
         if (!isNull(parameters.getCountry())) {
             conditions.add(builder.like(address.get("country"), containsValue(parameters.getCountry())));
         }
@@ -67,15 +61,20 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             conditions.add(builder.lessThanOrEqualTo(stays.get("minPrice"), parameters.getPriceTo()));
         }
         if (!isNull(parameters.getProperty())) {
-            for (StayProperty property : parameters.getProperty().stream().map(StayProperty::valueOf).collect(Collectors.toList())) {
-                conditions.add(builder.isMember(property, stays.get("properties")));
-            }
+            parameters.getProperty().stream().map(StayProperty::valueOf).forEach(stayProperty -> conditions.add(builder.isMember(stayProperty, stays.get("properties"))));
         }
         if (!isNull(parameters.getSleepersCapacity())) {
             conditions.add(builder.equal(accommodations.get("sleepersCapacity"), parameters.getSleepersCapacity()));
         }
-
-
+        if (!isNull(parameters.getCity()) && !isNull(parameters.getSouthWestLatitude()) && !isNull(parameters.getSouthWestLongitude()) && !isNull(parameters.getNorthEastLongitude()) && !isNull(parameters.getNorthEastLatitude())) {
+            conditions.add(builder.or(builder.and(
+                    builder.between(address.get("longitude"), parameters.getSouthWestLongitude(), parameters.getNorthEastLongitude()),
+                    builder.between(address.get("latitude"), parameters.getSouthWestLatitude(), parameters.getNorthEastLatitude())
+            ), builder.like(address.get("city"), containsValue(parameters.getCity()))));
+        }
+        if (!isNull(parameters.getCity())) {
+            conditions.add(builder.like(address.get("city"), containsValue(parameters.getCity())));
+        }
         if (!isNull(parameters.getSouthWestLatitude()) && !isNull(parameters.getSouthWestLongitude()) && !isNull(parameters.getNorthEastLongitude()) && !isNull(parameters.getNorthEastLatitude())) {
             conditions.add(builder.between(address.get("longitude"), parameters.getSouthWestLongitude(), parameters.getNorthEastLongitude()));
             conditions.add(builder.between(address.get("latitude"), parameters.getSouthWestLatitude(), parameters.getNorthEastLatitude()));
@@ -106,18 +105,17 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         } else {
             query.orderBy(builder.desc(stays.get("createdAt")));
         }
-        query.distinct(true);
-        query.where(conditions.toArray(Predicate[]::new));
+        //query.distinct(true);
+        //query.where(conditions.toArray(Predicate[]::new));
         TypedQuery<Stay> typedQuery = entityManager.createQuery(query.select(stays));
-        Query queryTotal = entityManager.createQuery
+       /* Query queryTotal = entityManager.createQuery
                 ("Select count(s.id) from Stay s");
         long maxRows = (long) queryTotal.getSingleResult();
-        if(maxRows < (long)parameters.getPageNumber() * (long)parameters.getPageSize()){
+        if (maxRows < (long) parameters.getPageNumber() * (long) parameters.getPageSize()) {
             return Lists.newArrayList();
-        }
+        }*/
         typedQuery.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
         typedQuery.setMaxResults(parameters.getPageSize());
-
 
         return typedQuery.getResultList();
     }

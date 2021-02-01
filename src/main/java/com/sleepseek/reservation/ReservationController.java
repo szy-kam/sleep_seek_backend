@@ -18,7 +18,12 @@ public class ReservationController {
     }
 
     @GetMapping("/reservation")
-    List<ReservationDTO> getReservationsByAccommodation(@RequestParam(required = false) Long accommodationId, @RequestParam(required = false) String username, @RequestParam(required = false) Long stayId) {
+    List<ReservationDTO> getReservationsByAccommodation(
+            @RequestParam Integer pageNumber,
+            @RequestParam Integer pageSize,
+            @RequestParam(required = false) Long accommodationId,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) Long stayId) {
 
         if (!isNull(username)) {
             return reservationFacade.getReservationsByUsername(username);
@@ -46,9 +51,9 @@ public class ReservationController {
     }
 
     @PostMapping("/reservation")
-    void postReservation(Principal principal, @RequestBody ReservationDTO reservationDTO) {
+    void postReservation(@RequestParam Long accommodationTemplateId, Principal principal, @RequestBody ReservationDTO reservationDTO) {
         reservationDTO.getCustomer().setUsername(principal.getName());
-        reservationFacade.addReservation(reservationDTO);
+        reservationFacade.addReservation(accommodationTemplateId, reservationDTO);
     }
 
     @PutMapping("/reservation/{id}")

@@ -1,25 +1,33 @@
 package com.sleepseek.accomodation;
 
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
+import com.sleepseek.accomodation.DTO.AccommodationTemplateDTO;
 import com.sleepseek.reservation.Reservation;
 
 import java.util.List;
 
 public interface AccommodationFacade {
 
-    AccommodationDTO addAccommodation(AccommodationDTO accommodationDTO);
+    void addAccommodationTemplate(AccommodationTemplateDTO accommodationTemplateDTO);
 
-    void deleteAccommodation(Long id);
+    void deleteAccommodationTemplate(Long id);
 
-    List<AccommodationDTO> getAccommodationsByStay(Long stayId);
+    List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId);
 
-    Accommodation loadById(Long id);
+    AccommodationTemplate loadAccommodationTemplateById(Long id);
+    Accommodation loadAccommodationById(Long id);
 
-    AccommodationDTO updateAccommodation(AccommodationDTO accommodationDTO);
+    void updateAccommodationTemplate(AccommodationTemplateDTO accommodationTemplateDTO);
+
+    AccommodationTemplateDTO getAccommodationTemplate(Long id);
+
+    List<AccommodationDTO> getAccommodations(Long accommodationTemplateId);
 
     AccommodationDTO getAccommodation(Long id);
 
-    void addReservation(Accommodation accommodation, Reservation reservation);
+    void updateAccommodation(AccommodationDTO accommodationDTO);
 
-    boolean existsById(Long id);
+    boolean accommodationTemplateExistsById(Long id);
+
+    void addReservation(Accommodation accommodation, Reservation newReservation);
 }

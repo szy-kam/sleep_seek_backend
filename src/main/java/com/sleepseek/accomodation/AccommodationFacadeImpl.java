@@ -2,87 +2,59 @@ package com.sleepseek.accomodation;
 
 import com.google.common.collect.Sets;
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
+import com.sleepseek.accomodation.DTO.AccommodationTemplateDTO;
 import com.sleepseek.accomodation.exception.AccommodationNotFoundException;
-import com.sleepseek.accomodation.exception.AccommodationPropertyNotFound;
 import com.sleepseek.accomodation.exception.AccommodationValidationException;
 import com.sleepseek.reservation.Reservation;
 import com.sleepseek.stay.Stay;
 import com.sleepseek.stay.StayFacade;
 import com.sleepseek.stay.exception.StayNotFoundException;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.sleepseek.accomodation.AccommodationErrorCodes.*;
 import static java.util.Objects.isNull;
 
 class AccommodationFacadeImpl implements AccommodationFacade {
     private final AccommodationRepository accommodationRepository;
     private final StayFacade stayFacade;
+    private final AccommodationTemplateRepository accommodationTemplateRepository;
 
-    AccommodationFacadeImpl(AccommodationRepository accommodationRepository, StayFacade stayFacade) {
+
+    AccommodationFacadeImpl(AccommodationRepository accommodationRepository, AccommodationTemplateRepository accommodationTemplateRepository, StayFacade stayFacade) {
         this.accommodationRepository = accommodationRepository;
         this.stayFacade = stayFacade;
+        this.accommodationTemplateRepository = accommodationTemplateRepository;
+
     }
 
     @Override
-    public AccommodationDTO addAccommodation(AccommodationDTO accommodationDTO) {
-        validateAccommodation(accommodationDTO, false, true);
-        Stay stay = stayFacade.loadStay(accommodationDTO.getStayId());
-        Accommodation newAccommodation = Accommodation.builder()
-                .price(accommodationDTO.getPrice())
-                .quantity(accommodationDTO.getQuantity())
-                .sleepersCapacity(accommodationDTO.getSleepersCapacity())
+    public void addAccommodationTemplate(AccommodationTemplateDTO accommodationTemplateDTO) {
+        validateAccommodation(accommodationTemplateDTO, false, true);
+        Stay stay = stayFacade.loadStay(accommodationTemplateDTO.getStayId());
+        AccommodationTemplate newAccommodationTemplate = AccommodationTemplate.builder()
+                .price(accommodationTemplateDTO.getPrice())
+                .quantity(accommodationTemplateDTO.getQuantity())
+                .sleepersCapacity(accommodationTemplateDTO.getSleepersCapacity())
+                .prefix(accommodationTemplateDTO.getPrefix())
                 .properties(new HashSet<>())
+                .accommodations(new ArrayList<>())
                 .build();
-        accommodationDTO.getProperties().forEach(property -> newAccommodation.getProperties().add(AccommodationProperty.valueOf(property)));
-        stayFacade.addAccommodation(stay, newAccommodation);
-        return AccommodationMapper.toDTO(newAccommodation);
-    }
-
-    private Optional<AccommodationErrorCodes> checkSleepersCapacity(Long sleepersCapacity) {
-        if (isNull(sleepersCapacity)) {
-            return Optional.of(SLEEPERS_CAP_NULL);
+        for (int i = 0; i < accommodationTemplateDTO.getQuantity(); i++) {
+            newAccommodationTemplate.addAccommodation(Accommodation.builder()
+                    .alias(accommodationTemplateDTO.getPrefix() + (i + 1))
+                    .build());
         }
-        if (sleepersCapacity < 0) {
-            return Optional.of(SLEEPERS_CAP_BOUNDARIES);
-        }
-        return Optional.empty();
-    }
-
-    private Optional<AccommodationErrorCodes> checkPrice(Long price) {
-        if (isNull(price)) {
-            return Optional.of(PRICE_NULL);
-        }
-        if (price < 0L) {
-            return Optional.of(PRICE_OUT_OF_BOUNDS);
-        }
-        return Optional.empty();
-    }
-
-    private Optional<AccommodationErrorCodes> checkQuantity(Long quantity) {
-        if (isNull(quantity)) {
-            return Optional.of(QUANTITY_NULL);
-        }
-        if (quantity < 0) {
-            return Optional.of(QUANTITY_BOUNDARIES);
-        }
-        return Optional.empty();
+        accommodationTemplateDTO.getProperties().forEach(property -> newAccommodationTemplate.getProperties().add(AccommodationProperty.valueOf(property)));
+        stayFacade.addAccommodation(stay, newAccommodationTemplate);
 
     }
 
-    private Optional<AccommodationErrorCodes> checkStay(Long stayId) {
-        if (isNull(stayId)) {
-            return Optional.of(STAY_NULL);
-        }
-        return Optional.empty();
-    }
 
     @Override
-    public void deleteAccommodation(Long id) {
+    public void deleteAccommodationTemplate(Long id) {
         if (!accommodationRepository.existsById(id)) {
             throw new AccommodationNotFoundException(id);
         }
@@ -90,30 +62,67 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     }
 
     @Override
-    public List<AccommodationDTO> getAccommodationsByStay(Long stayId) {
-        return stayFacade.loadStay(stayId).getAccommodations().stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
+    public List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId) {
+        return stayFacade.loadStay(stayId).getAccommodationTemplates().stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Accommodation loadById(Long id) {
+    public AccommodationTemplate loadAccommodationTemplateById(Long id) {
+        return accommodationTemplateRepository.findById(id).orElseThrow(() -> new AccommodationNotFoundException(id));
+    }
+
+    @Override
+    public Accommodation loadAccommodationById(Long id) {
         return accommodationRepository.findById(id).orElseThrow(() -> new AccommodationNotFoundException(id));
     }
 
     @Override
-    public AccommodationDTO updateAccommodation(AccommodationDTO accommodationDTO) {
-        validateAccommodation(accommodationDTO, true, false);
-        if (!accommodationRepository.existsById(accommodationDTO.getId())) {
-            throw new AccommodationNotFoundException(accommodationDTO.getId());
+    public void updateAccommodationTemplate(AccommodationTemplateDTO accommodationTemplateDTO) {
+        validateAccommodation(accommodationTemplateDTO, true, false);
+        if (!accommodationTemplateRepository.existsById(accommodationTemplateDTO.getId())) {
+            throw new AccommodationNotFoundException(accommodationTemplateDTO.getId());
         }
-        Accommodation accommodation = loadById(accommodationDTO.getId());
-        accommodation.setPrice(accommodation.getPrice());
-        accommodation.setQuantity(accommodationDTO.getQuantity());
-        accommodation.setSleepersCapacity(accommodationDTO.getSleepersCapacity());
-        accommodation.setProperties(new HashSet<>());
-        accommodationDTO.getProperties().forEach(property -> accommodation.getProperties().add(AccommodationProperty.valueOf(property)));
+        AccommodationTemplate accommodationTemplate = loadAccommodationTemplateById(accommodationTemplateDTO.getId());
+        accommodationTemplate.setPrice(accommodationTemplate.getPrice());
+        accommodationTemplate.setQuantity(accommodationTemplateDTO.getQuantity());
+        accommodationTemplate.setSleepersCapacity(accommodationTemplateDTO.getSleepersCapacity());
+        accommodationTemplate.setProperties(new HashSet<>());
+        accommodationTemplate.setPrefix(accommodationTemplateDTO.getPrefix());
+        accommodationTemplateDTO.getProperties().forEach(property -> accommodationTemplate.getProperties().add(AccommodationProperty.valueOf(property)));
 
-        accommodationRepository.save(accommodation);
-        return AccommodationMapper.toDTO(accommodation);
+        List<Accommodation> accommodations = accommodationTemplate.getAccommodations();
+        if (accommodations == null) {
+            accommodations = new ArrayList<>();
+        }
+        if (accommodations.size() < accommodationTemplateDTO.getQuantity()) {
+            for (int i = accommodations.size(); i <= accommodationTemplateDTO.getQuantity(); i++) {
+                accommodationTemplate.addAccommodation(Accommodation.builder()
+                        .alias(accommodationTemplateDTO.getPrefix() + i)
+                        .build());
+            }
+        } else if (accommodations.size() > accommodationTemplateDTO.getQuantity()) {
+            for (int i = accommodations.size() - 1; i >= accommodationTemplateDTO.getQuantity(); i--) {
+                accommodationTemplate.removeAccommodation(accommodationTemplate.getAccommodations().get(i));
+            }
+        }
+        accommodationTemplateRepository.save(accommodationTemplate);
+    }
+
+
+    @Override
+    public AccommodationTemplateDTO getAccommodationTemplate(Long id) {
+        if (!accommodationTemplateRepository.existsById(id)) {
+            throw new AccommodationNotFoundException(id);
+        }
+        return AccommodationMapper.toDTO(accommodationTemplateRepository.getOne(id));
+    }
+
+    @Override
+    public List<AccommodationDTO> getAccommodations(Long accommodationTemplateId) {
+        if (!accommodationTemplateRepository.existsById(accommodationTemplateId)) {
+            throw new AccommodationNotFoundException(accommodationTemplateId);
+        }
+        return accommodationRepository.findAllByAccommodationTemplate_Id(accommodationTemplateId).stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -125,54 +134,35 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     }
 
     @Override
-    public void addReservation(Accommodation accommodation, Reservation reservation) {
-        accommodation.addReservation(reservation);
+    public void updateAccommodation(AccommodationDTO accommodationDTO) {
+        if (!accommodationRepository.existsById(accommodationDTO.getId())) {
+            throw new AccommodationNotFoundException(accommodationDTO.getId());
+        }
+        if (isNull(accommodationDTO.getAlias())) {
+            throw new AccommodationValidationException(Sets.newHashSet(AccommodationErrorCodes.PREFIX_NULL));
+        }
+        Accommodation accommodation = accommodationRepository.getOne(accommodationDTO.getId());
+        accommodation.setAlias(accommodationDTO.getAlias());
         accommodationRepository.save(accommodation);
     }
 
+
     @Override
-    public boolean existsById(Long id) {
-        return accommodationRepository.existsById(id);
+    public boolean accommodationTemplateExistsById(Long id) {
+        return accommodationTemplateRepository.existsById(id);
     }
 
-    private void validateAccommodation(AccommodationDTO accommodationDTO, boolean shouldCheckId, boolean shouldCheckStayId) {
-        Set<AccommodationErrorCodes> errors = Sets.newHashSet();
-        if (shouldCheckId) {
-            checkId(accommodationDTO.getId()).ifPresent(errors::add);
-        }
-        if (shouldCheckStayId) {
-            checkStay(accommodationDTO.getStayId()).ifPresent(errors::add);
-        }
-        checkQuantity(accommodationDTO.getQuantity()).ifPresent(errors::add);
-        checkPrice(accommodationDTO.getPrice()).ifPresent(errors::add);
-        checkSleepersCapacity(accommodationDTO.getSleepersCapacity()).ifPresent(errors::add);
-        checkProperties(accommodationDTO.getProperties()).ifPresent(errors::add);
-        if (!errors.isEmpty()) {
-            throw new AccommodationValidationException(errors);
-        }
-        if (shouldCheckStayId && !stayFacade.stayExists(accommodationDTO.getStayId())) {
-            throw new StayNotFoundException(accommodationDTO.getStayId());
+    @Override
+    public void addReservation(Accommodation accommodation, Reservation newReservation) {
+        accommodation.addReservation(newReservation);
+    }
+
+    private void validateAccommodation(AccommodationTemplateDTO accommodationTemplateDTO, boolean shouldCheckId, boolean shouldCheckStayId) {
+        new AccommodationTemplateValidator().validate(accommodationTemplateDTO, shouldCheckId, shouldCheckStayId);
+        if (shouldCheckStayId && !stayFacade.stayExists(accommodationTemplateDTO.getStayId())) {
+            throw new StayNotFoundException(accommodationTemplateDTO.getStayId());
         }
     }
 
-    private Optional<AccommodationErrorCodes> checkProperties(List<String> properties) {
-        if (isNull(properties)) {
-            return Optional.of(PROPERTIES_NULL);
-        }
-        for (String property : properties) {
-            try {
-                AccommodationProperty.valueOf(property);
-            } catch (IllegalArgumentException exception) {
-                throw new AccommodationPropertyNotFound(property);
-            }
-        }
-        return Optional.empty();
-    }
 
-    private Optional<AccommodationErrorCodes> checkId(Long id) {
-        if (isNull(id)) {
-            return Optional.of(ID_NULL);
-        }
-        return Optional.empty();
-    }
 }
