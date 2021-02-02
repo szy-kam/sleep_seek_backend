@@ -1,10 +1,7 @@
 package com.sleepseek.user;
 
 import com.sleepseek.user.DTO.UserDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -33,7 +30,7 @@ class UserController {
     }
 
     @GetMapping("/displayName")
-    String displayName(String username) {
+    String displayName(@RequestParam String username) {
         return userFacade.getUserByUsername(username).getDisplayName();
     }
 }
