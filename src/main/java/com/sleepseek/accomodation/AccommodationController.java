@@ -47,14 +47,14 @@ class AccommodationController {
         return accommodationFacade.getAccommodationTemplate(id);
     }
 
-    @PostMapping("/accommodation")
+    @PostMapping("/accommodation-template")
     void addAccommodation(Principal principal, @RequestBody AccommodationTemplateDTO accommodationTemplateDTO) {
         accommodationFacade.addAccommodationTemplate(accommodationTemplateDTO);
     }
 
-    @DeleteMapping("/accommodation/{accommodationId}")
-    void deleteAccommodation(Principal principal, @PathVariable Long accommodationId) {
-        accommodationFacade.deleteAccommodationTemplate(accommodationId);
+    @DeleteMapping("/accommodation-template/{accommodationTemplateId}")
+    void deleteAccommodation(Principal principal, @PathVariable Long accommodationTemplateId) {
+        accommodationFacade.deleteAccommodationTemplate(accommodationTemplateId);
     }
 
     @PutMapping("/accommodation-template/{accommodationTemplateId}")
