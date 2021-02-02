@@ -1,6 +1,7 @@
 package com.sleepseek.reservation;
 
 import com.sleepseek.reservation.DTO.ReservationDTO;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -26,15 +27,15 @@ public class ReservationController {
             @RequestParam(required = false) Long stayId) {
 
         if (!isNull(username)) {
-            return reservationFacade.getReservationsByUsername(username);
+            return reservationFacade.getReservationsByUsername(username, PageRequest.of(pageNumber, pageSize));
         }
 
         if (!isNull(accommodationId)) {
-            return reservationFacade.getReservationsByAccommodationId(accommodationId);
+            return reservationFacade.getReservationsByAccommodationId(accommodationId, PageRequest.of(pageNumber, pageSize));
         }
 
         if (!isNull(stayId)) {
-            return reservationFacade.getReservationsByStayId(stayId);
+            return reservationFacade.getReservationsByStayId(stayId, PageRequest.of(pageNumber, pageSize));
         }
         return null;
     }

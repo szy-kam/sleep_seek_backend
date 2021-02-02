@@ -9,6 +9,7 @@ import com.sleepseek.reservation.Reservation;
 import com.sleepseek.stay.Stay;
 import com.sleepseek.stay.StayFacade;
 import com.sleepseek.stay.exception.StayNotFoundException;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -62,8 +63,8 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     }
 
     @Override
-    public List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId) {
-        return stayFacade.loadStay(stayId).getAccommodationTemplates().stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
+    public List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId, PageRequest of) {
+        return accommodationTemplateRepository.findAllByStayId(stayId, of).stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -118,11 +119,11 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     }
 
     @Override
-    public List<AccommodationDTO> getAccommodations(Long accommodationTemplateId) {
+    public List<AccommodationDTO> getAccommodations(Long accommodationTemplateId, PageRequest of) {
         if (!accommodationTemplateRepository.existsById(accommodationTemplateId)) {
             throw new AccommodationNotFoundException(accommodationTemplateId);
         }
-        return accommodationRepository.findAllByAccommodationTemplate_Id(accommodationTemplateId).stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
+        return accommodationRepository.findAllByAccommodationTemplate_Id(accommodationTemplateId, of).stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override

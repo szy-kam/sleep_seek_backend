@@ -24,9 +24,6 @@ public class ReservationDTO {
 
     private String status;
 
-
-    ;
-
     @Builder
     @Getter
     @Setter

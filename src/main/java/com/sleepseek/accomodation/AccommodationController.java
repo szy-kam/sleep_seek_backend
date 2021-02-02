@@ -2,6 +2,7 @@ package com.sleepseek.accomodation;
 
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
 import com.sleepseek.accomodation.DTO.AccommodationTemplateDTO;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -23,7 +24,7 @@ class AccommodationController {
             @RequestParam Integer pageNumber,
             @RequestParam Integer pageSize,
             @RequestParam Long stayId) {
-        return accommodationFacade.getAccommodationTemplatesByStay(stayId);
+        return accommodationFacade.getAccommodationTemplatesByStay(stayId, PageRequest.of(pageNumber, pageSize));
     }
 
     @GetMapping("/accommodation")
@@ -31,7 +32,7 @@ class AccommodationController {
             @RequestParam Integer pageNumber,
             @RequestParam Integer pageSize,
             @RequestParam Long accommodationTemplateId) {
-        return accommodationFacade.getAccommodations(accommodationTemplateId);
+        return accommodationFacade.getAccommodations(accommodationTemplateId, PageRequest.of(pageNumber, pageSize));
     }
 
     @GetMapping("/accommodation/{id}")

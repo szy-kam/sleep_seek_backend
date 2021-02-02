@@ -9,6 +9,7 @@ import com.sleepseek.stay.StayFacade;
 import com.sleepseek.stay.exception.StayNotFoundException;
 import com.sleepseek.user.UserFacade;
 import com.sleepseek.user.exception.UserNotFoundException;
+import org.springframework.data.domain.PageRequest;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -83,19 +84,19 @@ public class ReservationFacadeImpl implements ReservationFacade {
     }
 
     @Override
-    public List<ReservationDTO> getReservationsByAccommodationId(Long accommodationId) {
+    public List<ReservationDTO> getReservationsByAccommodationId(Long accommodationId, PageRequest of) {
         if (accommodationFacade.accommodationTemplateExistsById(accommodationId)) {
             throw new AccommodationNotFoundException(accommodationId);
         }
-        return reservationRepository.findAllByAccommodation_AccommodationTemplate_Id(accommodationId).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
+        return reservationRepository.findAllByAccommodation_AccommodationTemplate_Id(accommodationId, of).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
-    public List<ReservationDTO> getReservationsByStayId(Long stayId) {
+    public List<ReservationDTO> getReservationsByStayId(Long stayId, PageRequest of) {
         if (!stayFacade.stayExists(stayId)) {
             throw new StayNotFoundException(stayId);
         }
-        return reservationRepository.findAllByAccommodation_AccommodationTemplate_Stay_Id(stayId).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
+        return reservationRepository.findAllByAccommodation_AccommodationTemplate_Stay_Id(stayId, of).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -107,11 +108,11 @@ public class ReservationFacadeImpl implements ReservationFacade {
     }
 
     @Override
-    public List<ReservationDTO> getReservationsByUsername(String username) {
+    public List<ReservationDTO> getReservationsByUsername(String username, PageRequest of) {
         if (!userFacade.userExists(username)) {
             throw new UserNotFoundException(username);
         }
-        return reservationRepository.findAllByCustomer_User_Username(username).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
+        return reservationRepository.findAllByCustomer_User_Username(username, of).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
     }
 
 

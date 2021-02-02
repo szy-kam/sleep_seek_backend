@@ -3,6 +3,7 @@ package com.sleepseek.accomodation;
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
 import com.sleepseek.accomodation.DTO.AccommodationTemplateDTO;
 import com.sleepseek.reservation.Reservation;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface AccommodationFacade {
 
     void deleteAccommodationTemplate(Long id);
 
-    List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId);
+    List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId, PageRequest of);
 
     AccommodationTemplate loadAccommodationTemplateById(Long id);
     Accommodation loadAccommodationById(Long id);
@@ -21,7 +22,7 @@ public interface AccommodationFacade {
 
     AccommodationTemplateDTO getAccommodationTemplate(Long id);
 
-    List<AccommodationDTO> getAccommodations(Long accommodationTemplateId);
+    List<AccommodationDTO> getAccommodations(Long accommodationTemplateId, PageRequest of);
 
     AccommodationDTO getAccommodation(Long id);
 

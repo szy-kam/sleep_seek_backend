@@ -31,4 +31,9 @@ class UserController {
     UserDTO currentUser(Principal principal) {
         return UserMapper.toDto(userFacade.getUserByUsername(principal.getName()));
     }
+
+    @GetMapping("/displayName")
+    String displayName(String username) {
+        return userFacade.getUserByUsername(username).getDisplayName();
+    }
 }
