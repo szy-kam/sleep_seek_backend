@@ -84,7 +84,7 @@ class AccommodationFacadeImpl implements AccommodationFacade {
             throw new AccommodationNotFoundException(accommodationTemplateDTO.getId());
         }
         AccommodationTemplate accommodationTemplate = loadAccommodationTemplateById(accommodationTemplateDTO.getId());
-        accommodationTemplate.setPrice(accommodationTemplate.getPrice());
+        accommodationTemplate.setPrice(accommodationTemplateDTO.getPrice());
         accommodationTemplate.setQuantity(accommodationTemplateDTO.getQuantity());
         accommodationTemplate.setSleepersCapacity(accommodationTemplateDTO.getSleepersCapacity());
         accommodationTemplate.setProperties(new HashSet<>());
