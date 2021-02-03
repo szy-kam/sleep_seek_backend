@@ -17,11 +17,11 @@ class ReservationValidation {
         Set<ReservationErrorCodes> errors = Sets.newHashSet();
         if (checkId) {
             checkId(reservationDTO.getId()).ifPresent(errors::add);
+            checkAccommodation(reservationDTO.getAccommodationId()).ifPresent(errors::add);
         }
         checkDateFrom(reservationDTO.getDateFrom()).ifPresent(errors::add);
         checkDateTo(reservationDTO.getDateTo()).ifPresent(errors::add);
         checkDates(reservationDTO.getDateFrom(), reservationDTO.getDateTo()).ifPresent(errors::add);
-        checkAccommodation(reservationDTO.getAccommodationId()).ifPresent(errors::add);
         checkCustomer(reservationDTO.getCustomer()).ifPresent(errors::add);
         checkStatus(reservationDTO.getStatus()).ifPresent(errors::add);
         if (!errors.isEmpty()) {
