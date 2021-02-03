@@ -9,5 +9,5 @@ public interface ImageFacade {
 
     ImageDTO addImage(String username, MultipartFile image) throws IOException;
 
-    Image findImage(String url);
+    Image findOrAddImage(String url);
 }

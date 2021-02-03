@@ -43,7 +43,7 @@ class StayFacadeImpl implements StayFacade {
                 .minPrice(stayDTO.getMinPrice())
                 .category(StayCategory.valueOf(stayDTO.getCategory()))
                 .user(userFacade.getUserByUsername(stayDTO.getUsername()))
-                .photos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()))
+                .photos(stayDTO.getPhotos().stream().map(imageFacade::findOrAddImage).collect(Collectors.toList()))
                 .properties(new HashSet<>())
                 .accommodationTemplates(new HashSet<>())
                 .address(Address.builder()
@@ -80,7 +80,7 @@ class StayFacadeImpl implements StayFacade {
         stay.setEmail(stayDTO.getEmail());
         stay.setPhoneNumber(stayDTO.getPhoneNumber());
         stay.setCategory(StayCategory.valueOf(stayDTO.getCategory()));
-        stay.setPhotos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()));
+        stay.setPhotos(stayDTO.getPhotos().stream().map(imageFacade::findOrAddImage).collect(Collectors.toList()));
         stay.setProperties(new HashSet<>());
         stayDTO.getProperties().forEach(property -> stay.getProperties().add(StayProperty.valueOf(property)));
         Address address = stay.getAddress();
