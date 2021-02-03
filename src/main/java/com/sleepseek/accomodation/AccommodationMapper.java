@@ -11,7 +11,7 @@ import static java.util.Objects.isNull;
 
 public class AccommodationMapper {
 
-    public static AccommodationTemplateDTO toDTO(AccommodationTemplate accommodationTemplate) {
+    public static AccommodationTemplateDTO toDTO(AccommodationTemplate accommodationTemplate, boolean reservable) {
         List<String> properties;
         if (isNull(accommodationTemplate.getProperties())) {
             properties = new ArrayList<>();
@@ -26,6 +26,7 @@ public class AccommodationMapper {
                 .sleepersCapacity(accommodationTemplate.getSleepersCapacity())
                 .stayId(accommodationTemplate.getStay().getId())
                 .properties(properties)
+                .reservable(reservable)
                 .prefix(accommodationTemplate.getPrefix())
                 .build();
     }

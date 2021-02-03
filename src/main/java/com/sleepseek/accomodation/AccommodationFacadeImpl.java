@@ -6,9 +6,11 @@ import com.sleepseek.accomodation.DTO.AccommodationTemplateDTO;
 import com.sleepseek.accomodation.exception.AccommodationNotFoundException;
 import com.sleepseek.accomodation.exception.AccommodationValidationException;
 import com.sleepseek.reservation.Reservation;
+import com.sleepseek.reservation.ReservationRepositoryAdapter;
 import com.sleepseek.stay.Stay;
 import com.sleepseek.stay.StayFacade;
 import com.sleepseek.stay.exception.StayNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
@@ -23,7 +25,8 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     private final AccommodationRepositoryAdapter accommodationRepository;
     private final StayFacade stayFacade;
     private final AccommodationTemplateRepository accommodationTemplateRepository;
-
+    @Autowired
+    private ReservationRepositoryAdapter repositoryAdapter;
 
     AccommodationFacadeImpl(AccommodationRepositoryAdapter accommodationRepository, AccommodationTemplateRepository accommodationTemplateRepository, StayFacade stayFacade) {
         this.accommodationRepository = accommodationRepository;
@@ -64,8 +67,15 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     }
 
     @Override
-    public List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId, PageRequest of) {
-        return accommodationTemplateRepository.findAllByStayId(stayId, of).stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
+    public List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId, PageRequest of, String dateFrom, String dateTo) {
+        if (dateFrom != null && dateTo != null) {
+            LocalDate from = LocalDate.parse(dateFrom);
+            LocalDate to = LocalDate.parse(dateTo);
+            return accommodationTemplateRepository.findAllByStayId(stayId, of).stream().map(at -> AccommodationMapper.toDTO(at, repositoryAdapter.isReservable(at.getId(), from, to))).collect(Collectors.toList());
+        } else {
+            return accommodationTemplateRepository.findAllByStayId(stayId, of).stream().map(at -> AccommodationMapper.toDTO(at, true)).collect(Collectors.toList());
+
+        }
     }
 
     @Override
@@ -116,7 +126,7 @@ class AccommodationFacadeImpl implements AccommodationFacade {
         if (!accommodationTemplateRepository.existsById(id)) {
             throw new AccommodationNotFoundException(id);
         }
-        return AccommodationMapper.toDTO(accommodationTemplateRepository.getOne(id));
+        return AccommodationMapper.toDTO(accommodationTemplateRepository.getOne(id), true);
     }
 
     @Override

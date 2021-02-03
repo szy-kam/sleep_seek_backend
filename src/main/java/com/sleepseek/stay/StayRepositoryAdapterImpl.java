@@ -90,8 +90,8 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
                 case "city":
                     expression = address.get("city");
                     break;
-                case "avgRate":
-                    expression = null;
+                case "price":
+                    expression = stays.get("minPrice");
                     break;
                 default:
                     expression = stays.get("createdAt");

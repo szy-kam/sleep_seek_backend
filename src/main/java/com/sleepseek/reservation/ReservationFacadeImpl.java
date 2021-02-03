@@ -4,6 +4,7 @@ import com.sleepseek.accomodation.Accommodation;
 import com.sleepseek.accomodation.AccommodationFacade;
 import com.sleepseek.accomodation.exception.AccommodationNotFoundException;
 import com.sleepseek.reservation.DTO.ReservationDTO;
+import com.sleepseek.reservation.exception.ReservationConflictException;
 import com.sleepseek.reservation.exception.ReservationNotFoundException;
 import com.sleepseek.stay.StayFacade;
 import com.sleepseek.stay.exception.StayNotFoundException;
@@ -43,7 +44,7 @@ public class ReservationFacadeImpl implements ReservationFacade {
             status = ReservationStatus.PENDING;
             accommodation = reservationRepository.getReservable(accommodationTemplateId, LocalDate.parse(reservation.getDateFrom()), LocalDate.parse(reservation.getDateTo()));
         } else {
-            status = ReservationStatus.INVALID;
+            throw new ReservationConflictException(reservation.getDateFrom(), reservation.getDateTo());
         }
 
         Reservation newReservation = Reservation.builder()

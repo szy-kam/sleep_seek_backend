@@ -13,6 +13,7 @@ public class ReservationDTO {
     private Long accommodationId;
 
     private String stayName;
+    private Long stayId;
 
     private CustomerDTO customer;
 

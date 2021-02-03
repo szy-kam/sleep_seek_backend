@@ -23,8 +23,10 @@ class AccommodationController {
     List<AccommodationTemplateDTO> getAccommodationTemplates(
             @RequestParam Integer pageNumber,
             @RequestParam Integer pageSize,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo,
             @RequestParam Long stayId) {
-        return accommodationFacade.getAccommodationTemplatesByStay(stayId, PageRequest.of(pageNumber, pageSize));
+        return accommodationFacade.getAccommodationTemplatesByStay(stayId, PageRequest.of(pageNumber, pageSize), dateFrom, dateTo);
     }
 
     @GetMapping("/accommodation")

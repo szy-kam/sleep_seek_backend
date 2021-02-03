@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-public class ReservationRepositoryAdapterImpl implements ReservationRepositoryAdapter {
+class ReservationRepositoryAdapterImpl implements ReservationRepositoryAdapter {
     @PersistenceContext
     private EntityManager entityManager;
 

@@ -13,7 +13,7 @@ public interface AccommodationFacade {
 
     void deleteAccommodationTemplate(Long id);
 
-    List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId, PageRequest of);
+    List<AccommodationTemplateDTO> getAccommodationTemplatesByStay(Long stayId, PageRequest of, String dateFrom, String dateTo);
 
     AccommodationTemplate loadAccommodationTemplateById(Long id);
     Accommodation loadAccommodationById(Long id);

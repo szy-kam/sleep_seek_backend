@@ -17,4 +17,5 @@ public class AccommodationTemplateDTO {
     private Long quantity;
     private Long price;
     private List<String> properties;
+    private Boolean reservable;
 }
