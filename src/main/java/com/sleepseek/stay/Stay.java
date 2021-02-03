@@ -60,7 +60,7 @@ public final class Stay extends BaseEntity {
     @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<AccommodationTemplate> accommodationTemplates;
 
-    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Review> reviews;
 
     public void addAccommodation(AccommodationTemplate accommodationTemplate) {

@@ -58,7 +58,7 @@ public class ReservationFacadeImpl implements ReservationFacade {
                         .build())
                 .build();
         if (accommodation == null) {
-            reservationRepository.save(newReservation);
+            throw new ReservationConflictException(reservation.getDateFrom(), reservation.getDateTo());
         } else {
             accommodationFacade.addReservation(accommodation, newReservation);
         }
