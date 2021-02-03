@@ -68,13 +68,18 @@ class ReservationRepositoryAdapterImpl implements ReservationRepositoryAdapter {
                 cb.greaterThanOrEqualTo(reservations.get("dateTo"), dateFrom),
                 reservations.get("status").in(Arrays.asList(ReservationStatus.PENDING, ReservationStatus.CONFIRMED))
         ));
-        query.groupBy(accommodations.get("accommodationTemplate"));
-        query.multiselect(accommodations.get("accommodationTemplate"), cb.count(reservations));
+        query.groupBy(accommodations.get("accommodationTemplate").get("id"));
+        query.multiselect(accommodations.get("accommodationTemplate").get("id"), cb.count(reservations));
         query.where(cb.equal(accommodations.get("accommodationTemplate").get("id"), accommodationTemplateId));
         TypedQuery<Object[]> typedQuery = entityManager.createQuery(query);
         Object[] result = typedQuery.getSingleResult();
+        Long id = (Long) result[0];
         Long overlappingRooms = (Long) result[1];
-        AccommodationTemplate accommodationTemplate = (AccommodationTemplate) result[0];
+        CriteriaQuery<AccommodationTemplate> cq = cb.createQuery(AccommodationTemplate.class);
+        Root<AccommodationTemplate> accommodations2 = cq.from(AccommodationTemplate.class);
+        cq.select(accommodations2);
+        cq.where(cb.equal(accommodations2.get("id"), id));
+        AccommodationTemplate at =  entityManager.createQuery(cq).getSingleResult();
         /*
         Query query1 = entityManager.createQuery(
                 "SELECT a.accommodationTemplate, COUNT (r) " +
@@ -91,7 +96,7 @@ class ReservationRepositoryAdapterImpl implements ReservationRepositoryAdapter {
         Long overlappingRooms = (Long) result[1];
         AccommodationTemplate accommodationTemplate = (AccommodationTemplate) result[0];
         */
-        return accommodationTemplate.getQuantity() > overlappingRooms;
+        return at.getQuantity() > overlappingRooms;
     }
 
     @Override
