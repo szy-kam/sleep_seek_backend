@@ -19,7 +19,7 @@ class UserExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = UserNotFoundException.class)
-    ResponseEntity<?> handleUserAlreadyExistsException(UserNotFoundException exception) {
+    ResponseEntity<?> handleUserNotFoundException(UserNotFoundException exception) {
         return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, "User not found", exception));
     }
 

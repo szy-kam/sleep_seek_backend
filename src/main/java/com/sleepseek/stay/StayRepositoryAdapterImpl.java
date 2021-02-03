@@ -36,12 +36,8 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Stay> query = builder.createQuery(Stay.class);
         Root<Stay> stays = query.from(Stay.class);
-        //Root<Review> reviews = query.from(Review.class);
-        //Join<Stay, User> users = stays.join("user");
         Join<Stay, Address> address = stays.join("address");
         Join<Stay, AccommodationTemplate> accommodations = stays.join("accommodationTemplates", JoinType.LEFT);
-        //Join<Reservation, Accommodation> reservations = accommodations.join("reservations");
-
 
         List<Predicate> conditions = new ArrayList<>();
         if (!isNull(parameters.getName())) {
@@ -105,15 +101,9 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         } else {
             query.orderBy(builder.desc(stays.get("createdAt")));
         }
-        //query.distinct(true);
-        //query.where(conditions.toArray(Predicate[]::new));
+        query.distinct(true);
+        query.where(conditions.toArray(Predicate[]::new));
         TypedQuery<Stay> typedQuery = entityManager.createQuery(query.select(stays));
-       /* Query queryTotal = entityManager.createQuery
-                ("Select count(s.id) from Stay s");
-        long maxRows = (long) queryTotal.getSingleResult();
-        if (maxRows < (long) parameters.getPageNumber() * (long) parameters.getPageSize()) {
-            return Lists.newArrayList();
-        }*/
         typedQuery.setFirstResult(parameters.getPageNumber() * parameters.getPageSize());
         typedQuery.setMaxResults(parameters.getPageSize());
 
