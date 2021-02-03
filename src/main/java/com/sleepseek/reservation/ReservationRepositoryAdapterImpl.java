@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.time.LocalDate;
@@ -106,8 +105,8 @@ class ReservationRepositoryAdapterImpl implements ReservationRepositoryAdapter {
                 cb.greaterThanOrEqualTo(reservations.get("dateTo"), dateFrom),
                 reservations.get("status").in(Arrays.asList(ReservationStatus.PENDING, ReservationStatus.CONFIRMED))
         ));
-        query.groupBy(accommodations);
-        query.multiselect(accommodations, cb.count(reservations));
+        query.groupBy(accommodations.get("id"));
+        query.multiselect(accommodations.get("id"), cb.count(reservations));
         query.where(cb.equal(accommodations.get("accommodationTemplate").get("id"), accommodationTemplateId));
         TypedQuery<Object[]> typedQuery = entityManager.createQuery(query);
         /*Query query1 = entityManager.createQuery(
@@ -126,10 +125,14 @@ class ReservationRepositoryAdapterImpl implements ReservationRepositoryAdapter {
          */
         List<Object[]> result = typedQuery.getResultList();
         for (Object[] r : result) {
-            Accommodation a = (Accommodation) r[0];
+            Long id = (Long) r[0];
             Long count = (Long) r[1];
             if (count == 0) {
-                return a;
+                CriteriaQuery<Accommodation> cq = cb.createQuery(Accommodation.class);
+                Root<Accommodation> accommodations2 = cq.from(Accommodation.class);
+                cq.select(accommodations2);
+                cq.where(cb.equal(accommodations2.get("id"), id));
+                return entityManager.createQuery(cq).getSingleResult();
             }
         }
 
