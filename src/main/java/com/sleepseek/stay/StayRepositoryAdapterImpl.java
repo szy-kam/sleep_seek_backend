@@ -116,7 +116,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
 
     @Override
     public Page<Stay> findAllByUser_Username(String username, Pageable pageable) {
-        return stayRepository.findAllByUser_Username(username, pageable);
+        return stayRepository.findAllByUser_UsernameOrderByCreatedAtDesc(username, pageable);
     }
 
     @Override

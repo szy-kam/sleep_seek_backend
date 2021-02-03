@@ -5,5 +5,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 interface StayRepository extends JpaRepository<Stay, Long> {
-    Page<Stay> findAllByUser_Username(String username, Pageable pageable);
+    Page<Stay> findAllByUser_UsernameOrderByCreatedAtDesc(String username, Pageable pageable);
 }
