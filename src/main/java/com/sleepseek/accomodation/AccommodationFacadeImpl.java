@@ -11,6 +11,7 @@ import com.sleepseek.stay.StayFacade;
 import com.sleepseek.stay.exception.StayNotFoundException;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,12 +20,12 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 
 class AccommodationFacadeImpl implements AccommodationFacade {
-    private final AccommodationRepository accommodationRepository;
+    private final AccommodationRepositoryAdapter accommodationRepository;
     private final StayFacade stayFacade;
     private final AccommodationTemplateRepository accommodationTemplateRepository;
 
 
-    AccommodationFacadeImpl(AccommodationRepository accommodationRepository, AccommodationTemplateRepository accommodationTemplateRepository, StayFacade stayFacade) {
+    AccommodationFacadeImpl(AccommodationRepositoryAdapter accommodationRepository, AccommodationTemplateRepository accommodationTemplateRepository, StayFacade stayFacade) {
         this.accommodationRepository = accommodationRepository;
         this.stayFacade = stayFacade;
         this.accommodationTemplateRepository = accommodationTemplateRepository;
@@ -56,10 +57,10 @@ class AccommodationFacadeImpl implements AccommodationFacade {
 
     @Override
     public void deleteAccommodationTemplate(Long id) {
-        if (!accommodationRepository.existsById(id)) {
+        if (!accommodationTemplateRepository.existsById(id)) {
             throw new AccommodationNotFoundException(id);
         }
-        accommodationRepository.deleteById(id);
+        accommodationTemplateRepository.deleteById(id);
     }
 
     @Override
@@ -156,6 +157,12 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     @Override
     public void addReservation(Accommodation accommodation, Reservation newReservation) {
         accommodation.addReservation(newReservation);
+        accommodationRepository.save(accommodation);
+    }
+
+    @Override
+    public List<AccommodationDTO> getAccommodationsByDate(Long accommodationTemplateId, PageRequest of, String dateFrom, String dateTo) {
+        return accommodationRepository.findAllReservable(accommodationTemplateId, LocalDate.parse(dateFrom), LocalDate.parse(dateTo)).stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
     }
 
     private void validateAccommodation(AccommodationTemplateDTO accommodationTemplateDTO, boolean shouldCheckId, boolean shouldCheckStayId) {

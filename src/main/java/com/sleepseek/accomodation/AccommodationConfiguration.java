@@ -5,10 +5,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class AccommodationConfiguration {
+class AccommodationConfiguration {
 
     @Bean
-    public AccommodationFacade accommodationFacade(AccommodationRepository accommodationRepository, AccommodationTemplateRepository accommodationTemplaterepository, StayFacade stayFacade) {
+    AccommodationRepositoryAdapter accommodationRepositoryAdapter(AccommodationRepository repository) {
+        return new AccommodationRepositoryAdapterImpl(repository);
+    }
+
+    @Bean
+    AccommodationFacade accommodationFacade(AccommodationRepositoryAdapter accommodationRepository, AccommodationTemplateRepository accommodationTemplaterepository, StayFacade stayFacade) {
         return new AccommodationFacadeImpl(accommodationRepository, accommodationTemplaterepository, stayFacade);
     }
 }

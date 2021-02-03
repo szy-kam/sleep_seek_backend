@@ -19,7 +19,7 @@ public class ReservationController {
     }
 
     @GetMapping("/reservation")
-    List<ReservationDTO> getReservationsByAccommodation(
+    List<ReservationDTO> getReservations(
             @RequestParam Integer pageNumber,
             @RequestParam Integer pageSize,
             @RequestParam(required = false) Long accommodationId,

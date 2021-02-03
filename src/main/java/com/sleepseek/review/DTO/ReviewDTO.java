@@ -15,6 +15,8 @@ public class ReviewDTO {
 
     private String username;
 
+    private String displayName;
+
     private String message;
 
     private Double rating;

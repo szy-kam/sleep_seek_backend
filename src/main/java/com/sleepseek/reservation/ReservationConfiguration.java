@@ -10,7 +10,12 @@ import org.springframework.context.annotation.Configuration;
 class ReservationConfiguration {
 
     @Bean
-    ReservationFacade reservationFacade(ReservationRepository reservationRepository, AccommodationFacade accommodationFacade, StayFacade stayFacade, UserFacade userFacade) {
+    ReservationRepositoryAdapter reservationRepositoryAdapter(ReservationRepository reservationRepository){
+        return new ReservationRepositoryAdapterImpl(reservationRepository);
+    }
+
+    @Bean
+    ReservationFacade reservationFacade(ReservationRepositoryAdapter reservationRepository, AccommodationFacade accommodationFacade, StayFacade stayFacade, UserFacade userFacade) {
         return new ReservationFacadeImpl(reservationRepository, accommodationFacade, stayFacade, userFacade);
     }
 }

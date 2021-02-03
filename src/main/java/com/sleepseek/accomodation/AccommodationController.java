@@ -31,7 +31,13 @@ class AccommodationController {
     List<AccommodationDTO> getAccommodations(
             @RequestParam Integer pageNumber,
             @RequestParam Integer pageSize,
-            @RequestParam Long accommodationTemplateId) {
+            @RequestParam Long accommodationTemplateId,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo) {
+        if (dateFrom != null && dateTo != null) {
+            return accommodationFacade.getAccommodationsByDate(accommodationTemplateId, PageRequest.of(pageNumber, pageSize), dateFrom, dateTo);
+        }
+
         return accommodationFacade.getAccommodations(accommodationTemplateId, PageRequest.of(pageNumber, pageSize));
     }
 

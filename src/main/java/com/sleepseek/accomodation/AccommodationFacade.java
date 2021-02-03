@@ -31,4 +31,6 @@ public interface AccommodationFacade {
     boolean accommodationTemplateExistsById(Long id);
 
     void addReservation(Accommodation accommodation, Reservation newReservation);
+
+    List<AccommodationDTO> getAccommodationsByDate(Long accommodationTemplateId, PageRequest of, String dateFrom, String dateTo);
 }

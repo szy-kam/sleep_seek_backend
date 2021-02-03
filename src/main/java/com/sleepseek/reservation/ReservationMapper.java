@@ -6,15 +6,15 @@ import java.time.format.DateTimeFormatter;
 
 public class ReservationMapper {
     static ReservationDTO toDto(Reservation reservation) {
-        Long stayId = null;
+        String stayId = null;
         Long accommodationId = null;
         if(reservation.getAccommodation() != null){
-            stayId = reservation.getAccommodation().getAccommodationTemplate().getStay().getId();
+            stayId = reservation.getAccommodation().getAccommodationTemplate().getStay().getName();
             accommodationId = reservation.getAccommodation().getId();
         }
         return ReservationDTO.builder()
                 .id(reservation.getId())
-                .stayId(stayId)
+                .stayName(stayId)
                 .dateFrom(reservation.getDateFrom().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .dateTo(reservation.getDateTo().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .accommodationId(accommodationId)

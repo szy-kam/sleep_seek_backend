@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ReservationFacadeImpl implements ReservationFacade {
-    private final ReservationRepository reservationRepository;
+    private final ReservationRepositoryAdapter reservationRepository;
     private final AccommodationFacade accommodationFacade;
     private final UserFacade userFacade;
     private final StayFacade stayFacade;
 
-    public ReservationFacadeImpl(ReservationRepository reservationRepository, AccommodationFacade accommodationFacade, StayFacade stayFacade, UserFacade userFacade) {
+    public ReservationFacadeImpl(ReservationRepositoryAdapter reservationRepository, AccommodationFacade accommodationFacade, StayFacade stayFacade, UserFacade userFacade) {
         this.reservationRepository = reservationRepository;
         this.accommodationFacade = accommodationFacade;
         this.userFacade = userFacade;
@@ -34,8 +34,18 @@ public class ReservationFacadeImpl implements ReservationFacade {
     @Transactional
     public void addReservation(Long accommodationTemplateId, ReservationDTO reservation) {
         new ReservationValidation().validateReservation(reservation, false);
-        Long accommodationId = makeReservation(accommodationTemplateId, reservation.getDateFrom(), reservation.getDateTo());
-        ReservationStatus status = accommodationId != null ? ReservationStatus.PENDING : ReservationStatus.INVALID;
+        if(!accommodationFacade.accommodationTemplateExistsById(accommodationTemplateId)){
+            throw new AccommodationNotFoundException(accommodationTemplateId);
+        }
+        ReservationStatus status;
+        Accommodation accommodation = null;
+        if (reservationRepository.isReservable(accommodationTemplateId, LocalDate.parse(reservation.getDateFrom()), LocalDate.parse(reservation.getDateTo()))) {
+            status = ReservationStatus.PENDING;
+            accommodation = reservationRepository.getReservable(accommodationTemplateId, LocalDate.parse(reservation.getDateFrom()), LocalDate.parse(reservation.getDateTo()));
+        } else {
+            status = ReservationStatus.INVALID;
+        }
+
         Reservation newReservation = Reservation.builder()
                 .dateFrom(LocalDate.parse(reservation.getDateFrom(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .dateTo(LocalDate.parse(reservation.getDateTo(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
@@ -46,17 +56,11 @@ public class ReservationFacadeImpl implements ReservationFacade {
                         .fullName(reservation.getCustomer().getFullName())
                         .build())
                 .build();
-        if (accommodationId == null) {
+        if (accommodation == null) {
             reservationRepository.save(newReservation);
         } else {
-            Accommodation accommodation = accommodationFacade.loadAccommodationById(accommodationId);
             accommodationFacade.addReservation(accommodation, newReservation);
         }
-    }
-
-    private Long makeReservation(Long accommodationId, String dateFrom, String dateTo) {
-
-        return null;
     }
 
     @Override
@@ -71,9 +75,6 @@ public class ReservationFacadeImpl implements ReservationFacade {
     public void updateReservation(ReservationDTO reservationDTO) {
         new ReservationValidation().validateReservation(reservationDTO, true);
         Reservation reservation = reservationRepository.getOne(reservationDTO.getId());
-        reservation.setDateFrom(LocalDate.parse(reservationDTO.getDateFrom()));
-        reservation.setDateTo(LocalDate.parse(reservationDTO.getDateTo()));
-        reservation.setStatus(ReservationStatus.valueOf(reservationDTO.getStatus()));
         reservation.setStatus(ReservationStatus.valueOf(reservationDTO.getStatus()));
         reservation.setCustomer(Customer.builder()
                 .phoneNumber(reservationDTO.getCustomer().getPhoneNumber())
