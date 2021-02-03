@@ -7,6 +7,7 @@ import lombok.Getter;
 public enum AccommodationErrorCodes {
     ID_NULL("id is null"),
     STAY_NULL("stayId is null"),
+    PREFIX_NULL("prefix is null"),
     SLEEPERS_CAP_NULL("sleepersCapacity is null"),
     SLEEPERS_CAP_BOUNDARIES("sleepersCapacity out of boundaries"),
     QUANTITY_BOUNDARIES("quantity out of boundaries"),

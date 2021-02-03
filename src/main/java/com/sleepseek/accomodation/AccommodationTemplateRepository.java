@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
-    List<Accommodation> findAllByAccommodationTemplate_Id(Long id, Pageable of);
+interface AccommodationTemplateRepository extends JpaRepository<AccommodationTemplate, Long> {
+    List<AccommodationTemplate> findAllByStayId(Long id, Pageable page);
 }

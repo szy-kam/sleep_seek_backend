@@ -1,6 +1,7 @@
 package com.sleepseek.reservation;
 
 import com.sleepseek.reservation.DTO.ReservationDTO;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -18,18 +19,23 @@ public class ReservationController {
     }
 
     @GetMapping("/reservation")
-    List<ReservationDTO> getReservationsByAccommodation(@RequestParam(required = false) Long accommodationId, @RequestParam(required = false) String username, @RequestParam(required = false) Long stayId) {
+    List<ReservationDTO> getReservations(
+            @RequestParam Integer pageNumber,
+            @RequestParam Integer pageSize,
+            @RequestParam(required = false) Long accommodationId,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) Long stayId) {
 
         if (!isNull(username)) {
-            return reservationFacade.getReservationsByUsername(username);
+            return reservationFacade.getReservationsByUsername(username, PageRequest.of(pageNumber, pageSize));
         }
 
         if (!isNull(accommodationId)) {
-            return reservationFacade.getReservationsByAccommodationId(accommodationId);
+            return reservationFacade.getReservationsByAccommodationId(accommodationId, PageRequest.of(pageNumber, pageSize));
         }
 
         if (!isNull(stayId)) {
-            return reservationFacade.getReservationsByStayId(stayId);
+            return reservationFacade.getReservationsByStayId(stayId, PageRequest.of(pageNumber, pageSize));
         }
         return null;
     }
@@ -46,9 +52,9 @@ public class ReservationController {
     }
 
     @PostMapping("/reservation")
-    void postReservation(Principal principal, @RequestBody ReservationDTO reservationDTO) {
+    void postReservation(@RequestParam Long accommodationTemplateId, Principal principal, @RequestBody ReservationDTO reservationDTO) {
         reservationDTO.getCustomer().setUsername(principal.getName());
-        reservationFacade.addReservation(reservationDTO);
+        reservationFacade.addReservation(accommodationTemplateId, reservationDTO);
     }
 
     @PutMapping("/reservation/{id}")

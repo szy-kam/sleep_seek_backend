@@ -1,7 +1,7 @@
 package com.sleepseek.accommodation;
 
 import com.sleepseek.accomodation.*;
-import com.sleepseek.accomodation.DTO.AccommodationDTO;
+import com.sleepseek.accomodation.DTO.AccommodationTemplateDTO;
 import com.sleepseek.accomodation.exception.AccommodationNotFoundException;
 import com.sleepseek.accomodation.exception.AccommodationPropertyNotFound;
 import com.sleepseek.accomodation.exception.AccommodationValidationException;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-class AccommodationFacadeTest {
+class AccommodationTemplateFacadeTest {
     private AccommodationFacade accommodationFacade;
 
     private static final Long VALID_ACCOMMODATION_ID = 9L;
@@ -41,19 +41,19 @@ class AccommodationFacadeTest {
     private final List<String> INVALID_PROPERTIES = Arrays.asList("bar", "foo");
 
 
-    @Mock
-    private AccommodationRepository accommodationRepository;
+    //@Mock
+    //private AccommodationRepository accommodationRepository;
 
     @Mock
     private StayFacade stayFacade;
 
     @BeforeEach
     void initAccommodationFacade() {
-        accommodationFacade = new AccommodationConfiguration().accommodationFacade(accommodationRepository, stayFacade);
+        //accommodationFacade = new AccommodationConfiguration().accommodationFacade(accommodationRepository, stayFacade);
     }
 
-    private AccommodationDTO addAccommodation(Long stayId, Long sleepersCapacity, Long quantity, Long price, List<String> properties) {
-        return accommodationFacade.addAccommodation(AccommodationDTO.builder()
+    private void addAccommodation(Long stayId, Long sleepersCapacity, Long quantity, Long price, List<String> properties) {
+         accommodationFacade.addAccommodationTemplate(AccommodationTemplateDTO.builder()
                 .properties(properties)
                 .stayId(stayId)
                 .quantity(quantity)
@@ -62,8 +62,8 @@ class AccommodationFacadeTest {
                 .build());
     }
 
-    private AccommodationDTO updateAccommodation(Long accommodationId, Long sleepersCapacity, Long quantity, Long price, List<String> properties) {
-        return accommodationFacade.updateAccommodation(AccommodationDTO.builder()
+    private void updateAccommodation(Long accommodationId, Long sleepersCapacity, Long quantity, Long price, List<String> properties) {
+         accommodationFacade.updateAccommodationTemplate(AccommodationTemplateDTO.builder()
                 .price(price)
                 .id(accommodationId)
                 .sleepersCapacity(sleepersCapacity)
@@ -74,8 +74,8 @@ class AccommodationFacadeTest {
 
     @Test
     void deleteAccommodation_accommodationNotExist_throwsExceptionAccommodationNotFound() {
-        Mockito.when(accommodationRepository.existsById(NOT_EXISTING_ACCOMMODATION_ID)).thenReturn(false);
-        assertThrows(AccommodationNotFoundException.class, () -> accommodationFacade.deleteAccommodation(NOT_EXISTING_ACCOMMODATION_ID));
+        //Mockito.when(accommodationRepository.existsById(NOT_EXISTING_ACCOMMODATION_ID)).thenReturn(false);
+        assertThrows(AccommodationNotFoundException.class, () -> accommodationFacade.deleteAccommodationTemplate(NOT_EXISTING_ACCOMMODATION_ID));
     }
 
     @Test
@@ -146,7 +146,7 @@ class AccommodationFacadeTest {
 
     @Test
     void updateAccommodation_accommodationNotFound_throwsExceptionAccommodationNotFound() {
-        Mockito.when(accommodationRepository.existsById(NOT_EXISTING_ACCOMMODATION_ID)).thenReturn(false);
+        //Mockito.when(accommodationRepository.existsById(NOT_EXISTING_ACCOMMODATION_ID)).thenReturn(false);
         assertThrows(AccommodationNotFoundException.class, () -> updateAccommodation(NOT_EXISTING_ACCOMMODATION_ID, VALID_SLEEPERS_CAP, VALID_QUANTITY, VALID_PRICE, VALID_PROPERTIES));
 
     }

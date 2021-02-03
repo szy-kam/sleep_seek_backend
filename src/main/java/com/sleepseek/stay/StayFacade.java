@@ -1,6 +1,6 @@
 package com.sleepseek.stay;
 
-import com.sleepseek.accomodation.Accommodation;
+import com.sleepseek.accomodation.AccommodationTemplate;
 import com.sleepseek.review.Review;
 import com.sleepseek.stay.DTO.StayDTO;
 
@@ -23,6 +23,6 @@ public interface StayFacade {
 
     List<StayDTO> getStays(StaySearchParameters searchParameters);
 
-    void addAccommodation(Stay stay, Accommodation accommodation);
+    void addAccommodation(Stay stay, AccommodationTemplate accommodationTemplate);
 
 }

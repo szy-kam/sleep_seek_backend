@@ -1,13 +1,12 @@
 package com.sleepseek.stay;
 
-import com.sleepseek.accomodation.Accommodation;
+import com.sleepseek.accomodation.AccommodationTemplate;
 import com.sleepseek.image.ImageFacade;
 import com.sleepseek.review.Review;
 import com.sleepseek.stay.DTO.StayDTO;
 import com.sleepseek.stay.exception.StayNotFoundException;
 import com.sleepseek.user.UserFacade;
 import com.sleepseek.user.exception.UserNotFoundException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -46,7 +45,7 @@ class StayFacadeImpl implements StayFacade {
                 .user(userFacade.getUserByUsername(stayDTO.getUsername()))
                 .photos(stayDTO.getPhotos().stream().map(imageFacade::findImage).collect(Collectors.toList()))
                 .properties(new HashSet<>())
-                .accommodations(new HashSet<>())
+                .accommodationTemplates(new HashSet<>())
                 .address(Address.builder()
                         .city(stayDTO.getAddress().getCity())
                         .zipCode(stayDTO.getAddress().getZipCode())
@@ -123,8 +122,8 @@ class StayFacadeImpl implements StayFacade {
 
 
     @Override
-    public void addAccommodation(Stay stay, Accommodation accommodation) {
-        stay.addAccommodation(accommodation);
+    public void addAccommodation(Stay stay, AccommodationTemplate accommodationTemplate) {
+        stay.addAccommodation(accommodationTemplate);
         stayRepository.save(stay);
     }
 

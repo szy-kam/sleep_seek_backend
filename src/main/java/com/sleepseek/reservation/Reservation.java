@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class Reservation extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "accommodation", nullable = false)
+    @JoinColumn(name = "accommodation")
     private Accommodation accommodation;
 
     @Embedded
@@ -30,9 +30,7 @@ public class Reservation extends BaseEntity {
     private LocalDate dateTo;
 
     @Column
-    private Boolean confirmed;
-
-    @Column
-    private Boolean completed;
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
 
 }

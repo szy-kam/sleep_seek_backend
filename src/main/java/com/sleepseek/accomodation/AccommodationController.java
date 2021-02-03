@@ -1,6 +1,8 @@
 package com.sleepseek.accomodation;
 
 import com.sleepseek.accomodation.DTO.AccommodationDTO;
+import com.sleepseek.accomodation.DTO.AccommodationTemplateDTO;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -17,24 +19,56 @@ class AccommodationController {
     }
 
 
+    @GetMapping("/accommodation-template")
+    List<AccommodationTemplateDTO> getAccommodationTemplates(
+            @RequestParam Integer pageNumber,
+            @RequestParam Integer pageSize,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo,
+            @RequestParam Long stayId) {
+        return accommodationFacade.getAccommodationTemplatesByStay(stayId, PageRequest.of(pageNumber, pageSize), dateFrom, dateTo);
+    }
+
     @GetMapping("/accommodation")
-    List<AccommodationDTO> getAccommodations(@RequestParam Long stayId) {
-        return accommodationFacade.getAccommodationsByStay(stayId);
+    List<AccommodationDTO> getAccommodations(
+            @RequestParam Integer pageNumber,
+            @RequestParam Integer pageSize,
+            @RequestParam Long accommodationTemplateId,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo) {
+        if (dateFrom != null && dateTo != null) {
+            return accommodationFacade.getAccommodationsByDate(accommodationTemplateId, PageRequest.of(pageNumber, pageSize), dateFrom, dateTo);
+        }
+
+        return accommodationFacade.getAccommodations(accommodationTemplateId, PageRequest.of(pageNumber, pageSize));
     }
 
     @GetMapping("/accommodation/{id}")
-    AccommodationDTO getAccommodation(@PathVariable Long id){
+    AccommodationDTO getAccommodation(
+            @PathVariable Long id) {
         return accommodationFacade.getAccommodation(id);
     }
 
-    @PostMapping("/accommodation")
-    AccommodationDTO addAccommodation(Principal principal, @RequestBody AccommodationDTO accommodationDTO) {
-        return accommodationFacade.addAccommodation(accommodationDTO);
+    @GetMapping("/accommodation-template/{id}")
+    AccommodationTemplateDTO getAccommodationTemplate(
+            @PathVariable Long id) {
+        return accommodationFacade.getAccommodationTemplate(id);
     }
 
-    @DeleteMapping("/accommodation/{accommodationId}")
-    void deleteAccommodation(Principal principal, @PathVariable Long accommodationId) {
-        accommodationFacade.deleteAccommodation(accommodationId);
+    @PostMapping("/accommodation-template")
+    void addAccommodation(Principal principal, @RequestBody AccommodationTemplateDTO accommodationTemplateDTO) {
+        accommodationFacade.addAccommodationTemplate(accommodationTemplateDTO);
+    }
+
+    @DeleteMapping("/accommodation-template/{accommodationTemplateId}")
+    void deleteAccommodation(Principal principal, @PathVariable Long accommodationTemplateId) {
+        accommodationFacade.deleteAccommodationTemplate(accommodationTemplateId);
+    }
+
+    @PutMapping("/accommodation-template/{accommodationTemplateId}")
+    void updateAccommodationTemplate(Principal principal, @PathVariable Long accommodationTemplateId, @RequestBody AccommodationTemplateDTO accommodationTemplateDTO) {
+        accommodationTemplateDTO.setId(accommodationTemplateId);
+        accommodationFacade.updateAccommodationTemplate(accommodationTemplateDTO);
     }
 
     @PutMapping("/accommodation/{accommodationId}")

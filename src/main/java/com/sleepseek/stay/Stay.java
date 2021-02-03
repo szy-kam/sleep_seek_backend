@@ -1,6 +1,6 @@
 package com.sleepseek.stay;
 
-import com.sleepseek.accomodation.Accommodation;
+import com.sleepseek.accomodation.AccommodationTemplate;
 import com.sleepseek.common.BaseEntity;
 import com.sleepseek.image.Image;
 import com.sleepseek.review.Review;
@@ -18,8 +18,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Table(name = "stays")
-public class Stay extends BaseEntity {
-    @Column
+public final class Stay extends BaseEntity {
+    @Column(nullable = false)
     private String name;
 
     @Embedded
@@ -32,7 +32,7 @@ public class Stay extends BaseEntity {
     @Column(length = 10000)
     private String description;
 
-    @Column(name = "min_price")
+    @Column(nullable = false)
     private Long minPrice;
 
     @Column
@@ -44,28 +44,28 @@ public class Stay extends BaseEntity {
     @Column
     private String mainPhoto;
 
-    @ElementCollection(targetClass = StayProperty.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = StayProperty.class, fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "stay_properties")
+    @CollectionTable
     @Column(name = "properties")
     private Set<StayProperty> properties;
 
     @Enumerated(EnumType.STRING)
-    @Column
+    @Column(nullable = false)
     private StayCategory category;
 
     @OneToMany(targetEntity = Image.class)
     private List<Image> photos;
 
-    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<Accommodation> accommodations;
+    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<AccommodationTemplate> accommodationTemplates;
 
     @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
-    public void addAccommodation(Accommodation accommodation) {
-        accommodations.add(accommodation);
-        accommodation.setStay(this);
+    public void addAccommodation(AccommodationTemplate accommodationTemplate) {
+        accommodationTemplates.add(accommodationTemplate);
+        accommodationTemplate.setStay(this);
     }
 
     public void addReview(Review review) {
@@ -78,9 +78,9 @@ public class Stay extends BaseEntity {
         review.setStay(null);
     }
 
-    public void removeAccommodation(Accommodation accommodation) {
-        accommodations.remove(accommodation);
-        accommodation.setStay(null);
+    public void removeAccommodation(AccommodationTemplate accommodationTemplate) {
+        accommodationTemplates.remove(accommodationTemplate);
+        accommodationTemplate.setStay(null);
     }
 
 }

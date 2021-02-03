@@ -12,6 +12,7 @@ public class ReservationDTO {
 
     private Long accommodationId;
 
+    private String stayName;
     private Long stayId;
 
     private CustomerDTO customer;
@@ -22,9 +23,7 @@ public class ReservationDTO {
 
     private String createdAt;
 
-    private Boolean confirmed;
-
-    private Boolean completed;
+    private String status;
 
     @Builder
     @Getter

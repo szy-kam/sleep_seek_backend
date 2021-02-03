@@ -13,9 +13,10 @@ class StaySearchParameters {
     private Integer pageNumber;
     private Integer pageSize;
     private String username;
-    private Double latitude;
-    private Double longitude;
-    private Long distance;
+    private Double southWestLatitude;
+    private Double southWestLongitude;
+    private Double northEastLatitude;
+    private Double northEastLongitude;
     private String name;
     private String category;
     private String city;

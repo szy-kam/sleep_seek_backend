@@ -1,52 +1,67 @@
 package com.sleepseek.reservation;
 
-import com.google.common.collect.Sets;
 import com.sleepseek.accomodation.Accommodation;
 import com.sleepseek.accomodation.AccommodationFacade;
 import com.sleepseek.accomodation.exception.AccommodationNotFoundException;
 import com.sleepseek.reservation.DTO.ReservationDTO;
+import com.sleepseek.reservation.exception.ReservationConflictException;
 import com.sleepseek.reservation.exception.ReservationNotFoundException;
-import com.sleepseek.reservation.exception.ReservationValidationException;
+import com.sleepseek.stay.StayFacade;
+import com.sleepseek.stay.exception.StayNotFoundException;
 import com.sleepseek.user.UserFacade;
 import com.sleepseek.user.exception.UserNotFoundException;
+import org.springframework.data.domain.PageRequest;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.sleepseek.reservation.ReservationErrorCodes.*;
-import static java.util.Objects.isNull;
-
 public class ReservationFacadeImpl implements ReservationFacade {
-    private final ReservationRepository reservationRepository;
+    private final ReservationRepositoryAdapter reservationRepository;
     private final AccommodationFacade accommodationFacade;
     private final UserFacade userFacade;
+    private final StayFacade stayFacade;
 
-    public ReservationFacadeImpl(ReservationRepository reservationRepository, AccommodationFacade accommodationFacade, UserFacade userFacade) {
+    public ReservationFacadeImpl(ReservationRepositoryAdapter reservationRepository, AccommodationFacade accommodationFacade, StayFacade stayFacade, UserFacade userFacade) {
         this.reservationRepository = reservationRepository;
         this.accommodationFacade = accommodationFacade;
         this.userFacade = userFacade;
+        this.stayFacade = stayFacade;
     }
 
     @Override
-    public void addReservation(ReservationDTO reservation) {
-        validateReservation(reservation, false);
+    @Transactional
+    public void addReservation(Long accommodationTemplateId, ReservationDTO reservation) {
+        new ReservationValidation().validateReservation(reservation, false);
+        if(!accommodationFacade.accommodationTemplateExistsById(accommodationTemplateId)){
+            throw new AccommodationNotFoundException(accommodationTemplateId);
+        }
+        ReservationStatus status;
+        Accommodation accommodation = null;
+        if (reservationRepository.isReservable(accommodationTemplateId, LocalDate.parse(reservation.getDateFrom()), LocalDate.parse(reservation.getDateTo()))) {
+            status = ReservationStatus.PENDING;
+            accommodation = reservationRepository.getReservable(accommodationTemplateId, LocalDate.parse(reservation.getDateFrom()), LocalDate.parse(reservation.getDateTo()));
+        } else {
+            throw new ReservationConflictException(reservation.getDateFrom(), reservation.getDateTo());
+        }
+
         Reservation newReservation = Reservation.builder()
-                .completed(false)
-                .confirmed(false)
                 .dateFrom(LocalDate.parse(reservation.getDateFrom(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .dateTo(LocalDate.parse(reservation.getDateTo(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .status(status)
                 .customer(Customer.builder()
                         .phoneNumber(reservation.getCustomer().getPhoneNumber())
                         .user(userFacade.getUserByUsername(reservation.getCustomer().getUsername()))
                         .fullName(reservation.getCustomer().getFullName())
                         .build())
                 .build();
-        Accommodation accommodation = accommodationFacade.loadById(reservation.getAccommodationId());
-        accommodationFacade.addReservation(accommodation, newReservation);
+        if (accommodation == null) {
+            reservationRepository.save(newReservation);
+        } else {
+            accommodationFacade.addReservation(accommodation, newReservation);
+        }
     }
 
     @Override
@@ -59,12 +74,9 @@ public class ReservationFacadeImpl implements ReservationFacade {
 
     @Override
     public void updateReservation(ReservationDTO reservationDTO) {
-        validateReservation(reservationDTO, true);
+        new ReservationValidation().validateReservation(reservationDTO, true);
         Reservation reservation = reservationRepository.getOne(reservationDTO.getId());
-        reservation.setCompleted(reservationDTO.getCompleted());
-        reservation.setConfirmed(reservationDTO.getConfirmed());
-        reservation.setDateFrom(LocalDate.parse(reservationDTO.getDateFrom()));
-        reservation.setDateTo(LocalDate.parse(reservationDTO.getDateTo()));
+        reservation.setStatus(ReservationStatus.valueOf(reservationDTO.getStatus()));
         reservation.setCustomer(Customer.builder()
                 .phoneNumber(reservationDTO.getCustomer().getPhoneNumber())
                 .user(userFacade.getUserByUsername(reservationDTO.getCustomer().getUsername()))
@@ -74,14 +86,19 @@ public class ReservationFacadeImpl implements ReservationFacade {
     }
 
     @Override
-    public List<ReservationDTO> getReservationsByAccommodationId(Long accommodationId) {
-        Accommodation accommodation = accommodationFacade.loadById(accommodationId);
-        return accommodation.getReservations().stream().map(ReservationMapper::toDto).collect(Collectors.toList());
+    public List<ReservationDTO> getReservationsByAccommodationId(Long accommodationId, PageRequest of) {
+        if (accommodationFacade.accommodationTemplateExistsById(accommodationId)) {
+            throw new AccommodationNotFoundException(accommodationId);
+        }
+        return reservationRepository.findAllByAccommodation_AccommodationTemplate_Id(accommodationId, of).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
-    public List<ReservationDTO> getReservationsByStayId(Long stayId) {
-        return reservationRepository.findAllByAccommodation_Stay_Id(stayId).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
+    public List<ReservationDTO> getReservationsByStayId(Long stayId, PageRequest of) {
+        if (!stayFacade.stayExists(stayId)) {
+            throw new StayNotFoundException(stayId);
+        }
+        return reservationRepository.findAllByAccommodation_AccommodationTemplate_Stay_Id(stayId, of).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -93,69 +110,12 @@ public class ReservationFacadeImpl implements ReservationFacade {
     }
 
     @Override
-    public List<ReservationDTO> getReservationsByUsername(String username) {
+    public List<ReservationDTO> getReservationsByUsername(String username, PageRequest of) {
         if (!userFacade.userExists(username)) {
             throw new UserNotFoundException(username);
         }
-        return reservationRepository.findAllByCustomer_User_Username(username).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
+        return reservationRepository.findAllByCustomer_User_Username(username, of).stream().map(ReservationMapper::toDto).collect(Collectors.toList());
     }
 
-    private void validateReservation(ReservationDTO reservationDTO, boolean checkId) {
-        Set<ReservationErrorCodes> errors = Sets.newHashSet();
-        if (checkId) {
-            checkId(reservationDTO.getId()).ifPresent(errors::add);
-        }
-        checkDateFrom(reservationDTO.getDateFrom()).ifPresent(errors::add);
-        checkDateTo(reservationDTO.getDateTo()).ifPresent(errors::add);
-        checkAccommodation(reservationDTO.getAccommodationId()).ifPresent(errors::add);
-        checkCustomer(reservationDTO.getCustomer()).ifPresent(errors::add);
-        if (!errors.isEmpty()) {
-            throw new ReservationValidationException(errors);
-        }
-    }
-
-    private Optional<ReservationErrorCodes> checkAccommodation(Long accommodationId) {
-        if (isNull(accommodationId)) {
-            return Optional.of(ACCOMMODATION_NULL);
-        }
-        if (!accommodationFacade.existsById(accommodationId)) {
-            throw new AccommodationNotFoundException(accommodationId);
-        }
-        return Optional.empty();
-    }
-
-    private Optional<ReservationErrorCodes> checkCustomer(ReservationDTO.CustomerDTO customer) {
-        if (isNull(customer)) {
-            return Optional.of(CUSTOMER_NULL);
-        }
-        if (isNull(customer.getUsername())) {
-            return Optional.of(CUSTOMER_NULL);
-        }
-        if (!userFacade.userExists(customer.getUsername())) {
-            throw new UserNotFoundException(customer.getUsername());
-        }
-        return Optional.empty();
-    }
-
-    private Optional<ReservationErrorCodes> checkDateFrom(String dateFrom) {
-        if (isNull(dateFrom)) {
-            return Optional.of(DATE_FROM_NULL);
-        }
-        return Optional.empty();
-    }
-
-    private Optional<ReservationErrorCodes> checkDateTo(String dateTo) {
-        if (isNull(dateTo)) {
-            return Optional.of(DATE_TO_NULL);
-        }
-        return Optional.empty();
-    }
-
-    private Optional<ReservationErrorCodes> checkId(Long id) {
-        if (isNull(id)) {
-            return Optional.of(ID_NULL);
-        }
-        return Optional.empty();
-    }
 
 }
