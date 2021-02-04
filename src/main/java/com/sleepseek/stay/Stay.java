@@ -54,7 +54,7 @@ public final class Stay extends BaseEntity {
     @Column(nullable = false)
     private StayCategory category;
 
-    @OneToMany(targetEntity = Image.class)
+    @OneToMany(targetEntity = Image.class, fetch = FetchType.EAGER)
     private List<Image> photos;
 
     @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
