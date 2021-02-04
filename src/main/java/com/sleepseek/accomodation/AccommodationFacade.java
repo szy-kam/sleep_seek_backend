@@ -32,5 +32,7 @@ public interface AccommodationFacade {
 
     void addReservation(Accommodation accommodation, Reservation newReservation);
 
+    void deleteReservation(Accommodation accommodation, Reservation reservation);
+
     List<AccommodationDTO> getAccommodationsByDate(Long accommodationTemplateId, PageRequest of, String dateFrom, String dateTo);
 }

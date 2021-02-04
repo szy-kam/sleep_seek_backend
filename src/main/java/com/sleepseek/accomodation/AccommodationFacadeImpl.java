@@ -171,6 +171,12 @@ class AccommodationFacadeImpl implements AccommodationFacade {
     }
 
     @Override
+    public void deleteReservation(Accommodation accommodation, Reservation reservation) {
+        accommodation.removeReservation(reservation);
+        accommodationRepository.save(accommodation);
+    }
+
+    @Override
     public List<AccommodationDTO> getAccommodationsByDate(Long accommodationTemplateId, PageRequest of, String dateFrom, String dateTo) {
         return accommodationRepository.findAllReservable(accommodationTemplateId, LocalDate.parse(dateFrom), LocalDate.parse(dateTo)).stream().map(AccommodationMapper::toDTO).collect(Collectors.toList());
     }

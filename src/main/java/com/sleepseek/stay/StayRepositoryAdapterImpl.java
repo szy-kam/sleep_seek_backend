@@ -41,11 +41,11 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
 
         List<Predicate> conditions = new ArrayList<>();
         if (!isNull(parameters.getName())) {
-            conditions.add(builder.like(stays.get("name"), containsValue(parameters.getName())));
+            conditions.add(builder.like(builder.lower(stays.get("name")), containsValue(parameters.getName().toLowerCase())));
         }
 
         if (!isNull(parameters.getCountry())) {
-            conditions.add(builder.like(address.get("country"), containsValue(parameters.getCountry())));
+            conditions.add(builder.like(builder.lower(address.get("country")), containsValue(parameters.getCountry().toLowerCase())));
         }
         if (!isNull(parameters.getCategory())) {
             conditions.add(builder.equal(stays.get("category"), StayCategory.valueOf(parameters.getCategory())));
@@ -66,10 +66,10 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
             conditions.add(builder.or(builder.and(
                     builder.between(address.get("longitude"), parameters.getSouthWestLongitude(), parameters.getNorthEastLongitude()),
                     builder.between(address.get("latitude"), parameters.getSouthWestLatitude(), parameters.getNorthEastLatitude())
-            ), builder.like(address.get("city"), containsValue(parameters.getCity()))));
+            ), builder.like(builder.lower(address.get("city")), containsValue(parameters.getCity().toLowerCase()))));
         }
         if (!isNull(parameters.getCity())) {
-            conditions.add(builder.like(address.get("city"), containsValue(parameters.getCity())));
+            conditions.add(builder.like(builder.lower(address.get("city")), containsValue(parameters.getCity().toLowerCase())));
         }
         if (!isNull(parameters.getSouthWestLatitude()) && !isNull(parameters.getSouthWestLongitude()) && !isNull(parameters.getNorthEastLongitude()) && !isNull(parameters.getNorthEastLatitude())) {
             conditions.add(builder.between(address.get("longitude"), parameters.getSouthWestLongitude(), parameters.getNorthEastLongitude()));
