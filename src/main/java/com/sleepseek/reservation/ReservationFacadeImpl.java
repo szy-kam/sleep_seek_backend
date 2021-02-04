@@ -35,7 +35,7 @@ public class ReservationFacadeImpl implements ReservationFacade {
     @Transactional
     public void addReservation(Long accommodationTemplateId, ReservationDTO reservation) {
         new ReservationValidation().validateReservation(reservation, false);
-        if(!accommodationFacade.accommodationTemplateExistsById(accommodationTemplateId)){
+        if (!accommodationFacade.accommodationTemplateExistsById(accommodationTemplateId)) {
             throw new AccommodationNotFoundException(accommodationTemplateId);
         }
         ReservationStatus status;
@@ -71,8 +71,11 @@ public class ReservationFacadeImpl implements ReservationFacade {
         }
         Reservation reservation = reservationRepository.getOne(id);
         Accommodation accommodation = reservation.getAccommodation();
-        accommodationFacade.deleteReservation(accommodation, reservation);
-        reservationRepository.deleteById(id);
+        if (accommodation != null) {
+            accommodationFacade.deleteReservation(accommodation, reservation);
+        } else {
+            reservationRepository.deleteById(id);
+        }
     }
 
     @Override
