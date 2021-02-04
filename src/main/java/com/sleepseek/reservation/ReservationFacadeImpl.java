@@ -69,13 +69,7 @@ public class ReservationFacadeImpl implements ReservationFacade {
         if (!reservationRepository.existsById(id)) {
             throw new ReservationNotFoundException(id);
         }
-        Reservation reservation = reservationRepository.getOne(id);
-        Accommodation accommodation = reservation.getAccommodation();
-        if (accommodation != null) {
-            accommodationFacade.deleteReservation(accommodation, reservation);
-        } else {
-            reservationRepository.deleteById(id);
-        }
+        reservationRepository.deleteById(id);
     }
 
     @Override

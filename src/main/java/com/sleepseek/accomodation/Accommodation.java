@@ -21,7 +21,7 @@ public class Accommodation extends BaseEntity {
     @JoinColumn(name = "accommodationTemplate")
     AccommodationTemplate accommodationTemplate;
 
-    @OneToMany(targetEntity = Reservation.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "accommodation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Reservation> reservations;
 
     public void addReservation(Reservation reservation) {

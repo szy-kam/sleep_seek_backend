@@ -80,22 +80,6 @@ class ReservationRepositoryAdapterImpl implements ReservationRepositoryAdapter {
         cq.select(accommodations2);
         cq.where(cb.equal(accommodations2.get("id"), id));
         AccommodationTemplate at =  entityManager.createQuery(cq).getSingleResult();
-        /*
-        Query query1 = entityManager.createQuery(
-                "SELECT a.accommodationTemplate, COUNT (r) " +
-                        "FROM Accommodation a " +
-                        "LEFT JOIN Reservation r ON r.accommodation.id = a.id AND (r.dateFrom <= :dateTo AND :dateFrom <= r.dateTo) AND r.status IN :conflictingStatuses " +
-                        "WHERE  " +
-                        "a.accommodationTemplate.id = :accommodationTemplate " +
-                        "GROUP BY a.accommodationTemplate ");
-        query1.setParameter("dateTo", dateTo);
-        query1.setParameter("dateFrom", dateFrom);
-        query1.setParameter("accommodationTemplate", accommodationTemplateId);
-        query1.setParameter("conflictingStatuses", Arrays.asList(ReservationStatus.PENDING, ReservationStatus.CONFIRMED));
-        Object[] result = (Object[]) query1.getSingleResult();
-        Long overlappingRooms = (Long) result[1];
-        AccommodationTemplate accommodationTemplate = (AccommodationTemplate) result[0];
-        */
         return at.getQuantity() > overlappingRooms;
     }
 
@@ -114,20 +98,6 @@ class ReservationRepositoryAdapterImpl implements ReservationRepositoryAdapter {
         query.multiselect(accommodations.get("id"), cb.count(reservations));
         query.where(cb.equal(accommodations.get("accommodationTemplate").get("id"), accommodationTemplateId));
         TypedQuery<Object[]> typedQuery = entityManager.createQuery(query);
-        /*Query query1 = entityManager.createQuery(
-                "SELECT a, COUNT (r) " +
-                        "FROM Accommodation a " +
-                        "LEFT JOIN Reservation r ON r.accommodation.id = a.id AND (r.dateFrom <= :dateTo AND :dateFrom <= r.dateTo) AND r.status IN :conflictingStatuses " +
-                        "WHERE  " +
-                        "a.accommodationTemplate.id = :accommodationTemplate " +
-                        "GROUP BY a "
-        );
-        query1.setParameter("dateTo", dateTo);
-        query1.setParameter("dateFrom", dateFrom);
-        query1.setParameter("accommodationTemplate", accommodationTemplateId);
-        query1.setParameter("conflictingStatuses", Arrays.asList(ReservationStatus.PENDING, ReservationStatus.CONFIRMED));
-
-         */
         List<Object[]> result = typedQuery.getResultList();
         for (Object[] r : result) {
             Long id = (Long) r[0];
