@@ -36,9 +36,8 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Stay> query = builder.createQuery(Stay.class);
         Root<Stay> stays = query.from(Stay.class);
-        stays.fetch("properties", JoinType.LEFT);
+        stays.fetch("reviews", JoinType.LEFT);
         stays.fetch("user", JoinType.LEFT);
-        stays.fetch("photos", JoinType.LEFT);
         Join<Stay, Address> address = stays.join("address");
         Join<Stay, AccommodationTemplate> accommodations = stays.join("accommodationTemplates", JoinType.LEFT);
         List<Predicate> conditions = new ArrayList<>();
