@@ -66,8 +66,7 @@ class StayRepositoryAdapterImpl implements StayRepositoryAdapter {
                     builder.between(address.get("longitude"), parameters.getSouthWestLongitude(), parameters.getNorthEastLongitude()),
                     builder.between(address.get("latitude"), parameters.getSouthWestLatitude(), parameters.getNorthEastLatitude())
             ), builder.like(builder.lower(address.get("city")), containsValue(parameters.getCity().toLowerCase()))));
-        }
-        if (!isNull(parameters.getCity())) {
+        } else if (!isNull(parameters.getCity())) {
             conditions.add(builder.like(builder.lower(address.get("city")), containsValue(parameters.getCity().toLowerCase())));
         }
         if (!isNull(parameters.getSouthWestLatitude()) && !isNull(parameters.getSouthWestLongitude()) && !isNull(parameters.getNorthEastLongitude()) && !isNull(parameters.getNorthEastLatitude())) {
