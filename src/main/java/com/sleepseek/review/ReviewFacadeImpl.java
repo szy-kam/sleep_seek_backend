@@ -117,6 +117,7 @@ class ReviewFacadeImpl implements ReviewFacade {
         if (!existsById(id)) {
             throw new ReviewNotFoundException(id);
         }
+        reviewRepository.deleteById(id);
     }
 
     @Override
